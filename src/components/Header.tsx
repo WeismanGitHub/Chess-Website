@@ -1,7 +1,7 @@
-import React from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import Link from 'next/link'
+import React from 'react'
 
 const Header: React.FC = () => {
     const router = useRouter()
@@ -13,9 +13,10 @@ const Header: React.FC = () => {
         <div className="left">
             <Link href="/">
                 <a className="bold" data-active={isActive('/')}>
-                    Feed
+                    Home
                 </a>
             </Link>
+
             <style jsx>{`
                 .bold {
                     font-weight: bold;
@@ -147,7 +148,7 @@ const Header: React.FC = () => {
         right = (
             <div className="right">
                 <p>
-                    {session.user.name} ({session.user.email})
+                    {session?.user?.name} ({session?.user?.email})
                 </p>
                 <Link href="/create">
                     <button>
