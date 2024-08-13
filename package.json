@@ -1,31 +1,32 @@
 {
-  "name": "hello-next",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "license": "MIT",
-  "author": "",
-  "scripts": {
-    "dev": "next",
-    "build": "next build",
-    "start": "next start",
-    "deploy": "fly deploy --local-only",
-    "format": "npx prettier --write src"
-  },
-  "dependencies": {
-    "mongoose": "^8.5.2",
-    "next": "12.1.4",
-    "next-auth": "4.3.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-markdown": "8.0.2",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@types/next-auth": "3.13.0",
-    "@types/node": "16.18.66",
-    "@types/react": "17.0.44",
-    "ts-node": "10.7.0",
-    "typescript": "4.6.3"
-  }
+    "name": "bot-builder",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [],
+    "license": "MIT",
+    "author": "",
+    "scripts": {
+        "dev": "next",
+        "build": "next build",
+        "start": "next start",
+        "deploy": "fly deploy --local-only",
+        "format": "npx prettier --write src"
+    },
+    "dependencies": {
+        "@auth/mongodb-adapter": "^3.4.2",
+        "mongodb": "^6.8.0",
+        "mongoose": "^8.5.2",
+        "next": "^14.2.5",
+        "next-auth": "^5.0.0-beta.20",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-markdown": "8.0.2",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@types/node": "16.18.66",
+        "@types/react": "^18.3.3",
+        "ts-node": "10.7.0",
+        "typescript": "4.6.3"
+    }
 }
