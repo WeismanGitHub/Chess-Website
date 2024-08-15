@@ -1,15 +1,49 @@
-import mongoose from 'mongoose'
+import { Model, Schema, model, models } from 'mongoose'
+import { compare, hash } from 'bcrypt'
 
-export interface Users extends mongoose.Document {
-    name: string
+interface IUser {
+    username: string
+    password: string
 }
 
-const UserSchema = new mongoose.Schema<Users>({
-    name: {
-        type: String,
-        required: [true, 'Please provide a name.'],
-        maxlength: [25, 'Name cannot be more than 25 characters.'],
+interface IUserMethods {
+    isValidPassword(password: string): Promise<boolean>
+    hashPassword(): Promise<void>
+}
+
+type UserModel = Model<IUser, {}, IUserMethods>
+
+const userSchema = new Schema<IUser, UserModel, IUserMethods>(
+    {
+        username: {
+            type: String,
+            required: [true, 'Please provide a username.'],
+            maxlength: [25, 'Username cannot be more than 25 characters.'],
+        },
+        password: {
+            type: String,
+            required: [true, 'Please provide a password.'],
+        },
     },
+    { timestamps: { createdAt: true, updatedAt: false } }
+)
+
+userSchema.method('isValidPassword', async function isValidPassword(password: string) {
+    const isValid = await compare(password, this.password)
+
+    return isValid
 })
 
-export default mongoose.models.Users || mongoose.model<Users>('Users', UserSchema)
+userSchema.method('hashPassword', async function hashPassword() {
+    const hashedPassword = await hash(this.password, 10)
+    this.password = hashedPassword
+})
+
+userSchema.pre('save', async function (next) {
+    const hashedPassword = await hash(this.password, 10)
+    this.password = hashedPassword
+
+    next()
+})
+
+export default models.Users || model<IUser, UserModel>('Users', userSchema)
