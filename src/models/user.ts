@@ -2,7 +2,7 @@ import { Model, Schema, model, models } from 'mongoose'
 import { compare, hash } from 'bcrypt'
 
 interface IUser {
-    username: string
+    name: string
     password: string
 }
 
@@ -15,10 +15,10 @@ type UserModel = Model<IUser, {}, IUserMethods>
 
 const userSchema = new Schema<IUser, UserModel, IUserMethods>(
     {
-        username: {
+        name: {
             type: String,
-            required: [true, 'Please provide a username.'],
-            maxlength: [25, 'Username cannot be more than 25 characters.'],
+            required: [true, 'Please provide a name.'],
+            maxlength: [25, 'Name cannot be more than 25 characters.'],
         },
         password: {
             type: String,
@@ -41,4 +41,4 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
-export default models.Users || model<IUser, UserModel>('Users', userSchema)
+export default (models.Users || model<IUser, UserModel>('Users', userSchema)) as UserModel
