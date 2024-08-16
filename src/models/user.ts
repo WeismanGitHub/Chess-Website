@@ -34,11 +34,6 @@ userSchema.method('isValidPassword', async function isValidPassword(password: st
     return isValid
 })
 
-userSchema.method('hashPassword', async function hashPassword() {
-    const hashedPassword = await hash(this.password, 10)
-    this.password = hashedPassword
-})
-
 userSchema.pre('save', async function (next) {
     const hashedPassword = await hash(this.password, 10)
     this.password = hashedPassword
