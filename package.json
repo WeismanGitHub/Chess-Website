@@ -1,32 +1,38 @@
 {
-    "name": "bot-builder",
-    "version": "1.0.0",
-    "description": "",
-    "keywords": [],
-    "license": "MIT",
-    "author": "",
-    "scripts": {
-        "dev": "next",
-        "build": "next build",
-        "start": "next start",
-        "deploy": "fly deploy --local-only",
-        "format": "npx prettier --write src"
-    },
-    "dependencies": {
-        "bcrypt": "^5.1.1",
-        "mongodb": "^6.8.0",
-        "mongoose": "^8.5.2",
-        "next": "^14.2.5",
-        "react": "18.2.0",
-        "react-dom": "18.2.0",
-        "react-markdown": "8.0.2",
-        "zod": "^3.23.8"
-    },
-    "devDependencies": {
-        "@types/bcrypt": "^5.0.2",
-        "@types/node": "16.18.66",
-        "@types/react": "^18.3.3",
-        "ts-node": "10.7.0",
-        "typescript": "4.6.3"
-    }
+  "name": "bot-builder",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "deploy": "fly deploy --local-only",
+    "format": "npx prettier --write src",
+    "test": "jest"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "mongodb": "^6.8.0",
+    "mongoose": "^8.5.2",
+    "next": "^14.2.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-markdown": "8.0.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.4.8",
+    "@testing-library/react": "^16.0.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "16.18.66",
+    "@types/react": "^18.3.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "ts-node": "10.7.0",
+    "typescript": "4.6.3"
+  }
 }
