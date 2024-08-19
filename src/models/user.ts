@@ -1,5 +1,6 @@
 import { Model, Schema, model, models } from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
+import { UserConstants } from '../lib/constants'
 import { compare, hash } from 'bcrypt'
 
 interface IUser {

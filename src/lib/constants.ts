@@ -1,4 +1,4 @@
-abstract class UserConstants {
+export abstract class UserConstants {
     public static readonly MinNameLength: 1
     public static readonly MaxNameLength: 25
 

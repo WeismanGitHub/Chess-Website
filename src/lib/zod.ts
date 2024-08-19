@@ -1,3 +1,4 @@
+import { UserConstants } from './constants'
 import { object, string } from 'zod'
 
 export const credentialsSchema = object({
