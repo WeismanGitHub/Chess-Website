@@ -1,6 +1,6 @@
-export abstract class UserConstants {
-    public static readonly MinNameLength: 1
-    public static readonly MaxNameLength: 25
+export class UserConstants {
+    public static readonly minNameLength = 1
+    public static readonly maxNameLength = 25
 
-    public static readonly MinPasswordLength: 10
+    public static readonly minPasswordLength = 10
 }

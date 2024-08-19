@@ -21,12 +21,12 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
             type: String,
             required: [true, 'Please provide a name.'],
             minlength: [
-                UserConstants.MinNameLength,
-                `Name cannot be less than ${UserConstants.MinNameLength} character(s).`,
+                UserConstants.minNameLength,
+                `Name cannot be less than ${UserConstants.minNameLength} character(s).`,
             ],
             maxlength: [
-                UserConstants.MaxNameLength,
-                `Name cannot be more than ${UserConstants.MaxNameLength} characters.`,
+                UserConstants.maxNameLength,
+                `Name cannot be more than ${UserConstants.maxNameLength} characters.`,
             ],
             unique: true,
         },
