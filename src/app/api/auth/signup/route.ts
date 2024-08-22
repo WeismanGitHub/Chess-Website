@@ -5,7 +5,7 @@ import { ApiError } from 'next/dist/server/api-utils'
 import dbConnect from '../../../../lib/dbConnect'
 import { StatusCodes } from 'http-status-codes'
 import { signJwt } from '../../../../lib/jwt'
-import User from '../../../../models/User'
+import { User } from '../../../../models'
 import { cookies } from 'next/headers'
 import { Error } from 'mongoose'
 
