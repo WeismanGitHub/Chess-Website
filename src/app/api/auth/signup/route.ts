@@ -1,10 +1,10 @@
-import { errorHandler } from '../../../../lib/error-handler'
+import { errorHandler } from '../../../../lib/middleware'
+import { NextRequest, NextResponse } from 'next/server'
 import { credentialsSchema } from '../../../../lib/zod'
 import { ApiError } from 'next/dist/server/api-utils'
 import dbConnect from '../../../../lib/dbConnect'
 import { StatusCodes } from 'http-status-codes'
 import { signJwt } from '../../../../lib/jwt'
-import { NextResponse } from 'next/server'
 import User from '../../../../models/User'
 import { cookies } from 'next/headers'
 import { Error } from 'mongoose'
@@ -14,7 +14,7 @@ type body = {
     password: string | undefined
 }
 
-async function endpoint(req: Request) {
+async function endpoint(req: NextRequest) {
     const body: body = await req.json().catch(() => {
         throw new ApiError(StatusCodes.BAD_REQUEST, 'Cannot parse request body.')
     })

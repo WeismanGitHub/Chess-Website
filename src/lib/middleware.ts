@@ -3,7 +3,7 @@ import { ApiError } from 'next/dist/server/api-utils'
 import { StatusCodes } from 'http-status-codes'
 import { ZodError } from 'zod'
 
-export function errorHandler(...handlers: Function[]) {
+export function errorHandler(...handlers: ((...args: any) => Promise<NextResponse<unknown>>)[]) {
     return async (req: NextRequest, res: NextResponse) => {
         try {
             for (const handler of handlers) {
