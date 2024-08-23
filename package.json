@@ -21,6 +21,7 @@
     "mongoose": "^8.5.2",
     "mongoose-unique-validator": "^5.0.1",
     "next": "^14.2.5",
+    "next-test-api-route-handler": "^4.0.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-markdown": "8.0.2",
