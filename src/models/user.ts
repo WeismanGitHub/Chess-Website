@@ -6,6 +6,7 @@ import { compare, hash } from 'bcrypt'
 interface IUser {
     name: string
     password: string
+    botIds: string[]
 }
 
 interface IUserMethods {
@@ -34,6 +35,11 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
             type: String,
             required: [true, 'Please provide a password.'],
         },
+        botIds: {
+            type: [{ type: String, required: true }],
+            required: true,
+            default: [],
+        },
     },
     { timestamps: { createdAt: true, updatedAt: false } }
 )
@@ -47,6 +53,10 @@ userSchema.method('isValidPassword', async function isValidPassword(password: st
 userSchema.pre('save', async function (next) {
     const hashedPassword = await hash(this.password, 10)
     this.password = hashedPassword
+
+    if (!this.botIds) {
+        this.botIds = []
+    }
 
     next()
 })
