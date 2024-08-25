@@ -9,11 +9,8 @@ beforeAll(async () => {
     await dbConnect()
 })
 
-afterEach(async () => {
-    await User.deleteMany()
-})
-
 afterAll(async () => {
+    await User.deleteMany()
     await mongoose.connection.close()
 })
 
