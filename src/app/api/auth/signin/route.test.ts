@@ -37,17 +37,31 @@ describe('POST /api/auth/signin', () => {
         })
     })
 
-    // it('should return status 400 for invalid input', async () => {
-    //     await testApiHandler({
-    //         appHandler,
-    //         async test({ fetch }) {
-    //             const res = await fetch({
-    //                 method: 'POST',
-    //                 body: JSON.stringify({}),
-    //             })
+    it('should return status 404 for nonexistent user', async () => {
+        await testApiHandler({
+            appHandler,
+            async test({ fetch }) {
+                const res = await fetch({
+                    method: 'POST',
+                    body: JSON.stringify({ name: 'nonexistent', password: credentials.password }),
+                })
 
-    //             expect(res.status).toBe(StatusCodes.BAD_REQUEST)
-    //         },
-    //     })
-    // })
+                expect(res.status).toBe(StatusCodes.NOT_FOUND)
+            },
+        })
+    })
+
+    it('should return status 400 for invalid password', async () => {
+        await testApiHandler({
+            appHandler,
+            async test({ fetch }) {
+                const res = await fetch({
+                    method: 'POST',
+                    body: JSON.stringify({ name: credentials.name, password: 'InvalidPassword1' }),
+                })
+
+                expect(res.status).toBe(StatusCodes.NOT_FOUND)
+            },
+        })
+    })
 })
