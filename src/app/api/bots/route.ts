@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { errorHandler } from '../../../lib/middleware'
 import { ApiError } from 'next/dist/server/api-utils'
 import { BotConstants } from '../../../lib/constants'
+import { decodeAuthJwt } from '../../../lib/jwt'
 import { StatusCodes } from 'http-status-codes'
 import dbConnect from '../../../lib/dbConnect'
-import { Bot } from '../../../models'
+import { Bot, User } from '../../../models'
 import { z } from 'zod'
 
 type body = {
@@ -30,9 +31,13 @@ async function endpoint(req: NextRequest) {
 
     await dbConnect()
 
-    await Bot.create({
+    const bot = await Bot.create({
         name,
     })
+
+    const userId = decodeAuthJwt(req)
+
+    await User.updateOne({ _id: userId }, { $push: { botIds: bot._id } })
 
     return NextResponse.json({}, { status: StatusCodes.CREATED })
 }
