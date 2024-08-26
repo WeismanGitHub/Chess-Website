@@ -4,7 +4,7 @@ import { credentialsSchema } from '../../../../lib/zod'
 import { ApiError } from 'next/dist/server/api-utils'
 import dbConnect from '../../../../lib/dbConnect'
 import { StatusCodes } from 'http-status-codes'
-import { signJwt } from '../../../../lib/jwt'
+import { signAuthJwt } from '../../../../lib/jwt'
 import { User } from '../../../../models'
 import { cookies } from 'next/headers'
 import { Error } from 'mongoose'
@@ -40,7 +40,7 @@ async function endpoint(req: NextRequest) {
         throw error
     })
 
-    cookies().set('auth', signJwt(user.id), { httpOnly: true, sameSite: true, secure: true })
+    cookies().set('auth', signAuthJwt(user.id), { httpOnly: true, sameSite: true, secure: true })
 
     return NextResponse.json({}, { status: StatusCodes.CREATED })
 }
