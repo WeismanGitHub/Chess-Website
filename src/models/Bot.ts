@@ -20,7 +20,6 @@ const botSchema = new Schema<IBot, BotModel>(
                 BotConstants.maxNameLength,
                 `Name cannot be more than ${BotConstants.maxNameLength} characters.`,
             ],
-            unique: true,
         },
     },
     { timestamps: true }
