@@ -24,7 +24,7 @@ export function errorHandler(...handlers: ((...args: any) => Promise<NextRespons
                 return NextResponse.json({ message: message.trimEnd() }, { status: StatusCodes.BAD_REQUEST })
             }
 
-            console.log(error)
+            console.error(error)
 
             return NextResponse.json(
                 { message: 'Something went wrong.' },
