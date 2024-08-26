@@ -2,11 +2,12 @@ import { Model, Schema, model, models } from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
 import { UserConstants } from '../lib/constants'
 import { compare, hash } from 'bcrypt'
+import { ObjectId } from 'mongodb'
 
 interface IUser {
     name: string
     password: string
-    botIds: string[]
+    botIds: ObjectId[]
 }
 
 interface IUserMethods {
@@ -36,7 +37,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
             required: [true, 'Please provide a password.'],
         },
         botIds: {
-            type: [{ type: String, required: true }],
+            type: [{ type: ObjectId, required: true }],
             required: true,
             default: [],
         },
