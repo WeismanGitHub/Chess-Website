@@ -25,4 +25,4 @@ const botSchema = new Schema<IBot, BotModel>(
     { timestamps: true }
 )
 
-export default (models.Users || model<IBot, BotModel>('Bots', botSchema)) as BotModel
+export default (models.Bots || model<IBot, BotModel>('Bots', botSchema)) as BotModel
