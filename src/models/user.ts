@@ -2,12 +2,10 @@ import { Model, Schema, model, models } from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
 import { UserConstants } from '../lib/constants'
 import { compare, hash } from 'bcrypt'
-import { ObjectId } from 'mongodb'
 
 interface IUser {
     name: string
     password: string
-    botIds: ObjectId[]
 }
 
 interface IUserMethods {
@@ -36,11 +34,6 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
             type: String,
             required: [true, 'Please provide a password.'],
         },
-        botIds: {
-            type: [{ type: ObjectId, required: true }],
-            required: true,
-            default: [],
-        },
     },
     { timestamps: { createdAt: true, updatedAt: false } }
 )
@@ -54,10 +47,6 @@ userSchema.method('isValidPassword', async function isValidPassword(password: st
 userSchema.pre('save', async function (next) {
     const hashedPassword = await hash(this.password, 10)
     this.password = hashedPassword
-
-    if (!this.botIds) {
-        this.botIds = []
-    }
 
     next()
 })
