@@ -1,14 +1,20 @@
 import { Model, Schema, model, models } from 'mongoose'
 import { BotConstants } from '../lib/constants'
+import { ObjectId } from 'mongodb'
 
 interface IBot {
     name: string
+    userId: typeof ObjectId
 }
 
 type BotModel = Model<IBot, {}>
 
 const botSchema = new Schema<IBot, BotModel>(
     {
+        userId: {
+            type: ObjectId,
+            required: [true, 'Please provide a user Id.'],
+        },
         name: {
             type: String,
             required: [true, 'Please provide a name.'],
