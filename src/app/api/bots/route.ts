@@ -22,7 +22,7 @@ const botSchema = z.object({
         ),
 })
 
-async function endpoint(req: NextRequest) {
+async function createBot(req: NextRequest) {
     const body: body = await req.json().catch(() => {
         throw new ApiError(StatusCodes.BAD_REQUEST, 'Cannot parse request body.')
     })
@@ -31,10 +31,17 @@ async function endpoint(req: NextRequest) {
 
     await dbConnect()
 
+    const userId = decodeAuthJwt(req)
+
     const bot = await Bot.create({
         name,
+        userId,
     })
 
+    return NextResponse.json({ id: bot.id }, { status: StatusCodes.CREATED })
+}
+
+async function getBots(req: NextRequest) {
     const userId = decodeAuthJwt(req)
 
     await User.updateOne({ _id: userId }, { $push: { botIds: bot._id } })
