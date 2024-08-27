@@ -5,7 +5,7 @@ import { BotConstants } from '../../../lib/constants'
 import { decodeAuthJwt } from '../../../lib/jwt'
 import { StatusCodes } from 'http-status-codes'
 import dbConnect from '../../../lib/dbConnect'
-import { Bot, User } from '../../../models'
+import { Bot } from '../../../models'
 import { z } from 'zod'
 
 type body = {
@@ -44,9 +44,12 @@ async function createBot(req: NextRequest) {
 async function getBots(req: NextRequest) {
     const userId = decodeAuthJwt(req)
 
-    await User.updateOne({ _id: userId }, { $push: { botIds: bot._id } })
+    await dbConnect()
 
-    return NextResponse.json({}, { status: StatusCodes.CREATED })
+    const bots = await Bot.find({ userId })
+
+    return NextResponse.json(bots, { status: StatusCodes.OK })
 }
 
-export const POST = errorHandler(endpoint)
+export const POST = errorHandler(createBot)
+export const GET = errorHandler(getBots)
