@@ -14,6 +14,7 @@ const botSchema = new Schema<IBot, BotModel>(
         userId: {
             type: ObjectId,
             required: [true, 'Please provide a user Id.'],
+            index: true,
         },
         name: {
             type: String,
