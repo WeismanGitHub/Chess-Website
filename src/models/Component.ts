@@ -1,14 +1,12 @@
 import { Model, Schema, model, models } from 'mongoose'
+import { ITrigger } from './triggers'
 import { ObjectId } from 'mongodb'
-
-interface ITrigger {}
-
-interface IAction {}
+import { IBlock } from './blocks'
 
 interface IComponent {
     botId: typeof ObjectId
-    triggers: [ITrigger]
-    actions: [IAction]
+    trigger: ITrigger
+    flow: [IBlock]
 }
 
 type ComponentModel = Model<IComponent, {}>
@@ -20,13 +18,11 @@ const componentSchema = new Schema<IComponent, ComponentModel>(
             required: [true, 'Please provide a bot Id.'],
             index: true,
         },
-        triggers: {
-            type: [{}],
-            maxlength: [100, 'Cannot have more than 100 triggers.'],
+        trigger: {
+            type: {},
         },
-        actions: {
+        flow: {
             type: [{}],
-            maxlength: [100, 'Cannot have more than 100 actions.'],
         },
     },
     { timestamps: false }
