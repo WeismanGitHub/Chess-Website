@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { StatusCodes } from 'http-status-codes'
 
-export default function handler(_req: NextRequest) {
+function handler(_req: NextRequest) {
     return NextResponse.json({ message: 'This endpoint does not exist.' }, { status: StatusCodes.NOT_FOUND })
 }
 
