@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "",
   "scripts": {
-    "dev": "next",
+    "dev": "nodemon ./src/server.ts",
     "build": "next build",
     "start": "next start",
     "deploy": "fly deploy --local-only",
