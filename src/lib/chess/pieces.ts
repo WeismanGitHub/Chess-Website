@@ -2,7 +2,7 @@ import Board from './board'
 
 export abstract class Piece {
     public white: boolean
-    public killed: boolean = true
+    public dead: boolean = false
 
     constructor(white: boolean) {
         this.white = white
