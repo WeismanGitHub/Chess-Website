@@ -2,10 +2,11 @@ import Board from './board'
 
 export abstract class Piece {
     public white: boolean
-    public dead: boolean = false
+    public dead: boolean
 
-    constructor(white: boolean) {
+    constructor(white: boolean = true, dead: boolean = false) {
         this.white = white
+        this.dead = dead
     }
 
     abstract canMove(board: Board, x: number, y: number): boolean
