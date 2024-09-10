@@ -2,12 +2,12 @@ import { Piece } from './pieces'
 
 export default class Square {
     public piece: Piece | null
-    public x: number
-    public y: number
+    public row: number
+    public col: number
 
-    constructor(x: number, y: number, piece: Piece | null = null) {
+    constructor(row: number, col: number, piece: Piece | null = null) {
         this.piece = piece
-        this.x = x
-        this.y = y
+        this.row = row
+        this.col = col
     }
 }

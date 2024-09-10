@@ -7,8 +7,8 @@ export default class Board {
         this.squares = squares
     }
 
-    getSquare(x: number, y: number): Square | null {
-        const square: Square | null = this.squares[x][y]
+    getSquare(row: number, col: number): Square | null {
+        const square: Square | null = this.squares[row][col]
 
         return square
     }
