@@ -1,31 +1,50 @@
-import { Piece } from './pieces'
 import Board from './board'
 import Move from './move'
 
-export class Game {
-    private board: Board
-    public pieces: Piece[]
-    public moves: Move[] = []
-    private isWhitesTurn: boolean = true
-
-    constructor(board: Board, pieces: Piece[]) {
-        this.board = board
-        this.pieces = pieces
-    }
-
-    movePiece(piece: Piece, x: number, y: number) {
-        const square = this.board.getSquare(x, y)
-
-        if (!square) {
-            throw new Error('Could not find that square.')
-        }
-
-        this.moves.push(new Move(this.isWhitesTurn))
-
-        this.isWhitesTurn = !this.isWhitesTurn
-    }
+enum GameStatus {
+    Active,
+    Win,
+    Stalemate,
+    Resignation,
 }
 
-export class GameBuilder {
-    static initializeGame() {}
+export class Game {
+    public board: Board
+
+    public moves: Move[] = []
+    private turn: Color = 'white'
+
+    public status: GameStatus = GameStatus.Active
+    public winner: Color | null = null
+
+    constructor() {
+        this.board = new Board([])
+    }
+
+    movePiece(startCoordinate: Coordinate, endCoordinate: Coordinate) {
+        const start = this.board.getSquare(startCoordinate[0], startCoordinate[1])
+        const end = this.board.getSquare(endCoordinate[0], endCoordinate[1])
+
+        if (!start || !end) {
+            throw new Error('Invalid Coordinate(s)')
+        }
+
+        const piece = start.piece
+
+        if (!piece) {
+            throw new Error("There's no piece on that square.")
+        }
+
+        if (piece.color !== this.turn) {
+            throw new Error('Cannot move pieces of another color.')
+        }
+
+        if (piece.canMove(this.board, start, end)) {
+            // move
+        }
+
+        // this.moves.push(new Move(this.turn))
+
+        this.turn = this.turn === 'white' ? 'black' : 'white'
+    }
 }
