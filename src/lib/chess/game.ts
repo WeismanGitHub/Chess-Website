@@ -1,3 +1,5 @@
+import { Bishop, King, Knight, Pawn, Queen, Rook } from './pieces'
+import Square from './square'
 import Board from './board'
 import Move from './move'
 
@@ -17,8 +19,8 @@ export class Game {
     public status: GameStatus = GameStatus.Active
     public winner: Color | null = null
 
-    constructor() {
-        this.board = new Board([])
+    constructor(board: Board) {
+        this.board = board
     }
 
     movePiece(startCoordinate: Coordinate, endCoordinate: Coordinate) {
@@ -43,7 +45,8 @@ export class Game {
             // move
         }
 
-        // this.moves.push(new Move(this.turn))
+        // const move = new Move()
+        // this.moves.push(move)
 
         this.turn = this.turn === 'white' ? 'black' : 'white'
     }
