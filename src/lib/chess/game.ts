@@ -48,3 +48,47 @@ export class Game {
         this.turn = this.turn === 'white' ? 'black' : 'white'
     }
 }
+
+export abstract class GameBuilder {
+    static createDefaultBoard() {
+        const rows = []
+
+        for (let i = 0; i < 8; i++) {
+            const row: Square[] = []
+
+            for (let j = 0; j < 8; j++) {
+                row.push(new Square(i, j))
+            }
+
+            rows.push(row)
+        }
+
+        rows[0][0].piece = new Rook()
+        rows[0][1].piece = new Knight()
+        rows[0][2].piece = new Bishop()
+        rows[0][3].piece = new Queen()
+        rows[0][4].piece = new King()
+        rows[0][5].piece = new Bishop()
+        rows[0][6].piece = new Knight()
+        rows[0][7].piece = new Rook()
+
+        for (let i = 0; i < 8; i++) {
+            rows[1][i].piece = new Pawn()
+        }
+
+        rows[7][0].piece = new Rook('black')
+        rows[7][1].piece = new Knight('black')
+        rows[7][2].piece = new Bishop('black')
+        rows[7][3].piece = new Queen('black')
+        rows[7][4].piece = new King('black')
+        rows[7][5].piece = new Bishop('black')
+        rows[7][6].piece = new Knight('black')
+        rows[7][7].piece = new Rook('black')
+
+        for (let i = 0; i < 8; i++) {
+            rows[1][i].piece = new Pawn()
+        }
+
+        return new Board(rows)
+    }
+}
