@@ -1,3 +1,3 @@
-type color = 'black' | 'white'
+type Color = 'black' | 'white'
 
 type Coordinate = [number, number]
