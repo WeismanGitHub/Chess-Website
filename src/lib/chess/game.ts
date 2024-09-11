@@ -51,6 +51,10 @@ export class Game {
 
         this.turn = this.turn === 'white' ? 'black' : 'white'
     }
+
+    end(status: Exclude<GameStatus, GameStatus.Active>) {
+        this.status = status
+    }
 }
 
 export abstract class GameBuilder {
