@@ -5,9 +5,11 @@ import Move from './move'
 
 enum GameStatus {
     Active,
-    Win,
     Stalemate,
-    Resignation,
+    BlackWin,
+    WhiteWin,
+    BlackResignation,
+    WhiteResignation,
 }
 
 export class Game {
@@ -17,7 +19,6 @@ export class Game {
     private turn: Color = 'white'
 
     public status: GameStatus = GameStatus.Active
-    public winner: Color | null = null
 
     constructor(board: Board) {
         this.board = board
