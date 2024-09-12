@@ -23,6 +23,7 @@
         "strictPropertyInitialization": true,
         "noImplicitThis": true,
         "alwaysStrict": true,
+        "experimentalDecorators": true,
         "plugins": [
             {
                 "name": "next"
