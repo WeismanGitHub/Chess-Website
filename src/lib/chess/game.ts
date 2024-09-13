@@ -1,4 +1,4 @@
-import { Bishop, King, Knight, Pawn, Queen, Rook } from './pieces'
+import { Bishop, King, Knight, Pawn, Piece, Queen, Rook } from './pieces'
 import Square from './square'
 import Board from './board'
 import Move from './move'
@@ -13,52 +13,13 @@ enum GameStatus {
 }
 
 export class Game {
+    public status: GameStatus = GameStatus.Active
     public board: Board
-
+    public deadPieces: Piece[] = []
     public moves: Move[] = []
     private turn: Color = 'white'
 
-    public status: GameStatus = GameStatus.Active
-
-    constructor(board: Board) {
-        this.board = board
-    }
-
-    movePiece(startCoordinate: Coordinate, endCoordinate: Coordinate) {
-        const start = this.board.getSquare(startCoordinate[0], startCoordinate[1])
-        const end = this.board.getSquare(endCoordinate[0], endCoordinate[1])
-
-        if (!start || !end) {
-            throw new Error('Invalid Coordinate(s)')
-        }
-
-        const piece = start.piece
-
-        if (!piece) {
-            throw new Error("There's no piece on that square.")
-        }
-
-        if (piece.color !== this.turn) {
-            throw new Error('Cannot move pieces of another color.')
-        }
-
-        if (piece.canMove(this.board, start, end)) {
-            // move
-        }
-
-        // const move = new Move()
-        // this.moves.push(move)
-
-        this.turn = this.turn === 'white' ? 'black' : 'white'
-    }
-
-    end(status: Exclude<GameStatus, GameStatus.Active>) {
-        this.status = status
-    }
-}
-
-export abstract class GameBuilder {
-    static createDefaultBoard() {
+    constructor() {
         const rows = []
 
         for (let i = 0; i < 8; i++) {
@@ -94,9 +55,65 @@ export abstract class GameBuilder {
         rows[7][7].piece = new Rook('black')
 
         for (let i = 0; i < 8; i++) {
-            rows[1][i].piece = new Pawn()
+            rows[6][i].piece = new Pawn('black')
         }
 
-        return new Board(rows)
+        this.board = new Board(rows)
+    }
+
+    movePiece(startCoordinate: Coordinate, endCoordinate: Coordinate, promotion: Piece | null) {
+        if (this.status !== GameStatus.Active) {
+            throw new Error('Game is not active.')
+        }
+
+        const start = this.board.getSquare(startCoordinate[0], startCoordinate[1])
+        const end = this.board.getSquare(endCoordinate[0], endCoordinate[1])
+
+        if (!start || !end) {
+            throw new Error('Invalid Coordinate(s)')
+        }
+
+        const piece = start.piece
+
+        if (!piece) {
+            throw new Error("There's no piece on that square.")
+        }
+
+        if (piece.color !== this.turn) {
+            throw new Error('Cannot move pieces of another color.')
+        }
+
+        if (!piece.canMove(this.board, start, end)) {
+            throw new Error('Invalid Move')
+        }
+
+        let killedPiece: Piece | null = null
+
+        if (end.piece) {
+            killedPiece = end.piece
+            this.deadPieces.push(end.piece)
+        }
+
+        switch (true) {
+            case piece instanceof Pawn:
+                if (end.row === this.board.rows) {
+                    end.piece = promotion
+                    start.piece = null
+                }
+
+                break
+
+            default:
+                end.piece = piece
+                start.piece = null
+                break
+        }
+
+        this.moves.push(new Move(piece, killedPiece, this.turn, start, end))
+        this.turn = this.turn === 'white' ? 'black' : 'white'
+    }
+
+    end(status: Exclude<GameStatus, GameStatus.Active>) {
+        this.status = status
     }
 }
