@@ -3,15 +3,6 @@ import Square from './square'
 import Board from './board'
 import Move from './move'
 
-enum GameStatus {
-    Active,
-    Stalemate,
-    BlackWin,
-    WhiteWin,
-    BlackResignation,
-    WhiteResignation,
-}
-
 export class Game {
     public status: GameStatus = GameStatus.Active
     public board: Board
