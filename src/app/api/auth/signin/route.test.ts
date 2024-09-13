@@ -1,5 +1,5 @@
 import { testApiHandler } from 'next-test-api-route-handler'
-import dbConnect from '../../../../lib/dbConnect'
+import dbConnect from '../../../../lib/db-connect'
 import { StatusCodes } from 'http-status-codes'
 import { User } from '../../../../models'
 import * as appHandler from './route'

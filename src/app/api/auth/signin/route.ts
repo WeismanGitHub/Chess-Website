@@ -1,7 +1,7 @@
 import { errorHandler } from '../../../../lib/middleware'
 import { NextRequest, NextResponse } from 'next/server'
 import { ApiError } from 'next/dist/server/api-utils'
-import dbConnect from '../../../../lib/dbConnect'
+import dbConnect from '../../../../lib/db-connect'
 import { StatusCodes } from 'http-status-codes'
 import { signAuthJwt } from '../../../../lib/jwt'
 import { User } from '../../../../models'
