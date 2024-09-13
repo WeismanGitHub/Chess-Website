@@ -1,4 +1,5 @@
 import { Model, Schema, model, models, Types } from 'mongoose'
+import { Game } from '../lib/chess/game'
 
 interface IGame {
     status: GameStatus
@@ -9,14 +10,13 @@ interface IGame {
 
 type Move = {}
 
-interface IUserMethods {
-    isValidPassword(password: string): Promise<boolean>
-    hashPassword(): Promise<void>
+interface IGameMethods {
+    constructGame(): Game
 }
 
-type GameModel = Model<IGame, {}, IUserMethods>
+type GameModel = Model<IGame, {}, IGameMethods>
 
-const gameschema = new Schema<IGame, GameModel, IUserMethods>(
+const gameschema = new Schema<IGame, GameModel, IGameMethods>(
     {
         status: {
             type: Number,
@@ -40,5 +40,9 @@ const gameschema = new Schema<IGame, GameModel, IUserMethods>(
     },
     { timestamps: { createdAt: true, updatedAt: true } }
 )
+
+gameschema.method('constructGame', function constructGame() {
+    return new Game()
+})
 
 export default (models.Games || model<IGame, GameModel>('Games', gameschema)) as GameModel
