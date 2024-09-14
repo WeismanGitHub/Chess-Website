@@ -104,7 +104,11 @@ export class Game {
         this.turn = this.turn === 'white' ? 'black' : 'white'
     }
 
-    end(status: Exclude<GameStatus, GameStatus.Active>) {
+    end(status: GameStatus) {
+        if (status === GameStatus.Active) {
+            throw new Error('Active is an invalid status.')
+        }
+
         this.status = status
     }
 }
