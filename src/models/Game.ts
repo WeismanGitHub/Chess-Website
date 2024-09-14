@@ -4,8 +4,8 @@ import { Game } from '../lib/chess/game'
 interface IGame {
     status: GameStatus
     moves: Move[]
-    white: typeof Types.ObjectId
-    black: typeof Types.ObjectId
+    white: typeof Types.ObjectId | null
+    black: typeof Types.ObjectId | null
 }
 
 type Move = {}
@@ -31,11 +31,13 @@ const gameschema = new Schema<IGame, GameModel, IGameMethods>(
         },
         white: {
             type: Types.ObjectId,
-            required: true,
+            required: false,
+            default: null
         },
         black: {
             type: Types.ObjectId,
-            required: true,
+            required: false,
+            default: null
         },
     },
     { timestamps: { createdAt: true, updatedAt: true } }
