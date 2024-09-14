@@ -5,14 +5,16 @@ export default class Clock {
     public current: 'black' | 'white' = 'white'
 
     private interval: NodeJS.Timer | null = null
+    private callback: Function
 
-    constructor(seconds: number) {
+    constructor(seconds: number, callback: Function) {
         if (seconds <= 0) {
             throw new Error(`${seconds} is an invalid amount of time.`)
         }
 
         this.whiteSeconds = seconds
         this.blackSeconds = seconds
+        this.callback = callback
     }
 
     public start() {
@@ -22,7 +24,8 @@ export default class Clock {
 
         this.interval = setInterval(() => {
             if ((this.whiteSeconds === 0 || this.blackSeconds === 0) && this.interval) {
-                return clearInterval(this.interval)
+                this.callback()
+                this.end()
             }
 
             if (this.current === 'white') {
@@ -39,7 +42,7 @@ export default class Clock {
 
     public end() {
         if (!this.interval) {
-            throw new Error('No Interval')
+            throw new Error("The clock hasn't been started.")
         }
 
         clearInterval(this.interval)
