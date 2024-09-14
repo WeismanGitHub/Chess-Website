@@ -1,3 +1,4 @@
+import socketHandler from './lib/socket-handler'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { parse } from 'url'
@@ -13,14 +14,7 @@ app.prepare().then(() => {
     })
 
     const io = new Server(server)
-
-    io.on('connection', (socket) => {
-        console.log('Client connected')
-
-        socket.on('disconnect', () => {
-            console.log('Client disconnected')
-        })
-    })
+    io.on('connection', socketHandler)
 
     server.listen(3000, (err?: Error) => {
         if (err) throw err
