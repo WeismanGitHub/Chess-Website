@@ -1,12 +1,17 @@
-type Color = 'black' | 'white'
+import { Game } from './lib/chess/game'
+import Clock from './lib/chess/clock'
 
-type Coordinate = [number, number]
+declare global {
+    type Color = 'black' | 'white'
 
-enum GameStatus {
-    Active,
-    Stalemate,
-    BlackWin,
-    WhiteWin,
-    BlackResignation,
-    WhiteResignation,
+    type Coordinate = [number, number]
+
+    enum GameStatus {
+        Active,
+        Stalemate,
+        BlackWin,
+        WhiteWin,
+        BlackResignation,
+        WhiteResignation,
+    }
 }
