@@ -36,4 +36,12 @@ export default class Clock {
     public switch() {
         this.current = this.current === 'white' ? 'black' : 'white'
     }
+
+    public end() {
+        if (!this.interval) {
+            throw new Error('No Interval')
+        }
+
+        clearInterval(this.interval)
+    }
 }
