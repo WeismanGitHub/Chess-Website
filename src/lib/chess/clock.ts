@@ -1,4 +1,4 @@
-class Clock {
+export default class Clock {
     public whiteSeconds: number
     public blackSeconds: number
 
@@ -37,12 +37,3 @@ class Clock {
         this.current = this.current === 'white' ? 'black' : 'white'
     }
 }
-
-const clock = new Clock(10)
-clock.start()
-
-setTimeout(() => {
-    clock.switch()
-}, 5000)
-
-export {}
