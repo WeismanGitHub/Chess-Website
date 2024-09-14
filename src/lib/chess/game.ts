@@ -3,7 +3,7 @@ import Square from './square'
 import Board from './board'
 import Move from './move'
 
-export class Game {
+export default class Game {
     public status: GameStatus = GameStatus.Active
     public board: Board
     public deadPieces: Piece[] = []
