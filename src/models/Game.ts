@@ -1,5 +1,6 @@
 import { Model, Schema, model, models, Types } from 'mongoose'
-import { Game } from '../lib/chess/game'
+import { GameStatus } from '../types'
+import { Game } from '../lib/chess/'
 
 interface IGame {
     status: GameStatus

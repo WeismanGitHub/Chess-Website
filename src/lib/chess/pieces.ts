@@ -1,3 +1,4 @@
+import { Color } from '../../types'
 import Square from './square'
 import Board from './board'
 

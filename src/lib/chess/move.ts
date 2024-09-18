@@ -1,3 +1,4 @@
+import { Color } from '../../types'
 import { Piece } from './pieces'
 import Square from './square'
 

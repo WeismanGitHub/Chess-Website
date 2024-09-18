@@ -1,4 +1,5 @@
 import { Bishop, King, Knight, Pawn, Piece, Queen, Rook } from './pieces'
+import { Color, Coordinate, GameStatus } from '../../types'
 import Square from './square'
 import Board from './board'
 import Move from './move'
