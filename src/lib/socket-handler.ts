@@ -1,13 +1,14 @@
-import { lobbies, Lobby } from './lobbies'
+import { lobbies, Lobby, Room, rooms } from './caches'
 import { Socket } from 'socket.io'
 import { Types } from 'mongoose'
+import { Clock, Game } from './chess'
 // import { games, GameCacheEntry } from './game-cache'
 // import Game from './chess/game'
 // import Clock from './chess/clock'
 
-// const CLOCK_TIME = 30_000
+const CLOCK_TIME = 30_000
 
-type AuthenticatedSocket = Socket & { userId: string }
+type AuthenticatedSocket = Socket & { userId: string,  }
 
 export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on('createLobby', async (callback) => {
@@ -23,7 +24,6 @@ export default function socketHandler(socket: AuthenticatedSocket) {
     })
 
     socket.on('joinLobby', async (id: string) => {
-        console.log(id)
         if (!Types.ObjectId.isValid(id)) {
             throw new Error('Please use a valid game id.')
         }
@@ -34,11 +34,11 @@ export default function socketHandler(socket: AuthenticatedSocket) {
             throw new Error("That lobby doesn't exist.")
         }
 
-        if (lobby?.players.length === 2) {
+        if (lobby.players.length === 2) {
             throw new Error('Lobby is full.')
         }
 
-        if (lobby.players.some((player) => player.id == socket.userId)) {
+        if (socket.rooms.has(id)) {
             throw new Error('You are already in this lobby.')
         }
 
@@ -50,13 +50,58 @@ export default function socketHandler(socket: AuthenticatedSocket) {
         socket.to(id).emit('playerJoined', socket.userId)
     })
 
-    socket.on('ready', () => {})
+    socket.on('ready', async (lobbyId: string) => {
+        const lobby = await lobbies.get<Lobby>(lobbyId)
+
+        if (!lobby) {
+            throw new Error("That lobby doesn't exist.")
+        }
+
+        if (lobby.players.length < 2) {
+            throw new Error('You need 2 players to start.')
+        }
+
+        if (!lobby.players.some((player) => player.id == socket.userId)) {
+            throw new Error('You are not in this lobby.')
+        }
+
+        lobby.players = lobby.players.map((player) => {
+            if (player.id === socket.userId) {
+                player.ready = true
+            }
+
+            return player
+        })
+
+        // If both players are NOT ready
+        if (!(lobby.players[0].ready && lobby.players[1].ready)) {
+            return lobbies.set(lobbyId, lobby)
+        }
+
+        lobbies.delete(lobbyId)
+
+        const coinflip = Math.random() < 0.5
+
+        const room: Room = {
+            white: lobby.players[coinflip ? 1 : 0].id,
+            black: lobby.players[coinflip ? 0 : 1].id,
+
+            clock: new Clock(CLOCK_TIME, () => {}),
+            game: new Game(),
+        }
+
+        rooms.set(lobbyId, room)
+
+        // create the game room
+    })
+
+    socket.on('move', async () => {
+        const room = rooms.get()
+    })
 
     socket.on('disconnect', async () => {
         // delete room
     })
-
-    // const coinflip = Math.random() < 0.5
 
     // const game = new GameCacheEntry(new Game(), new Clock(CLOCK_TIME, () => {}), coinflip ? userId : null, !coinflip ? userId : null)
 
@@ -68,6 +113,4 @@ export default function socketHandler(socket: AuthenticatedSocket) {
 
 // goal: website where users can play chess
 
-// a signed in user connects to the socketHandler (i need to check if theyre authenticated).
-
-// create the game in memory and store it in a cache by id. once the game is over you delete it from memory and save it in mongodb
+// flow: a user creates a game on /games. they can invite someone off their friends list to the lobby. once a friend joins and they both click "ready" then a room instance is created.
