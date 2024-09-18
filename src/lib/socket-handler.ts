@@ -11,15 +11,15 @@ type AuthenticatedSocket = Socket & { userId: string }
 
 export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on('createLobby', async (callback) => {
-        const lobbyId = new Types.ObjectId()
+        const lobbyId = new Types.ObjectId().toString()
 
-        await lobbies.set(lobbyId.toString(), {
+        await lobbies.set(lobbyId, {
             players: [{ id: socket.userId, ready: false }],
             started: false,
         })
 
-        socket.join(lobbyId.toString())
-        callback(lobbyId.toString())
+        socket.join(lobbyId)
+        callback(lobbyId)
     })
 
     socket.on('joinLobby', async (id: string) => {
