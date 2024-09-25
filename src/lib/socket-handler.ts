@@ -8,7 +8,7 @@ import { Clock, Game } from './chess'
 
 const CLOCK_TIME = 30_000
 
-type AuthenticatedSocket = Socket & { userId: string,  }
+type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
 
 export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on('createLobby', async (callback) => {
@@ -19,6 +19,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
             started: false,
         })
 
+        socket.roomId = lobbyId
         socket.join(lobbyId)
         callback(lobbyId)
     })
@@ -46,12 +47,17 @@ export default function socketHandler(socket: AuthenticatedSocket) {
 
         await lobbies.set(id, lobby)
 
-        socket.join(id)
+        socket.roomId = id
         socket.to(id).emit('playerJoined', socket.userId)
+        socket.join(id)
     })
 
-    socket.on('ready', async (lobbyId: string) => {
-        const lobby = await lobbies.get<Lobby>(lobbyId)
+    socket.on('ready', async () => {
+        if (!socket.roomId) {
+            throw new Error('Join a lobby first.')
+        }
+
+        const lobby = await lobbies.get<Lobby>(socket.roomId)
 
         if (!lobby) {
             throw new Error("That lobby doesn't exist.")
@@ -75,10 +81,11 @@ export default function socketHandler(socket: AuthenticatedSocket) {
 
         // If both players are NOT ready
         if (!(lobby.players[0].ready && lobby.players[1].ready)) {
-            return lobbies.set(lobbyId, lobby)
+            lobbies.set(socket.roomId, lobby)
+            return
         }
 
-        lobbies.delete(lobbyId)
+        lobbies.delete(socket.roomId)
 
         const coinflip = Math.random() < 0.5
 
@@ -90,17 +97,25 @@ export default function socketHandler(socket: AuthenticatedSocket) {
             game: new Game(),
         }
 
-        rooms.set(lobbyId, room)
+        rooms.set(socket.roomId, room)
 
         // create the game room
     })
 
     socket.on('move', async () => {
-        const room = rooms.get()
+        if (!socket.roomId) {
+            throw new Error("You're not in a room.")
+        }
+
+        const room = rooms.get(socket.roomId)
+
+        if (!room) {
+            throw new Error('Could not find your room.')
+        }
     })
 
     socket.on('disconnect', async () => {
-        // delete room
+        // delete lobby
     })
 
     // const game = new GameCacheEntry(new Game(), new Clock(CLOCK_TIME, () => {}), coinflip ? userId : null, !coinflip ? userId : null)
