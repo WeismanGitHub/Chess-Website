@@ -14,6 +14,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.56.2",
+    "@trpc/client": "^11.0.0-rc.532",
+    "@trpc/next": "^11.0.0-rc.532",
+    "@trpc/react-query": "^11.0.0-rc.532",
+    "@trpc/server": "^11.0.0-rc.532",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "flowbite-react": "^0.10.1",
