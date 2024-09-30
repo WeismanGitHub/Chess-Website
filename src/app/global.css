@@ -7,3 +7,7 @@ body {
     height: 100%;
     margin: 0;
 }
+
+*:focus {
+    @apply rounded outline-none outline-cyan-500;
+}
