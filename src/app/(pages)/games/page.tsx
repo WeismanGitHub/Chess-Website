@@ -15,17 +15,18 @@ export default function () {
                         <form className="space-y-4 md:space-y-6" action="#">
                             <div>
                                 <Label
-                                    htmlFor="email"
+                                    htmlFor="minutes"
                                     className="mb-2 block text-sm font-medium text-gray-900"
                                 >
                                     Minutes
                                 </Label>
                                 <TextInput
                                     type="number"
-                                    name="email"
+                                    name="minutes"
                                     max={120}
                                     defaultValue={30}
-                                    id="email"
+                                    min={1}
+                                    id="minutes"
                                     required={true}
                                 />
                             </div>
