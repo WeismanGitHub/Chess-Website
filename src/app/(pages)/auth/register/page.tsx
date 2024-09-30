@@ -3,11 +3,11 @@
 import { Button, Label, TextInput } from 'flowbite-react'
 import React from 'react'
 
-export default function Auth() {
+export default function () {
     return (
         <>
             <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
-                <a href="#" className="mb-6 flex items-center text-4xl font-semibold">
+                <a href="/" className="mb-6 flex items-center text-4xl font-semibold">
                     <img className="h-12 w-12" src="/icon.svg" alt="pawn logo" />
                     Chess
                 </a>
@@ -71,7 +71,7 @@ export default function Auth() {
                             </Button>
                             <p className="text-sm font-light text-gray-500">
                                 Already have an account?{' '}
-                                <a href="#" className="text-primary-600 font-medium hover:underline">
+                                <a href="/auth/login" className="font-medium hover:underline">
                                     Login here
                                 </a>
                             </p>
