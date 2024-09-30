@@ -10,7 +10,7 @@ export default function () {
     return (
         <Navbar fluid rounded className="border-b-2 border-[#daeaee] bg-transparent">
             <Navbar.Brand as={Link} href="/">
-                <img src="/icon.svg" className="mr-3 h-6 sm:h-9" alt="pawn logo" />
+                <img src="/icon.svg" className="h-6 sm:h-9" alt="pawn logo" />
                 <span className="self-center whitespace-nowrap text-xl font-semibold">Chess</span>
             </Navbar.Brand>
             <Navbar.Toggle />
