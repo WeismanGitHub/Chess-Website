@@ -8,6 +8,21 @@ body {
     margin: 0;
 }
 
-*:focus {
-    @apply rounded outline-none outline-cyan-500;
+.navbar-border {
+    border-style: solid;
+    border-image-slice: 1;
+    border-right: 0;
+    border-top: 0;
+    border-left: 0;
+    border-image-source: linear-gradient(
+        to left,
+        rgba(14, 116, 144, 0.075),
+        rgba(216, 232, 237, 0.25),
+        rgba(216, 232, 237, 0.25),
+        rgba(216, 232, 237, 0.25),
+        rgba(216, 232, 237, 0.25),
+        rgba(14, 116, 144, 0.075)
+    );
+
+    @apply border-b-2;
 }

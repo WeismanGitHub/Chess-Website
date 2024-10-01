@@ -8,7 +8,7 @@ export default function () {
     const path = usePathname()
 
     return (
-        <Navbar fluid rounded className="border-b-2 border-[#daeaee] bg-transparent">
+        <Navbar fluid rounded className="navbar-border bg-transparent">
             <Navbar.Brand as={Link} href="/">
                 <img src="/icon.svg" className="h-6 sm:h-9" alt="pawn logo" />
                 <span className="self-center whitespace-nowrap text-xl font-semibold">Chess</span>
