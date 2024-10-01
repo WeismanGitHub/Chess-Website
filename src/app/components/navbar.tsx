@@ -15,14 +15,18 @@ export default function () {
             </Navbar.Brand>
             <Navbar.Toggle />
             <Navbar.Collapse>
+                {/* make the hitbox larger */}
                 <Navbar.Link href="/" active={path == '/'}>
                     Home
                 </Navbar.Link>
-                <Navbar.Link href="/auth/register" active={path == '/auth/register'}>
-                    Register
+                <Navbar.Link href="/games" active={path.startsWith('/games')}>
+                    Games
                 </Navbar.Link>
                 <Navbar.Link as={Link} href="/about" active={path == '/about'}>
                     About
+                </Navbar.Link>
+                <Navbar.Link href="/auth/register" active={path == '/auth/register'}>
+                    Register
                 </Navbar.Link>
             </Navbar.Collapse>
         </Navbar>
