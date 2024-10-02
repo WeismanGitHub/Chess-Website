@@ -23,8 +23,13 @@ body {
         rgba(216, 232, 237, 0.25),
         rgba(14, 116, 144, 0.075)
     );
+}
 
 .nav-link {
     padding: 0.75em !important;
     margin: -0.75em !important;
+}
+
+*:focus-visible {
+    @apply rounded outline-none outline-cyan-500;
 }
