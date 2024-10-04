@@ -1,6 +1,8 @@
 'use client'
 
 import { Button, Label, TextInput } from 'flowbite-react'
+import { credentialsSchema } from '../../../../lib/zod'
+import { Formik, Form } from 'formik'
 import React from 'react'
 
 export default function () {
@@ -16,66 +18,117 @@ export default function () {
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                             Create an account
                         </h1>
-                        <form className="space-y-4 md:space-y-6" action="#">
-                            <div>
-                                <Label
-                                    htmlFor="email"
-                                    className="mb-2 block text-sm font-medium text-gray-900"
-                                >
-                                    Your email
-                                </Label>
-                                <TextInput
-                                    type="email"
-                                    name="email"
-                                    id="email"
-                                    placeholder="name@company.com"
-                                    required={true}
-                                />
-                            </div>
-                            <div>
-                                <Label
-                                    htmlFor="password"
-                                    className="mb-2 block text-sm font-medium text-gray-900"
-                                >
-                                    Password
-                                </Label>
-                                <TextInput
-                                    type="password"
-                                    name="password"
-                                    id="password"
-                                    placeholder="••••••••••"
-                                    required={true}
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="confirm-password"
-                                    className="mb-2 block text-sm font-medium text-gray-900"
-                                >
-                                    Confirm password
-                                </label>
-                                <TextInput
-                                    type="text"
-                                    name="confirm-password"
-                                    id="confirm-password"
-                                    placeholder="••••••••••"
-                                    required={true}
-                                    className="focus:border-none"
-                                />
-                            </div>
-                            <Button
-                                type="submit"
-                                className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
-                            >
-                                Create an account
-                            </Button>
-                            <p className="text-sm font-light text-gray-500">
-                                Already have an account?{' '}
-                                <a href="/auth/login" className="font-medium hover:underline">
-                                    Login here
-                                </a>
-                            </p>
-                        </form>
+                        <Formik
+                            initialValues={{
+                                name: '',
+                                password: '',
+                                confirmPassword: '',
+                            }}
+                            validate={(values) => {
+                                const errors: {
+                                    name?: string
+                                    password?: string
+                                    confirmPassword?: string
+                                } = {}
+
+                                if (values.confirmPassword !== values.password) {
+                                    errors.confirmPassword = 'Passwords must match'
+                                }
+
+                                const res = credentialsSchema.safeParse(values)
+                                console.log(res)
+
+                                return errors
+                            }}
+                            onSubmit={function (values) {
+                                console.log(values)
+                                throw new Error('Function not implemented.')
+                            }}
+                            validateOnChange
+                        >
+                            {({ handleSubmit, handleChange, values, errors }) => {
+                                return (
+                                    <Form
+                                        className="space-y-4 md:space-y-6"
+                                        noValidate
+                                        onSubmit={handleSubmit}
+                                    >
+                                        <div>
+                                            <Label
+                                                htmlFor="name"
+                                                className="mb-2 block text-sm font-medium text-gray-900"
+                                            >
+                                                Your name
+                                            </Label>
+                                            <TextInput
+                                                type="text"
+                                                name="name"
+                                                id="name"
+                                                value={values.name}
+                                                placeholder="username"
+                                                required={true}
+                                                onChange={handleChange}
+                                                helperText={<span>{errors.name}</span>}
+                                                color={errors.name && 'failure'}
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label
+                                                htmlFor="password"
+                                                className="mb-2 block text-sm font-medium text-gray-900"
+                                            >
+                                                Password
+                                            </Label>
+                                            <TextInput
+                                                value={values.password}
+                                                onChange={handleChange}
+                                                autoComplete="on"
+                                                type="password"
+                                                name="password"
+                                                id="password"
+                                                placeholder="••••••••••"
+                                                required={true}
+                                                helperText={<span>{errors.password}</span>}
+                                                color={errors.password && 'failure'}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label
+                                                htmlFor="confirmPassword"
+                                                className="mb-2 block text-sm font-medium text-gray-900"
+                                            >
+                                                Confirm password
+                                            </label>
+                                            <TextInput
+                                                type="password"
+                                                name="confirmPassword"
+                                                id="confirmPassword"
+                                                placeholder="••••••••••"
+                                                required={true}
+                                                className="focus:border-none"
+                                                value={values.confirmPassword}
+                                                onChange={handleChange}
+                                                autoComplete="on"
+                                                helperText={<span>{errors.confirmPassword}</span>}
+                                                color={errors.confirmPassword && 'failure'}
+                                            />
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
+                                        >
+                                            Create an account
+                                        </Button>
+                                        <p className="text-sm font-light text-gray-500">
+                                            Already have an account?{' '}
+                                            <a href="/auth/login" className="font-medium hover:underline">
+                                                Login here
+                                            </a>
+                                        </p>
+                                    </Form>
+                                )
+                            }}
+                        </Formik>
                     </div>
                 </div>
             </div>
