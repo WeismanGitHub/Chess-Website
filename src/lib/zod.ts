@@ -9,7 +9,7 @@ export const credentialsSchema = object({
         )
         .max(
             UserConstants.maxNameLength,
-            `Name cannot be more than be more than ${UserConstants.maxNameLength} character(s)`
+            `Name cannot be more than be more than ${UserConstants.maxNameLength} characters`
         ),
     password: string({ required_error: 'Password is required' }).min(
         UserConstants.minPasswordLength,
