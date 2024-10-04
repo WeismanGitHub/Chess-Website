@@ -31,25 +31,40 @@ export default function () {
                                     confirmPassword?: string
                                 } = {}
 
+                                const res = credentialsSchema.safeParse(values)
+
+                                if (!res.success) {
+                                    const fieldErrors = res.error.flatten().fieldErrors
+                                    errors.name = fieldErrors.name?.[0]
+                                    errors.password = fieldErrors.password?.[0]
+                                    errors.confirmPassword = fieldErrors.password?.[0]
+                                }
+
                                 if (values.confirmPassword !== values.password) {
                                     errors.confirmPassword = 'Passwords must match'
                                 }
 
-                                const res = credentialsSchema.safeParse(values)
-                                console.log(res)
-
                                 return errors
                             }}
-                            onSubmit={function (values) {
+                            onSubmit={(values) => {
                                 console.log(values)
                                 throw new Error('Function not implemented.')
                             }}
-                            validateOnChange
+                            validateOnChange={true}
+                            validateOnBlur={true}
                         >
-                            {({ handleSubmit, handleChange, values, errors }) => {
+                            {({
+                                handleSubmit,
+                                handleChange,
+                                handleBlur,
+                                values,
+                                errors,
+                                touched,
+                                setTouched,
+                            }) => {
                                 return (
                                     <Form
-                                        className="space-y-4 md:space-y-6"
+                                        className="mb-4 space-y-4 md:space-y-6"
                                         noValidate
                                         onSubmit={handleSubmit}
                                     >
@@ -67,9 +82,20 @@ export default function () {
                                                 value={values.name}
                                                 placeholder="username"
                                                 required={true}
-                                                onChange={handleChange}
-                                                helperText={<span>{errors.name}</span>}
-                                                color={errors.name && 'failure'}
+                                                onBlur={handleBlur}
+                                                onChange={(target) => {
+                                                    setTouched({
+                                                        name: true,
+                                                        ...touched,
+                                                    })
+                                                    handleChange(target)
+                                                }}
+                                                helperText={
+                                                    touched.name && errors.name ? (
+                                                        <span>{errors.name}</span>
+                                                    ) : undefined
+                                                }
+                                                color={touched.name && errors.name ? 'failure' : undefined}
                                             />
                                         </div>
                                         <div>
@@ -81,36 +107,65 @@ export default function () {
                                             </Label>
                                             <TextInput
                                                 value={values.password}
-                                                onChange={handleChange}
+                                                onChange={(target) => {
+                                                    setTouched({
+                                                        password: true,
+                                                        ...touched,
+                                                    })
+                                                    handleChange(target)
+                                                }}
                                                 autoComplete="on"
                                                 type="password"
+                                                onBlur={handleBlur}
                                                 name="password"
                                                 id="password"
                                                 placeholder="••••••••••"
                                                 required={true}
-                                                helperText={<span>{errors.password}</span>}
-                                                color={errors.password && 'failure'}
+                                                helperText={
+                                                    touched.password && errors.password ? (
+                                                        <span>{errors.password}</span>
+                                                    ) : undefined
+                                                }
+                                                color={
+                                                    touched.password && errors.password
+                                                        ? 'failure'
+                                                        : undefined
+                                                }
                                             />
                                         </div>
                                         <div>
-                                            <label
+                                            <Label
                                                 htmlFor="confirmPassword"
                                                 className="mb-2 block text-sm font-medium text-gray-900"
                                             >
                                                 Confirm password
-                                            </label>
+                                            </Label>
                                             <TextInput
                                                 type="password"
                                                 name="confirmPassword"
                                                 id="confirmPassword"
                                                 placeholder="••••••••••"
                                                 required={true}
-                                                className="focus:border-none"
                                                 value={values.confirmPassword}
-                                                onChange={handleChange}
+                                                onChange={(target) => {
+                                                    setTouched({
+                                                        confirmPassword: true,
+                                                        ...touched,
+                                                    })
+                                                    handleChange(target)
+                                                }}
+                                                onBlur={handleBlur}
                                                 autoComplete="on"
-                                                helperText={<span>{errors.confirmPassword}</span>}
-                                                color={errors.confirmPassword && 'failure'}
+                                                helperText={
+                                                    touched.confirmPassword && errors.confirmPassword ? (
+                                                        <span>{errors.confirmPassword}</span>
+                                                    ) : undefined
+                                                }
+                                                color={
+                                                    touched.confirmPassword && errors.confirmPassword
+                                                        ? 'failure'
+                                                        : undefined
+                                                }
                                             />
                                         </div>
                                         <Button
