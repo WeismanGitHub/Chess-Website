@@ -1,4 +1,4 @@
-import { ApiError } from 'next/dist/server/api-utils'
+import CustomError from '../../lib/custom-error'
 import { ZodError } from 'zod'
 
 export default function errorHandler<argument, result>(action: (arg: argument) => Promise<result>) {
@@ -13,7 +13,7 @@ export default function errorHandler<argument, result>(action: (arg: argument) =
                 result,
             }
         } catch (error) {
-            if (error instanceof ApiError) {
+            if (error instanceof CustomError) {
                 return {
                     success: false,
                     message: error.message,
