@@ -15,7 +15,6 @@ export default function () {
             </Navbar.Brand>
             <Navbar.Toggle />
             <Navbar.Collapse>
-                {/* make the hitbox larger */}
                 <Navbar.Link className="nav-link" as={Link} href="/" active={path == '/'}>
                     Home
                 </Navbar.Link>
