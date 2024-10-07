@@ -1,14 +1,15 @@
 'use server'
 
 import { credentialsSchema } from '../../../lib/zod'
+import CustomError from '../../../lib/custom-error'
 import { Error as MongooseError } from 'mongoose'
 import dbConnect from '../../../lib/db-connect'
 import { signAuthJwt } from '../../../lib/jwt'
-import { redirect } from 'next/navigation'
+import errorHandler from '../error-handler'
 import { cookies } from 'next/headers'
 import { User } from '../../../models'
 
-export default async function (body: { name: string; password: string }) {
+export default errorHandler(async (body: { name: string; password: string }) => {
     const { name, password } = await credentialsSchema.parseAsync(body)
 
     await dbConnect()
@@ -20,9 +21,9 @@ export default async function (body: { name: string; password: string }) {
         if (error instanceof MongooseError.ValidationError) {
             for (const err of Object.values(error.errors)) {
                 if (err.kind === 'unique') {
-                    throw new Error('Name must be unique.')
+                    throw new CustomError('Name must be unique.')
                 } else {
-                    throw new Error('A validation error occurred.')
+                    throw new CustomError('A validation error occurred.')
                 }
             }
         }
@@ -31,5 +32,4 @@ export default async function (body: { name: string; password: string }) {
     })
 
     cookies().set('auth', signAuthJwt(user.id), { httpOnly: true, sameSite: true, secure: true })
-    redirect('/')
-}
+})
