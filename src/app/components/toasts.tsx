@@ -1,7 +1,7 @@
 import { Toast } from 'flowbite-react'
 import React from 'react'
 
-function toastWrapper(toast: React.ReactElement) {
+function toastWrapper(toast: React.ReactElement, classes: string | null = null) {
     return function ({
         message,
         show,
@@ -14,10 +14,10 @@ function toastWrapper(toast: React.ReactElement) {
         return (
             <>
                 {show && (
-                    <Toast className="absolute right-0 top-0 m-4">
+                    <Toast className={`toast absolute right-0 top-0 m-4 ${classes}`}>
                         {toast}
                         <div className="ml-3 text-sm font-normal">{message}</div>
-                        <Toast.Toggle onDismiss={handleDismiss} />
+                        <Toast.Toggle className="bg-transparent" onDismiss={handleDismiss} />
                     </Toast>
                 )}
             </>
@@ -26,7 +26,7 @@ function toastWrapper(toast: React.ReactElement) {
 }
 
 export const SuccessToast = toastWrapper(
-    <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200">
+    <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500">
         <svg
             stroke="currentColor"
             fill="currentColor"
@@ -44,12 +44,13 @@ export const SuccessToast = toastWrapper(
                 clip-rule="evenodd"
             ></path>
         </svg>
-    </div>
+    </div>,
+    'success-toast-flash'
 )
 
 export const FailureToast = toastWrapper(
-    <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
-        <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
+    <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500">
+        <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500">
             <svg
                 stroke="currentColor"
                 fill="currentColor"
@@ -68,5 +69,6 @@ export const FailureToast = toastWrapper(
                 ></path>
             </svg>
         </div>
-    </div>
+    </div>,
+    'failure-toast-flash'
 )
