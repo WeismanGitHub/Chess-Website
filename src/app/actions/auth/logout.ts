@@ -1,3 +1,7 @@
 'use server'
 
-export default async function () {}
+import { cookies } from 'next/headers'
+
+export default async function () {
+    cookies().delete('auth')
+}
