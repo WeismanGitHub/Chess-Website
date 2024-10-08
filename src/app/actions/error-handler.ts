@@ -1,9 +1,9 @@
 import CustomError from '../../lib/custom-error'
 import { ZodError } from 'zod'
 
-export default function errorHandler<argument, result>(action: (arg: argument) => Promise<result>) {
+export default function errorHandler<argument, result>(action: (arg?: argument) => Promise<result>) {
     return async function (
-        arg: argument
+        arg?: argument
     ): Promise<{ success: true; result: result } | { success: false; message: string }> {
         try {
             const result = await action(arg)
