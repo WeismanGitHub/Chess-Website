@@ -19,7 +19,9 @@ export default errorHandler(async (body: { name: string; password: string }) => 
         throw new CustomError('Could not find an account with that name.')
     }
 
-    if (!user.isValidPassword(password)) {
+    const isValidPassword = await user.isValidPassword(password)
+
+    if (!isValidPassword) {
         throw new CustomError('That password is invalid.')
     }
 
