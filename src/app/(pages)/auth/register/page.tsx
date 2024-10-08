@@ -64,6 +64,8 @@ export default function () {
                                 const res = await register(values)
 
                                 if (res.success) {
+                                    localStorage.setItem('authenticated', 'true')
+                                    
                                     return router.push('/')
                                 }
 

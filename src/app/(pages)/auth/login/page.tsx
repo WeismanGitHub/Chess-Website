@@ -58,6 +58,8 @@ export default function () {
                                 const res = await login(values)
 
                                 if (res.success) {
+                                    localStorage.setItem('authenticated', 'true')
+
                                     return router.push('/')
                                 }
 
