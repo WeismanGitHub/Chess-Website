@@ -35,6 +35,10 @@ const nextConfig = {
                         key: 'Permissions-Policy',
                         value: 'geolocation=(), camera=(), microphone=()',
                     },
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests'",
+                    },
                 ],
             },
         ]
