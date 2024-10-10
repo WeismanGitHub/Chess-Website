@@ -24,9 +24,9 @@ export default function RootLayout({
                 <div className="absolute top-0 z-[-2] h-screen w-screen bg-white bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,116,144,0.25),rgba(255,255,255,0))]" />
                 <div className="flex min-h-screen flex-col">
                     <Navbar />
-                    <div className={`${inter.className} flex flex-1 items-center justify-center`}>
+                    <main className={`${inter.className} flex flex-1 items-center justify-center`}>
                         {children}
-                    </div>
+                    </main>
                 </div>
             </body>
         </html>
