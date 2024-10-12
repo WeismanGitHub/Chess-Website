@@ -2,9 +2,9 @@
 
 import { Button, Modal, Navbar } from 'flowbite-react'
 import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { logout } from '../actions/auth'
 import { FailureToast } from './toasts'
-import { useState } from 'react'
 import Link from 'next/link'
 
 export default function () {
@@ -12,9 +12,14 @@ export default function () {
     const router = useRouter()
 
     const [message, setMessage] = useState<string | null>(null)
+    const [authenticated, setAuthenticated] = useState(false)
     const [openModal, setOpenModal] = useState(false)
 
-    const authenticated = Boolean(localStorage.getItem('authenticated'))
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setAuthenticated(Boolean(localStorage.getItem('authenticated')))
+        }
+    }, [])
 
     return (
         <>
