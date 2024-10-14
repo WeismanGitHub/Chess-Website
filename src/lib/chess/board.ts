@@ -1,7 +1,7 @@
 import Square from './square'
 
 export default class Board {
-    private squares: Square[][]
+    public squares: Square[][]
     public rows: number
 
     constructor(squares: Square[][]) {
