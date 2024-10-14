@@ -1,12 +1,9 @@
 import { lobbies, Lobby, Room, rooms } from './caches'
-import { Socket } from 'socket.io'
-import { Types } from 'mongoose'
+import CustomError from './custom-error'
 import { Clock, Game } from './chess'
 import { lobbySchema } from './zod'
-import CustomError from './custom-error'
-// import { games, GameCacheEntry } from './game-cache'
-// import Game from './chess/game'
-// import Clock from './chess/clock'
+import { Socket } from 'socket.io'
+import { Types } from 'mongoose'
 
 type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
 
