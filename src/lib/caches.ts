@@ -4,6 +4,10 @@ import Keyv from 'keyv'
 export const lobbies = new Keyv({ namespace: 'lobbies' })
 
 export type Lobby = {
+    started: boolean
+    name: string
+    password: string
+    minutes: number
     players: { id: string; ready: boolean }[]
 }
 
