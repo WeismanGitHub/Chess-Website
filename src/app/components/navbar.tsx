@@ -37,10 +37,7 @@ export default function () {
                             stroke-linejoin="round"
                             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         ></path>
-                        <h3 className="mb-5 text-lg font-normal">
-                            <strong></strong>
-                            Are you sure you want to log out?
-                        </h3>
+                        <h3 className="mb-5 text-2xl font-normal">Are you sure you want to log out?</h3>
                         <div className="flex justify-center gap-4">
                             <Button
                                 color="failure"
