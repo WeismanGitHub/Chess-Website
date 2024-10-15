@@ -29,34 +29,10 @@ function Board({ game }: { game: Game }) {
             updateWidth()
 
             window.addEventListener('resize', () => {
-                console.log(window.innerHeight, window.innerWidth)
-
                 updateWidth()
             })
         }
     }, [])
-
-    const squares = game.board.squares.map((row, index) => (
-        <div key={index} className="flex flex-row">
-            {row.map((square) => {
-                const evenCol = square.col % 2 === 1
-                const evenRow = square.row % 2 === 1
-
-                const color = evenRow ? (evenCol ? '#e8f2f5' : '#0e7490') : evenCol ? '#0e7490' : '#e8f2f5'
-
-                return (
-                    <svg
-                        key={square.col + square.row}
-                        width={width}
-                        height={width}
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <rect width={width} height={width} fill={color} />
-                    </svg>
-                )
-            })}
-        </div>
-    ))
 
     const pieces = game.board.squares.map((row, index) => (
         <div key={index}>
@@ -82,94 +58,48 @@ function Board({ game }: { game: Game }) {
 
     return (
         <div>
-            <div className="">
-                <svg xmlns="http://www.w3.org/2000/svg" height={width * 8} width={width * 8}>
-                    <g>
-                        <rect width={width} height={width} y={width * 0} x={width * 0} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 0} x={width * 1} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 0} x={width * 2} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 0} x={width * 3} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 0} x={width * 4} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 0} x={width * 5} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 0} x={width * 6} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 0} x={width * 7} fill="#0e7490" />
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height={width * game.board.rows}
+                width={width * game.board.rows}
+            >
+                <g>
+                    {game.board.squares.map((row) =>
+                        row.map((square) => {
+                            const evenCol = square.col % 2 === 1
+                            const evenRow = square.row % 2 === 1
 
-                        <rect width={width} height={width} y={width * 1} x="0" fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 1} x={width * 1} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 1} x={width * 2} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 1} x={width * 3} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 1} x={width * 4} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 1} x={width * 5} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 1} x={width * 6} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 1} x={width * 7} fill="#e8f2f5" />
+                            const color = evenRow
+                                ? evenCol
+                                    ? '#e8f2f5'
+                                    : '#0e7490'
+                                : evenCol
+                                  ? '#0e7490'
+                                  : '#e8f2f5'
 
-                        <rect width={width} height={width} y={width * 2} x="0" fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 2} x={width * 1} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 2} x={width * 2} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 2} x={width * 3} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 2} x={width * 4} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 2} x={width * 5} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 2} x={width * 6} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 2} x={width * 7} fill="#0e7490" />
+                            return (
+                                <rect
+                                    width={width}
+                                    height={width}
+                                    y={width * square.col}
+                                    x={width * square.row}
+                                    fill={color}
+                                />
+                            )
+                        })
+                    )}
+                </g>
 
-                        <rect width={width} height={width} y={width * 3} x="0" fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 3} x={width * 1} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 3} x={width * 2} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 3} x={width * 3} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 3} x={width * 4} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 3} x={width * 5} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 3} x={width * 6} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 3} x={width * 7} fill="#e8f2f5" />
-
-                        <rect width={width} height={width} y={width * 4} x="0" fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 4} x={width * 1} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 4} x={width * 2} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 4} x={width * 3} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 4} x={width * 4} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 4} x={width * 5} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 4} x={width * 6} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 4} x={width * 7} fill="#0e7490" />
-
-                        <rect width={width} height={width} y={width * 5} x="0" fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 5} x={width * 1} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 5} x={width * 2} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 5} x={width * 3} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 5} x={width * 4} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 5} x={width * 5} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 5} x={width * 6} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 5} x={width * 7} fill="#e8f2f5" />
-
-                        <rect width={width} height={width} y={width * 6} x="0" fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 6} x={width * 1} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 6} x={width * 2} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 6} x={width * 3} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 6} x={width * 4} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 6} x={width * 5} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 6} x={width * 6} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 6} x={width * 7} fill="#0e7490" />
-
-                        <rect width={width} height={width} y={width * 7} x="0" fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 7} x={width * 1} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 7} x={width * 2} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 7} x={width * 3} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 7} x={width * 4} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 7} x={width * 5} fill="#e8f2f5" />
-                        <rect width={width} height={width} y={width * 7} x={width * 6} fill="#0e7490" />
-                        <rect width={width} height={width} y={width * 7} x={width * 7} fill="#e8f2f5" />
-                    </g>
-                    <rect
-                        x="2"
-                        y="2"
-                        width={width * 8 - 4}
-                        height={width * 8 - 4}
-                        fill="none"
-                        stroke="black"
-                        strokeWidth="6"
-                    />
-                </svg>
-            </div>
-            <br />
-            <div className=""> {squares}</div>
+                <rect
+                    x="2"
+                    y="2"
+                    width={width * game.board.rows - 4}
+                    height={width * game.board.rows - 4}
+                    fill="none"
+                    stroke="black"
+                    strokeWidth="6"
+                />
+            </svg>
         </div>
     )
 }
