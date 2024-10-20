@@ -7,20 +7,25 @@ import { lobbySchema } from '../../../lib/zod'
 import { Game } from '../../../lib/chess'
 import { io } from 'socket.io-client'
 import { Form, Formik } from 'formik'
+import svgs from './pieces-svgs'
 import Image from 'next/image'
 
 function Board({ game }: { game: Game }) {
-    const [width, setWidth] = useState(0)
+    const [active, setActive] = useState<[number, number] | null>(null)
+    const [coords, setCoords] = useState<[number, number]>([0, 0])
+    const [isMounted, setIsMounted] = useState(false)
+    const [size, setSize] = useState(0)
+    const borderSize = 12
 
     function updateWidth() {
         if (window.innerHeight > window.innerWidth) {
             // vertical screen
             const width = window.innerWidth * 0.09
-            setWidth(width > 38 ? width : 38)
+            setSize(width > 38 ? width : 38)
         } else {
             // horizontal screen
             const width = window.innerHeight * 0.09
-            setWidth(width > 38 ? width : 38)
+            setSize(width > 38 ? width : 38)
         }
     }
 
@@ -32,75 +37,116 @@ function Board({ game }: { game: Game }) {
                 updateWidth()
             })
         }
+
+        setIsMounted(true)
     }, [])
 
-    const pieces = game.board.squares.map((row, index) => (
-        <div key={index}>
-            {row.map((square) => {
-                if (square.piece && square.col == 0 && square.row == 0) {
-                    return (
-                        <svg
-                            className="absolute"
-                            style={{ top: square.row, right: square.col }}
-                            key={square.col + square.row}
-                            width={width * 2}
-                            height={width * 2}
-                            viewBox={`0 0 ${width * 2} ${width * 2}`}
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <circle cx={width} cy={width} r="50" />
-                        </svg>
-                    )
-                }
-            })}
-        </div>
-    ))
+    console.log(coords)
+
+    useEffect(() => {
+        if (!active) {
+            return
+        }
+
+        const piece = document.getElementById(`${active[0]}${active[1]}`)
+
+        piece?.setAttribute('x', coords[0].toString())
+        piece?.setAttribute('y', coords[1].toString())
+    }, [coords])
 
     return (
-        <div>
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height={width * game.board.rows}
-                width={width * game.board.rows}
-            >
-                <g>
-                    {game.board.squares.map((row) =>
-                        row.map((square) => {
-                            const evenCol = square.col % 2 === 1
-                            const evenRow = square.row % 2 === 1
+        <>
+            {isMounted && (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height={size * game.board.rows + borderSize}
+                    width={size * game.board.rows + borderSize}
+                    onMouseMove={(e) => {
+                        // @ts-ignore
+                        const svgRect = e.currentTarget.getBoundingClientRect()
+                        const x = e.clientX - svgRect.left
+                        const y = e.clientY - svgRect.top
+                        setCoords([x, y])
+                    }}
+                    onClick={() => {
+                        setActive(null)
+                        // if (!active) {
+                        //     return
+                        // }
 
-                            const color = evenRow
-                                ? evenCol
-                                    ? '#e8f2f5'
-                                    : '#0e7490'
-                                : evenCol
-                                  ? '#0e7490'
-                                  : '#e8f2f5'
+                        // const piece = document.getElementById(`${active[0]}${active[1]}`)
 
-                            return (
-                                <rect
-                                    width={width}
-                                    height={width}
-                                    y={width * square.col}
-                                    x={width * square.row}
-                                    fill={color}
-                                />
-                            )
-                        })
-                    )}
-                </g>
+                        // piece?.setAttribute('x', active[0].toString())
+                        // piece?.setAttribute('y', active[1].toString())
+                    }}
+                >
+                    <g>
+                        {game.board.squares.map((row) =>
+                            row.map((square) => {
+                                const evenCol = square.col % 2 === 1
+                                const evenRow = square.row % 2 === 1
 
-                <rect
-                    x="2"
-                    y="2"
-                    width={width * game.board.rows - 4}
-                    height={width * game.board.rows - 4}
-                    fill="none"
-                    stroke="black"
-                    strokeWidth="6"
-                />
-            </svg>
-        </div>
+                                const color = evenRow
+                                    ? evenCol
+                                        ? '#0e7490'
+                                        : '#e8f2f5'
+                                    : evenCol
+                                      ? '#e8f2f5'
+                                      : '#0e7490'
+
+                                const name = square?.piece?.constructor.name.toLowerCase()
+
+                                const adjustedY = size * (game.board.rows - square.row - 1) + borderSize / 2
+
+                                return (
+                                    <g key={`${square.col}${square.row}`}>
+                                        <rect
+                                            width={size}
+                                            height={size}
+                                            y={adjustedY}
+                                            x={size * square.col + borderSize / 2}
+                                            fill={color}
+                                            id={`${square.col}${square.row}${square.piece?.color}`}
+                                        />
+                                        {square.piece && (
+                                            <svg
+                                                id={`${square.col}${square.row}`}
+                                                width={size}
+                                                height={size}
+                                                y={adjustedY}
+                                                x={size * square.col + borderSize / 2}
+                                                z={999}
+                                                style={{
+                                                    filter:
+                                                        square.piece.color === 'black'
+                                                            ? 'invert(100%)'
+                                                            : 'invert(0%)',
+                                                    cursor: 'grab',
+                                                }}
+                                                onClick={() => {}}
+                                                onMouseDown={() => {
+                                                    setActive([square.col, square.row])
+                                                }}
+                                            >
+                                                {svgs[name!]}
+                                            </svg>
+                                        )}
+                                    </g>
+                                )
+                            })
+                        )}
+                    </g>
+
+                    <rect
+                        width={size * game.board.rows + borderSize}
+                        height={size * game.board.rows + borderSize}
+                        fill="none"
+                        stroke="black"
+                        strokeWidth="12"
+                    />
+                </svg>
+            )}
+        </>
     )
 }
 
