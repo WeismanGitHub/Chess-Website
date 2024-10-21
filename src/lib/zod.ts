@@ -37,3 +37,7 @@ export const lobbyJoinSchema = object({
         .min(1, `Password must be more than 1 character`)
         .max(50, `Password cannot be more than be more than 50 characters`),
 })
+
+export const messageSchema = string({ required_error: 'Message is required' })
+    .min(1, `Message must be more than 1 character`)
+    .max(1000, `Message cannot be more than be more than 1000 characters`)
