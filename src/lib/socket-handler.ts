@@ -1,8 +1,8 @@
 import { lobbies, Lobby, Room, rooms } from './caches'
 import CustomError from './custom-error'
 import { Clock, Game } from './chess'
-import { lobbySchema } from './zod'
 import { Socket } from 'socket.io'
+import { lobbyJoin } from './zod'
 import { Types } from 'mongoose'
 
 type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
@@ -11,7 +11,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on('createLobby', async (values, callback) => {
         try {
             const lobbyId = new Types.ObjectId().toString()
-            const { success, data } = lobbySchema.safeParse(values)
+            const { success, data } = lobbyJoin.safeParse(values)
 
             if (!success) {
                 throw new CustomError('Invalid lobby config values.')
