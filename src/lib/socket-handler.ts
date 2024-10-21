@@ -2,22 +2,24 @@ import { lobbies, Lobby, Room, rooms } from './caches'
 import CustomError from './custom-error'
 import { Clock, Game } from './chess'
 import { Socket } from 'socket.io'
-import { lobbyJoin } from './zod'
-import { Types } from 'mongoose'
+import { lobbyJoinSchema, messageSchema } from './zod'
 
 type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
 
 export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on('createLobby', async (values, callback) => {
         try {
-            const lobbyId = new Types.ObjectId().toString()
-            const { success, data } = lobbyJoin.safeParse(values)
+            const { success, data } = lobbyJoinSchema.safeParse(values)
 
             if (!success) {
                 throw new CustomError('Invalid lobby config values.')
             }
 
-            await lobbies.set(lobbyId, {
+            if (await lobbies.has(data.name)) {
+                throw new CustomError('Please use a unique lobby name.')
+            }
+
+            await lobbies.set(data.name, {
                 name: data.name,
                 password: data.password,
                 minutes: data.password,
@@ -30,10 +32,10 @@ export default function socketHandler(socket: AuthenticatedSocket) {
                 ],
             })
 
-            socket.roomId = lobbyId
-            socket.join(lobbyId)
+            socket.roomId = data.name
+            socket.join(data.name)
 
-            callback({ success: true, data: lobbyId })
+            callback({ success: true, data: data.name })
         } catch (err) {
             callback({
                 success: false,
@@ -42,32 +44,43 @@ export default function socketHandler(socket: AuthenticatedSocket) {
         }
     })
 
-    socket.on('joinLobby', async (id: string) => {
-        if (!Types.ObjectId.isValid(id)) {
-            throw new CustomError('Please use a valid game id.')
+    socket.on('joinLobby', async (values, callback) => {
+        try {
+            const { success, data } = await lobbyJoinSchema.safeParseAsync(values)
+
+            if (!success) {
+                throw new CustomError('Invalid lobby credentials.')
+            }
+
+            const lobby = await lobbies.get<Lobby>(data.name)
+
+            if (!lobby) {
+                throw new CustomError("That lobby doesn't exist.")
+            }
+
+            if (lobby.players.length === 2) {
+                throw new CustomError('Lobby is full.')
+            }
+
+            if (socket.rooms.has(data.name)) {
+                throw new CustomError('You are already in this lobby.')
+            }
+
+            lobby.players.push({ id: socket.userId, ready: false })
+
+            await lobbies.set(data.name, lobby)
+
+            socket.roomId = data.name
+            socket.to(data.name).emit('playerJoined', socket.userId)
+            socket.join(data.name)
+
+            callback({ success: true })
+        } catch (err) {
+            callback({
+                success: false,
+                data: err instanceof CustomError ? err.message : 'A server error occurred.',
+            })
         }
-
-        const lobby = await lobbies.get<Lobby>(id)
-
-        if (!lobby) {
-            throw new CustomError("That lobby doesn't exist.")
-        }
-
-        if (lobby.players.length === 2) {
-            throw new CustomError('Lobby is full.')
-        }
-
-        if (socket.rooms.has(id)) {
-            throw new CustomError('You are already in this lobby.')
-        }
-
-        lobby.players.push({ id: socket.userId, ready: false })
-
-        await lobbies.set(id, lobby)
-
-        socket.roomId = id
-        socket.to(id).emit('playerJoined', socket.userId)
-        socket.join(id)
     })
 
     socket.on('ready', async () => {
@@ -129,6 +142,33 @@ export default function socketHandler(socket: AuthenticatedSocket) {
 
         if (!room) {
             throw new CustomError('Could not find your room.')
+        }
+    })
+
+    socket.on('sendMessage', async (values, callback) => {
+        try {
+            const { success, data } = await messageSchema.safeParseAsync(values)
+
+            if (!success) {
+                throw new CustomError('Invalid lobby credentials.')
+            }
+
+            if (!socket.roomId) {
+                throw new CustomError('Join a lobby first.')
+            }
+
+            const lobby = await lobbies.get<Lobby>(socket.roomId)
+
+            if (!lobby) {
+                throw new CustomError("That lobby doesn't exist.")
+            }
+
+            socket.to(socket.roomId).emit('messageReceived', data)
+        } catch (err) {
+            callback({
+                success: false,
+                data: err instanceof CustomError ? err.message : 'A server error occurred.',
+            })
         }
     })
 
