@@ -17,7 +17,7 @@ export const credentialsSchema = object({
     ),
 })
 
-export const lobbyCreate = object({
+export const lobbyCreateSchema = object({
     name: string({ required_error: 'Name is required' })
         .min(1, `Name must be more than 1 character`)
         .max(50, `Name cannot be more than be more than 50 characters`),
@@ -29,7 +29,7 @@ export const lobbyCreate = object({
         .max(240, `Minutes cannot be more than 240`),
 })
 
-export const lobbyJoin = object({
+export const lobbyJoinSchema = object({
     name: string({ required_error: 'Name is required' })
         .min(1, `Name must be more than 1 character`)
         .max(50, `Name cannot be more than be more than 50 characters`),

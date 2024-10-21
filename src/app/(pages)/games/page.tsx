@@ -1,9 +1,9 @@
 'use client'
 
 import { Button, Label, Tabs, TextInput } from 'flowbite-react'
+import { lobbyJoinSchema, lobbyCreateSchema } from '../../../lib/zod'
 import { FailureToast } from '../../components/toasts'
 import React, { useEffect, useState } from 'react'
-import { lobbySchema } from '../../../lib/zod'
 import { Game } from '../../../lib/chess'
 import { io } from 'socket.io-client'
 import { Form, Formik } from 'formik'
@@ -170,7 +170,7 @@ export default function () {
             />
 
             <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
-                {!game ? (
+                {game ? (
                     <Board game={new Game()} />
                 ) : (
                     <div className="w-full overflow-hidden rounded-lg bg-white shadow sm:max-w-md md:mt-0 lg:m-5 xl:p-0">
@@ -193,7 +193,7 @@ export default function () {
                                                 minutes?: string
                                             } = {}
 
-                                            const res = lobbySchema.safeParse(values)
+                                            const res = lobbyCreateSchema.safeParse(values)
 
                                             if (!res.success) {
                                                 const fieldErrors = res.error.flatten().fieldErrors
@@ -450,7 +450,7 @@ export default function () {
                                                 password?: string
                                             } = {}
 
-                                            const res = lobbySchema.safeParse(values)
+                                            const res = lobbyJoinSchema.safeParse(values)
 
                                             if (!res.success) {
                                                 const fieldErrors = res.error.flatten().fieldErrors
@@ -462,6 +462,21 @@ export default function () {
                                         }}
                                         onSubmit={async (values) => {
                                             console.log(values)
+                                            const socket = io()
+
+                                            socket.on('connect', () => {
+                                                socket.emit(
+                                                    'joinLobby',
+                                                    values,
+                                                    ({ success, data }: { success: boolean; data: any }) => {
+                                                        if (success) {
+                                                            return setId(data)
+                                                        }
+
+                                                        setMessage(data)
+                                                    }
+                                                )
+                                            })
                                         }}
                                         validateOnChange={true}
                                         validateOnBlur={true}
@@ -555,7 +570,7 @@ export default function () {
                                                         type="submit"
                                                         className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
                                                     >
-                                                        Join lobby
+                                                        Create lobby
                                                     </Button>
                                                 </Form>
                                             )
