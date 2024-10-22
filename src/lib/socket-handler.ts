@@ -75,7 +75,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
             await lobbies.set(data.name, lobby)
 
             socket.roomId = data.name
-            socket.to(data.name).emit('playerJoined', socket.userId)
+            socket.to(data.name).emit('player joined', socket.userId)
             socket.join(data.name)
 
             callback({ success: true })
@@ -167,7 +167,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
                 throw new CustomError("That lobby doesn't exist.")
             }
 
-            socket.to(socket.roomId).emit('messageReceived', data)
+            socket.to(socket.roomId).emit('message received', data)
         } catch (err) {
             callback({
                 success: false,
