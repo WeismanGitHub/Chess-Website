@@ -58,6 +58,10 @@ export default function socketHandler(socket: AuthenticatedSocket) {
                 throw new CustomError("That lobby doesn't exist.")
             }
 
+            if (lobby.password !== data.password) {
+                throw new CustomError('That password is invalid.')
+            }
+
             if (lobby.players.length === 2) {
                 throw new CustomError('Lobby is full.')
             }
