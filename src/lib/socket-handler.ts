@@ -7,7 +7,7 @@ import { lobbyJoinSchema, messageSchema } from './zod'
 type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
 
 export default function socketHandler(socket: AuthenticatedSocket) {
-    socket.on('createLobby', async (values, callback) => {
+    socket.on('create lobby', async (values, callback) => {
         try {
             const { success, data } = lobbyJoinSchema.safeParse(values)
 
@@ -44,7 +44,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
         }
     })
 
-    socket.on('joinLobby', async (values, callback) => {
+    socket.on('join lobby', async (values, callback) => {
         try {
             const { success, data } = await lobbyJoinSchema.safeParseAsync(values)
 
@@ -149,7 +149,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
         }
     })
 
-    socket.on('sendMessage', async (values, callback) => {
+    socket.on('send message', async (values, callback) => {
         try {
             const { success, data } = await messageSchema.safeParseAsync(values)
 
