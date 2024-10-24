@@ -82,3 +82,15 @@ body {
 .success-toast-flash {
     animation: success-toast-flash 1s ease-in-out forwards;
 }
+
+.unselectable {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+@media only screen and (min-width: 500px) {
+    .board {
+        outline-style: solid;
+    }
+}
