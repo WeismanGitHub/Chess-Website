@@ -1,7 +1,9 @@
 'use client'
 
+import { King, Piece, Queen, Pawn, Bishop, Rook, Knight } from '../../../lib/chess/pieces'
 import React, { ReactNode, useEffect, useState } from 'react'
 import { Game } from '../../../lib/chess'
+import { Button } from 'flowbite-react'
 
 function setHue(id: string, value: number) {
     const square = document.getElementById(id)
@@ -16,6 +18,22 @@ function resetSquareHues() {
         for (let j = 0; j < 8; j++) {
             setHue(`square-${i}-${j}`, 0)
         }
+    }
+}
+
+function getPieceCharacter(piece: Piece) {
+    if (piece instanceof King) {
+        return '♚'
+    } else if (piece instanceof Queen) {
+        return '♛'
+    } else if (piece instanceof Rook) {
+        return '♜'
+    } else if (piece instanceof Bishop) {
+        return '♝'
+    } else if (piece instanceof Knight) {
+        return '♞'
+    } else if (piece instanceof Pawn) {
+        return '♟'
     }
 }
 
@@ -45,6 +63,7 @@ function Square({
                 backgroundColor: dark ? '#0e7490' : '#e8f2f5',
                 filter: 'hue-rotate(0deg)',
             }}
+            className="flex justify-center align-middle"
         >
             {children}
         </div>
@@ -84,26 +103,44 @@ export default function Board() {
     return (
         <>
             {isMounted && (
-                <div
-                    style={{ height: size, width: size }}
-                    className={`flex ${size > 320 ? 'outline' : ''} outline-8 outline-black`}
-                    onClick={resetSquareHues}
-                >
-                    {game.board.squares.map((row) => (
-                        <div style={{ height: '12.5%', width: '12.5%' }}>
-                            {row.map((square) => {
-                                const evenCol = square.col % 2 === 1
-                                const evenRow = square.row % 2 === 1
+                <div className="flex h-fit w-fit flex-row align-top">
+                    <div
+                        style={{ height: size, width: size, transform: 'rotate(-0.25turn)' }}
+                        className={`flex ${size > 320 ? 'outline' : ''} outline-8 outline-black`}
+                        onClick={resetSquareHues}
+                    >
+                        {game.board.squares.map((row) => (
+                            <div style={{ height: '12.5%', width: '12.5%' }}>
+                                {row.map((square) => {
+                                    const evenCol = square.col % 2 === 1
+                                    const evenRow = square.row % 2 === 1
 
-                                return (
-                                    <Square
-                                        id={`square-${square.col}-${square.row}`}
-                                        dark={evenRow ? !evenCol : evenCol}
-                                    />
-                                )
-                            })}
-                        </div>
-                    ))}
+                                    const dark = evenRow ? evenCol : !evenCol
+
+                                    const piece = square.piece
+
+                                    return (
+                                        <Square id={`square-${square.col}-${square.row}`} dark={dark}>
+                                            {piece && (
+                                                <div
+                                                    className="unselectable h-fit w-fit cursor-grab"
+                                                    style={{
+                                                        WebkitTextStroke: `0.5px ${piece.color == 'white' ? 'black' : 'white'}`,
+                                                        WebkitTextFillColor: piece.color,
+                                                        fontSize: size / 12,
+                                                        transform: 'rotate(0.25turn)',
+                                                    }}
+                                                >
+                                                    {getPieceCharacter(piece)}
+                                                </div>
+                                            )}
+                                        </Square>
+                                    )
+                                })}
+                            </div>
+                        ))}
+                    </div>
+
                 </div>
             )}
         </>
