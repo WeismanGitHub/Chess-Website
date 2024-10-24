@@ -3,10 +3,49 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import { Game } from '../../../lib/chess'
 
-function Square({ dark = false, children = undefined }: { dark?: boolean; children?: ReactNode }) {
+function setHue(id: string, value: number) {
+    const square = document.getElementById(id)
 
+    if (square) {
+        square.style.filter = `hue-rotate(${value}deg)`
+    }
+}
+
+function resetSquareHues() {
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            setHue(`square-${i}-${j}`, 0)
+        }
+    }
+}
+
+function Square({
+    dark = false,
+    children = undefined,
+    id,
+}: {
+    dark?: boolean
+    children?: ReactNode
+    id: string
+}) {
     return (
-        <div style={{ width: '100%', height: '100%', backgroundColor: dark ? '#0e7490' : '#e8f2f5' }}>
+        <div
+            onContextMenu={(e) => {
+                e.preventDefault()
+
+                e.currentTarget.style.filter =
+                    e.currentTarget.style.filter === 'hue-rotate(0deg)'
+                        ? 'hue-rotate(150deg)'
+                        : 'hue-rotate(0deg)'
+            }}
+            id={id}
+            style={{
+                width: '100%',
+                height: '100%',
+                backgroundColor: dark ? '#0e7490' : '#e8f2f5',
+                filter: 'hue-rotate(0deg)',
+            }}
+        >
             {children}
         </div>
     )
@@ -48,6 +87,7 @@ export default function Board() {
                 <div
                     style={{ height: size, width: size }}
                     className={`flex ${size > 320 ? 'outline' : ''} outline-8 outline-black`}
+                    onClick={resetSquareHues}
                 >
                     {game.board.squares.map((row) => (
                         <div className="flex-row" style={{ height: '12.5%', width: '12.5%' }}>
@@ -55,7 +95,12 @@ export default function Board() {
                                 const evenCol = square.col % 2 === 1
                                 const evenRow = square.row % 2 === 1
 
-                                return <Square dark={evenRow ? !evenCol : evenCol} />
+                                return (
+                                    <Square
+                                        id={`square-${square.col}-${square.row}`}
+                                        dark={evenRow ? !evenCol : evenCol}
+                                    />
+                                )
                             })}
                         </div>
                     ))}
