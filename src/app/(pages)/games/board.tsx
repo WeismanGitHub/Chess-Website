@@ -90,7 +90,7 @@ export default function Board() {
                     onClick={resetSquareHues}
                 >
                     {game.board.squares.map((row) => (
-                        <div className="flex-row" style={{ height: '12.5%', width: '12.5%' }}>
+                        <div style={{ height: '12.5%', width: '12.5%' }}>
                             {row.map((square) => {
                                 const evenCol = square.col % 2 === 1
                                 const evenRow = square.row % 2 === 1
