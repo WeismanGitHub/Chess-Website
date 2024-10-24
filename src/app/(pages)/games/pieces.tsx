@@ -1,7 +1,5 @@
-import { ReactNode } from 'react'
-
-const svgs: { [string: string]: ReactNode } = {
-    king: (
+export function King() {
+    return (
         <g
             fill="none"
             fill-rule="evenodd"
@@ -24,8 +22,11 @@ const svgs: { [string: string]: ReactNode } = {
             />
             <path d="M12.5 30c5.5-3 14.5-3 20 0m-20 3.5c5.5-3 14.5-3 20 0m-20 3.5c5.5-3 14.5-3 20 0" />
         </g>
-    ),
-    queen: (
+    )
+}
+
+export function Queen() {
+    return (
         <g style={{ fill: '#ffffff', stroke: '#000000', strokeWidth: 1.5, strokeLinejoin: 'round' }}>
             <path d="M 9,26 C 17.5,24.5 30,24.5 36,26 L 38.5,13.5 L 31,25 L 30.7,10.9 L 25.5,24.5 L 22.5,10 L 19.5,24.5 L 14.3,10.9 L 14,25 L 6.5,13.5 L 9,26 z" />
             <path d="M 9,26 C 9,28 10.5,28 11.5,30 C 12.5,31.5 12.5,31 12,33.5 C 10.5,34.5 11,36 11,36 C 9.5,37.5 11,38.5 11,38.5 C 17.5,39.5 27.5,39.5 34,38.5 C 34,38.5 35.5,37.5 34,36 C 34,36 34.5,34.5 33,33.5 C 32.5,31 32.5,31.5 33.5,30 C 34.5,28 36,28 36,26 C 27.5,24.5 17.5,24.5 9,26 z" />
@@ -37,8 +38,11 @@ const svgs: { [string: string]: ReactNode } = {
             <circle cx="31" cy="9" r="2" />
             <circle cx="39" cy="12" r="2" />
         </g>
-    ),
-    rook: (
+    )
+}
+
+export function Rook() {
+    return (
         <g
             style={{
                 opacity: 1,
@@ -69,8 +73,11 @@ const svgs: { [string: string]: ReactNode } = {
             <path d="M 31,29.5 L 32.5,32 L 12.5,32 L 14,29.5" />
             <path d="M 11,14 L 34,14" style={{ fill: 'none', stroke: '#000000', strokeLinejoin: 'miter' }} />
         </g>
-    ),
-    bishop: (
+    )
+}
+
+export function Bishop() {
+    return (
         <g
             style={{
                 opacity: 1,
@@ -97,8 +104,11 @@ const svgs: { [string: string]: ReactNode } = {
                 style={{ fill: 'none', stroke: '#000000', strokeLinejoin: 'miter' }}
             />
         </g>
-    ),
-    knight: (
+    )
+}
+
+export function Knight() {
+    return (
         <g
             style={{
                 opacity: 1,
@@ -133,8 +143,10 @@ const svgs: { [string: string]: ReactNode } = {
                 style={{ fill: '#ffffff', stroke: '#000000' }}
             />
         </g>
-    ),
-    pawn: (
+    )
+}
+export function Pawn() {
+    return (
         <path
             d="m 22.5,9 c -2.21,0 -4,1.79 -4,4 0,0.89 0.29,1.71 0.78,2.38 C 17.33,16.5 16,18.59 16,21 c 0,2.03 0.94,3.84 2.41,5.03 C 15.41,27.09 11,31.58 11,39.5 H 34 C 34,31.58 29.59,27.09 26.59,26.03 28.06,24.84 29,23.03 29,21 29,18.59 27.67,16.5 25.72,15.38 26.21,14.71 26.5,13.89 26.5,13 c 0,-2.21 -1.79,-4 -4,-4 z"
             style={{
@@ -151,7 +163,5 @@ const svgs: { [string: string]: ReactNode } = {
                 strokeOpacity: 1,
             }}
         />
-    ),
+    )
 }
-
-export default svgs
