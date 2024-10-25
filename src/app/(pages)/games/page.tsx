@@ -25,10 +25,10 @@ export default function () {
             />
 
             <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
-                {socket ? (
+                {!socket ? (
                     <>
                         <Board />
-                        <Chat socket={socket} />
+                        {/* <Chat socket={socket} /> */}
                     </>
                 ) : (
                     <div className="w-full overflow-hidden rounded-lg bg-white shadow sm:max-w-md md:mt-0 lg:m-5 xl:p-0">

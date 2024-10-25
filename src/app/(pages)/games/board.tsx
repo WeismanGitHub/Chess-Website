@@ -2,6 +2,8 @@
 
 import { King, Piece, Queen, Pawn, Bishop, Rook, Knight } from '../../../lib/chess/pieces'
 import React, { ReactNode, useEffect, useState } from 'react'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider, useDrag } from 'react-dnd'
 import { Game } from '../../../lib/chess'
 import { Button } from 'flowbite-react'
 
@@ -70,12 +72,23 @@ function Square({
     )
 }
 
+const ItemTypes = {
+    KNIGHT: 'knight',
+}
+
 export default function Board() {
     const game = new Game()
 
     const [isMounted, setIsMounted] = useState(false)
     const [flipped, setFlipped] = useState(false)
     const [size, setSize] = useState(0)
+
+    const [{ isDragging }, drag] = useDrag(() => ({
+        type: ItemTypes.KNIGHT,
+        collect: (monitor: any) => ({
+            isDragging: !!monitor.isDragging(),
+        }),
+    }))
 
     function updateWidth() {
         if (window.innerHeight > window.innerWidth) {
@@ -113,46 +126,50 @@ export default function Board() {
         <>
             {isMounted && (
                 <div className="flex h-fit w-fit flex-col items-center md:flex-row md:items-start">
-                    <div
-                        style={{
-                            height: size,
-                            width: size,
-                            transform: `rotate(${flipped ? '-0.25' : '0.25'}turn)`,
-                        }}
-                        className="board flex outline-8 outline-black"
-                        onClick={resetSquareHues}
-                    >
-                        {game.board.squares.map((row) => (
-                            <div style={{ height: '12.5%', width: '12.5%' }}>
-                                {row.map((square) => {
-                                    const evenCol = square.col % 2 === 1
-                                    const evenRow = square.row % 2 === 1
+                    <DndProvider backend={HTML5Backend}>
+                        <div
+                            style={{
+                                height: size,
+                                width: size,
+                                transform: `rotate(${flipped ? '-0.25' : '0.25'}turn)`,
+                            }}
+                            className="board flex outline-8 outline-black"
+                            onClick={resetSquareHues}
+                        >
+                            {game.board.squares.map((row) => (
+                                <div style={{ height: '12.5%', width: '12.5%' }}>
+                                    {row.map((square) => {
+                                        const evenCol = square.col % 2 === 1
+                                        const evenRow = square.row % 2 === 1
 
-                                    const dark = evenRow ? evenCol : !evenCol
+                                        const dark = evenRow ? evenCol : !evenCol
 
-                                    const piece = square.piece
+                                        const piece = square.piece
 
-                                    return (
-                                        <Square id={`square-${square.col}-${square.row}`} dark={dark}>
-                                            {piece && (
-                                                <div
-                                                    className="unselectable h-fit w-fit cursor-grab"
-                                                    style={{
-                                                        WebkitTextStroke: `0.5px ${piece.color == 'white' ? 'black' : 'white'}`,
-                                                        WebkitTextFillColor: piece.color,
-                                                        fontSize: size / 12,
-                                                        transform: `rotate(${flipped ? '0.25' : '-0.25'}turn)`,
-                                                    }}
-                                                >
-                                                    {getPieceCharacter(piece)}
-                                                </div>
-                                            )}
-                                        </Square>
-                                    )
-                                })}
-                            </div>
-                        ))}
-                    </div>
+                                        return (
+                                            <Square id={`square-${square.col}-${square.row}`} dark={dark}>
+                                                {piece && (
+                                                    <div
+                                                        // @ts-ignore
+                                                        ref={drag}
+                                                        className="unselectable h-fit w-fit cursor-move"
+                                                        style={{
+                                                            WebkitTextStroke: `0.5px ${piece.color == 'white' ? 'black' : 'white'}`,
+                                                            WebkitTextFillColor: piece.color,
+                                                            fontSize: size / 12,
+                                                            transform: `rotate(${flipped ? '0.25' : '-0.25'}turn)`,
+                                                        }}
+                                                    >
+                                                        {getPieceCharacter(piece)}
+                                                    </div>
+                                                )}
+                                            </Square>
+                                        )
+                                    })}
+                                </div>
+                            ))}
+                        </div>
+                    </DndProvider>
                     <Button
                         type="button"
                         onClick={() => setFlipped(!flipped)}
