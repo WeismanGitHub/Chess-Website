@@ -1,17 +1,7 @@
 import { Bishop, King, Knight, Pawn, Piece, Queen, Rook } from '../../lib/chess/pieces'
-import type { CSSProperties, FC } from 'react'
 import { useDrag } from 'react-dnd'
+import type { FC } from 'react'
 import { memo } from 'react'
-
-const style: CSSProperties = {
-    border: '1px dashed gray',
-    backgroundColor: 'white',
-    padding: '0.5rem 1rem',
-    marginRight: '1.5rem',
-    marginBottom: '1.5rem',
-    cursor: 'move',
-    float: 'left',
-}
 
 export interface PieceProps {
     piece: Piece
