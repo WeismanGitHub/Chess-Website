@@ -85,7 +85,7 @@ export const Dustbin: FC<DustbinProps> = memo(function Dustbin({
         >
             {piece && (
                 <div
-                    className="unselectable h-fit w-fit cursor-move"
+                    className="unselectable h-fit w-fit cursor-grab"
                     style={{
                         WebkitTextStroke: `0.5px ${piece.color == 'white' ? 'black' : 'white'}`,
                         WebkitTextFillColor: piece.color,
