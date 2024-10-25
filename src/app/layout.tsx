@@ -20,10 +20,15 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                {/* https://github.com/ibelick/background-snippets */}
-                <div className="absolute top-0 z-[-2] h-screen w-screen bg-white bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,116,144,0.25),rgba(255,255,255,0))]" />
+                {/* Background Gradient https://github.com/ibelick/background-snippets */}
+                <div
+                    aria-hidden="true"
+                    className="absolute top-0 z-[-2] h-screen w-screen bg-white bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,116,144,0.25),rgba(255,255,255,0))]"
+                />
                 <div className="flex min-h-screen flex-col">
-                    <Navbar />
+                    <header>
+                        <Navbar />
+                    </header>
                     <main className={`${inter.className} flex flex-1 items-center justify-center`}>
                         {children}
                     </main>
