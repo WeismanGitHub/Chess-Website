@@ -49,6 +49,7 @@ export default function () {
                                     if (res.success) {
                                         localStorage.removeItem('authenticated')
                                         setOpenModal(false)
+                                        setAuthenticated(false)
                                         return router.push('/auth/login')
                                     }
 
@@ -64,7 +65,7 @@ export default function () {
                     </div>
                 </Modal.Body>
             </Modal>
-            <Navbar fluid rounded className="navbar-border bg-transparent">
+            <Navbar fluid className="navbar-border bg-transparent">
                 <Navbar.Brand as={Link} href="/">
                     <img src="/icon.svg" className="h-6 sm:h-9" alt="pawn logo" />
                     <span className="self-center whitespace-nowrap text-xl font-semibold">Chess</span>
@@ -86,13 +87,18 @@ export default function () {
                         About
                     </Navbar.Link>
                     {authenticated ? (
-                        <Navbar.Link className="nav-link cursor-pointer" onClick={() => setOpenModal(true)}>
+                        <Navbar.Link
+                            className="nav-link cursor-pointer"
+                            onClick={() => setOpenModal(true)}
+                            role="button"
+                        >
                             Logout
                         </Navbar.Link>
                     ) : (
                         <Navbar.Link
                             className="nav-link"
                             as={Link}
+                            role="button"
                             href="/auth/register"
                             active={path == '/auth/register'}
                         >
