@@ -83,9 +83,6 @@ export default function () {
                     >
                         Games
                     </Navbar.Link>
-                    <Navbar.Link className="nav-link" as={Link} href="/about" active={path == '/about'}>
-                        About
-                    </Navbar.Link>
                     {authenticated ? (
                         <Navbar.Link
                             className="nav-link cursor-pointer"
