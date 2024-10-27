@@ -53,7 +53,7 @@ export default class Game {
         this.board = new Board(rows)
     }
 
-    movePiece(startCoordinate: Coordinate, endCoordinate: Coordinate, promotion: Piece | null) {
+    movePiece(startCoordinate: Coordinate, endCoordinate: Coordinate, promotion: Piece | null = null) {
         if (this.status !== GameStatus.Active) {
             throw new Error('Game is not active.')
         }
