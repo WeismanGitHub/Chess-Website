@@ -48,6 +48,7 @@ export const PieceElement: FC<PieceProps> = memo(function Box({ piece, col, row 
                 fontSize: 30,
                 transform: `rotate(${true ? '0.25' : '-0.25'}turn)`,
                 opacity,
+                zIndex: 100,
             }}
         >
             {getPieceCharacter(piece)}

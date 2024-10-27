@@ -17,18 +17,18 @@ interface SquareState {
     col: number
 }
 
-function setHue(id: string, value: number) {
+function setBackgroundColor(id: string, value: string) {
     const square = document.getElementById(id)
 
     if (square) {
-        square.style.filter = `hue-rotate(${value}deg)`
+        square.style.backgroundColor = value
     }
 }
 
-function resetSquareHues() {
+function resetSquareBackgrounds() {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            setHue(`square-${i}-${j}`, 0)
+            setBackgroundColor(`overlay-${i}-${j}`, 'rgb(0 0 0 / 0)') // Invisible
         }
     }
 }
@@ -85,18 +85,16 @@ const Container: FC = memo(function Container() {
         (index: number, state: SquareState) => {
             const dragIndex = state.row * 8 + state.col
 
-            console.log(state.col, state.row, dragIndex)
-
             setSquares(
                 update(squares, {
-                    [index]: {
-                        piece: {
-                            $set: state.piece,
-                        },
-                    },
                     [dragIndex]: {
                         piece: {
                             $set: null,
+                        },
+                    },
+                    [index]: {
+                        piece: {
+                            $set: state.piece,
                         },
                     },
                 })
@@ -117,7 +115,7 @@ const Container: FC = memo(function Container() {
                                 transform: `rotate(${flipped ? '-0.25' : '0.25'}turn)`,
                             }}
                             className="board flex flex-wrap outline-8 outline-black"
-                            onClick={resetSquareHues}
+                            onClick={resetSquareBackgrounds}
                         >
                             {squares.map(({ piece, col, row }, index) => (
                                 <SquareElement
