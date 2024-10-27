@@ -6,7 +6,7 @@ import { memo } from 'react'
 
 interface SquareProps {
     piece: Piece | null
-    onDrop: (item: any) => void
+    onDrop: (...item: any) => void
     row: number
     col: number
 }
@@ -24,13 +24,6 @@ export const SquareElement: FC<SquareProps> = memo(function ({ piece, onDrop, co
     })
 
     const isActive = isOver && canDrop
-    let backgroundColor = '#222'
-
-    if (isActive) {
-        backgroundColor = 'darkgreen'
-    } else if (canDrop) {
-        backgroundColor = 'darkkhaki'
-    }
 
     const evenCol = col % 2 === 1
     const evenRow = row % 2 === 1
@@ -58,7 +51,7 @@ export const SquareElement: FC<SquareProps> = memo(function ({ piece, onDrop, co
             }}
             className="flex justify-center align-middle"
         >
-            {piece && <PieceElement col={col} piece={piece} row={row} type="piece" />}
+            {piece && <PieceElement col={col} piece={piece} row={row} />}
         </div>
     )
 })

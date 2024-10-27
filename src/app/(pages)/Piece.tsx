@@ -7,7 +7,6 @@ export interface PieceProps {
     piece: Piece
     row: number
     col: number
-    type: string
 }
 
 function getPieceCharacter(piece: Piece) {

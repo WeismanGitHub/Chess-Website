@@ -82,19 +82,23 @@ const Container: FC = memo(function Container() {
     )
 
     const handleDrop = useCallback(
-        (index: number, piece: Piece | null) => {
+        (index: number, state: SquareState) => {
+            const dragIndex = state.row * 8 + state.col
+
+            console.log(state.col, state.row, dragIndex)
+
             setSquares(
                 update(squares, {
                     [index]: {
                         piece: {
-                            $set: piece,
+                            $set: state.piece,
                         },
                     },
-                    // [dragIndex]: {
-                    //     piece: {
-                    //         $set: null,
-                    //     },
-                    // },
+                    [dragIndex]: {
+                        piece: {
+                            $set: null,
+                        },
+                    },
                 })
             )
         },
@@ -120,7 +124,7 @@ const Container: FC = memo(function Container() {
                                     col={col}
                                     row={row}
                                     piece={piece}
-                                    onDrop={(state: SquareState) => handleDrop(index, state.piece)}
+                                    onDrop={(state: SquareState) => handleDrop(index, state)}
                                     key={index}
                                 />
                             ))}
