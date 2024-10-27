@@ -7,6 +7,7 @@ export interface PieceProps {
     piece: Piece
     row: number
     col: number
+    type: string
 }
 
 function getPieceCharacter(piece: Piece) {
@@ -25,14 +26,14 @@ function getPieceCharacter(piece: Piece) {
     }
 }
 
-export const Box: FC<PieceProps> = memo(function Box({ piece, col, row }) {
+export const PieceElement: FC<PieceProps> = memo(function Box({ piece, col, row }) {
     const [{ opacity }, drag] = useDrag(
         () => ({
+            type: 'piece',
             item: { piece, col, row },
             collect: (monitor) => ({
                 opacity: monitor.isDragging() ? 0 : 1,
             }),
-            type: 'piece',
         }),
         [piece, col, row]
     )

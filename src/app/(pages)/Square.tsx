@@ -1,51 +1,26 @@
-import { Bishop, King, Knight, Pawn, Piece, Queen, Rook } from '../../lib/chess/pieces'
+import { Piece } from '../../lib/chess/pieces'
+import { PieceElement } from './Piece'
 import { useDrop } from 'react-dnd'
 import type { FC } from 'react'
 import { memo } from 'react'
 
-interface DustbinProps {
-    accept: string[]
+interface SquareProps {
     piece: Piece | null
     onDrop: (item: any) => void
     row: number
     col: number
-
-    flipped: boolean
-    size: number
 }
 
-function getPieceCharacter(piece: Piece) {
-    if (piece instanceof King) {
-        return '♚'
-    } else if (piece instanceof Queen) {
-        return '♛'
-    } else if (piece instanceof Rook) {
-        return '♜'
-    } else if (piece instanceof Bishop) {
-        return '♝'
-    } else if (piece instanceof Knight) {
-        return '♞'
-    } else if (piece instanceof Pawn) {
-        return '♟'
-    }
-}
-
-export const Dustbin: FC<DustbinProps> = memo(function Dustbin({
-    accept,
-    piece,
-    onDrop,
-    col,
-    row,
-    flipped,
-    size,
-}) {
+export const SquareElement: FC<SquareProps> = memo(function ({ piece, onDrop, col, row }) {
     const [{ isOver, canDrop }, drop] = useDrop({
-        accept,
+        accept: ['piece'],
         drop: onDrop,
-        collect: (monitor) => ({
-            isOver: monitor.isOver(),
-            canDrop: monitor.canDrop(),
-        }),
+        collect: (monitor) => {
+            return {
+                isOver: monitor.isOver(),
+                canDrop: monitor.canDrop(),
+            }
+        },
     })
 
     const isActive = isOver && canDrop
@@ -79,29 +54,11 @@ export const Dustbin: FC<DustbinProps> = memo(function Dustbin({
                 width: '12.5%',
                 height: '12.5%',
                 backgroundColor: dark ? '#0e7490' : '#e8f2f5',
-                filter: 'hue-rotate(0deg)',
+                filter: `${isActive ? 'hue-rotate(30deg)' : 'hue-rotate(0deg)'}`,
             }}
             className="flex justify-center align-middle"
         >
-            {piece && (
-                <div
-                    className="unselectable h-fit w-fit cursor-grab"
-                    style={{
-                        WebkitTextStroke: `0.5px ${piece.color == 'white' ? 'black' : 'white'}`,
-                        WebkitTextFillColor: piece.color,
-                        fontSize: size / 12,
-                        transform: `rotate(${flipped ? '0.25' : '-0.25'}turn)`,
-                    }}
-                >
-                    {getPieceCharacter(piece)}
-                </div>
-            )}
+            {piece && <PieceElement col={col} piece={piece} row={row} type="piece" />}
         </div>
-        // // @ts-ignore
-        // <div ref={drop} style={{ ...style, backgroundColor }} data-testid="dustbin">
-        //     {isActive ? 'Release to drop' : `This dustbin accepts: ${accept.join(', ')}`}
-
-        //     {lastDroppedItem && <p>Last dropped: {JSON.stringify(lastDroppedItem)}</p>}
-        // </div>
     )
 })

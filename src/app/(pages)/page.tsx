@@ -7,27 +7,12 @@ import { DndProvider } from 'react-dnd'
 import { Button } from 'flowbite-react'
 import type { FC } from 'react'
 
+import { SquareElement as SquareElement } from './Square'
 import { Piece } from '../../lib/chess/pieces'
 import { Game } from '../../lib/chess'
-import { Dustbin } from './Dustbin'
-import { Box } from './Box'
-
-export const ItemTypes = {
-    FOOD: 'food',
-    GLASS: 'glass',
-    PAPER: 'paper',
-}
 
 interface SquareState {
-    accepts: string[]
     piece: Piece | null
-
-    row: number
-    col: number
-}
-
-interface PieceState {
-    piece: Piece
     row: number
     col: number
 }
@@ -85,19 +70,10 @@ const Container: FC = memo(function Container() {
         setIsMounted(true)
     }, [])
 
-    const d = []
-
-    for (let i = 0; i < 64; i++) {
-        d.push({
-            accepts: [ItemTypes.PAPER, ItemTypes.GLASS, ItemTypes.FOOD],
-            lastDroppedItem: null,
-        })
-    }
-
     const [squares, setSquares] = useState<SquareState[]>(
         game.board.squares.flat().map((square) => {
             return {
-                accepts: [],
+                accepts: ['piece'],
                 col: square.col,
                 row: square.row,
                 piece: square.piece,
@@ -105,14 +81,8 @@ const Container: FC = memo(function Container() {
         })
     )
 
-    const [boxes] = useState<Piece[]>(
-        squares.filter((square) => square.piece !== null).map((square) => square.piece!)
-    )
-
-    console.log(boxes)
-
     const handleDrop = useCallback(
-        (index: number, piece: Piece) => {
+        (index: number, piece: Piece | null) => {
             setSquares(
                 update(squares, {
                     [index]: {
@@ -120,6 +90,11 @@ const Container: FC = memo(function Container() {
                             $set: piece,
                         },
                     },
+                    // [dragIndex]: {
+                    //     piece: {
+                    //         $set: null,
+                    //     },
+                    // },
                 })
             )
         },
@@ -140,19 +115,17 @@ const Container: FC = memo(function Container() {
                             className="board flex flex-wrap outline-8 outline-black"
                             onClick={resetSquareHues}
                         >
-                            {squares.map(({ accepts, piece, col, row }, index) => (
-                                <Dustbin
-                                    flipped={flipped}
-                                    size={size}
+                            {squares.map(({ piece, col, row }, index) => (
+                                <SquareElement
                                     col={col}
                                     row={row}
-                                    accept={accepts}
                                     piece={piece}
-                                    onDrop={(item) => handleDrop(index, item)}
+                                    onDrop={(state: SquareState) => handleDrop(index, state.piece)}
                                     key={index}
                                 />
                             ))}
                         </div>
+
                         <Button
                             type="button"
                             onClick={() => setFlipped(!flipped)}
@@ -170,13 +143,6 @@ const Container: FC = memo(function Container() {
                         </Button>
                     </div>
                 )}
-            </div>
-            <div>
-                <div style={{ overflow: 'hidden', clear: 'both' }}>
-                    {boxes.map((piece, index) => (
-                        <Box piece={piece} key={index} />
-                    ))}
-                </div>
             </div>
         </>
     )
