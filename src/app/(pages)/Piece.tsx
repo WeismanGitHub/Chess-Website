@@ -3,9 +3,9 @@ import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import React from 'react'
 
-export default function ({ piece }: { piece: Piece }) {
+export default function ({ piece, id }: { piece: Piece; id: string }) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
-        id: 'draggable',
+        id,
     })
 
     return (
