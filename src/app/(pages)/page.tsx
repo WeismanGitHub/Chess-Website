@@ -87,8 +87,6 @@ export default function () {
                                 onClick={resetSquareBackgrounds}
                             >
                                 {squares.map(({ col, row }, index) => (
-                                    // We updated the Droppable component so it would accept an `id`
-                                    // prop and pass it to `useDroppable`
                                     <DroppableSquare key={index} col={col} row={row}>
                                         {parent === index && draggableMarkup}
                                     </DroppableSquare>
