@@ -1,29 +1,16 @@
-import { Piece } from '../../lib/chess/pieces'
-import { PieceElement } from './Piece'
-import { useDrop } from 'react-dnd'
-import type { FC } from 'react'
-import { memo } from 'react'
+import { useDroppable } from '@dnd-kit/core'
+import React from 'react'
 
-interface SquareProps {
-    piece: Piece | null
-    onDrop: (...item: any) => void
-    row: number
+interface Props {
     col: number
+    row: number
+    children: any
 }
 
-export const SquareElement: FC<SquareProps> = memo(function ({ piece, onDrop, col, row }) {
-    const [{ isOver, canDrop }, drop] = useDrop({
-        accept: ['piece'],
-        drop: onDrop,
-        collect: (monitor) => {
-            return {
-                isOver: monitor.isOver(),
-                canDrop: monitor.canDrop(),
-            }
-        },
+export default function ({ col, row, children }: Props) {
+    const { isOver, setNodeRef } = useDroppable({
+        id: 'droppable',
     })
-
-    const isActive = isOver && canDrop
 
     const evenCol = col % 2 === 1
     const evenRow = row % 2 === 1
@@ -33,8 +20,7 @@ export const SquareElement: FC<SquareProps> = memo(function ({ piece, onDrop, co
     return (
         <>
             <div
-                // @ts-ignore
-                ref={drop}
+                ref={setNodeRef}
                 onContextMenu={(e) => {
                     e.preventDefault()
 
@@ -50,16 +36,15 @@ export const SquareElement: FC<SquareProps> = memo(function ({ piece, onDrop, co
                 }}
                 className="flex justify-center align-middle"
             >
-                {piece && <PieceElement col={col} piece={piece} row={row} />}
-
-                <div
+                {children}
+                {/* <div
                     style={{
                         width: '100%',
                         height: '100%',
                         position: 'absolute',
                         top: 0,
                         left: 0,
-                        backgroundColor: `rgb(${isActive ? '14 159 110' : '240 82 82'} / 0.85)`,
+                        // backgroundColor: `rgb(${isActive ? '14 159 110' : '240 82 82'} / 0.85)`,
                     }}
                     hidden
                     aria-hidden
@@ -71,8 +56,8 @@ export const SquareElement: FC<SquareProps> = memo(function ({ piece, onDrop, co
                         const invisible = 'rgb(0 0 0 / 0)'
                         e.currentTarget.style.backgroundColor = invisible
                     }}
-                />
+                /> */}
             </div>
         </>
     )
-})
+}

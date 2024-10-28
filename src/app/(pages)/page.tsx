@@ -1,21 +1,13 @@
 'use client'
 
-import { memo, useCallback, useEffect, useState } from 'react'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import update from 'immutability-helper'
-import { DndProvider } from 'react-dnd'
+import { DndContext, UniqueIdentifier } from '@dnd-kit/core'
+import { useEffect, useState } from 'react'
 import { Button } from 'flowbite-react'
-import type { FC } from 'react'
 
-import { SquareElement as SquareElement } from './Square'
-import { Piece } from '../../lib/chess/pieces'
+import { King } from '../../lib/chess/pieces'
 import { Game } from '../../lib/chess'
-
-interface SquareState {
-    piece: Piece | null
-    row: number
-    col: number
-}
+import DroppableSquare from './Square'
+import DraggablePiece from './Piece'
 
 function setBackgroundColor(id: string, value: string) {
     const square = document.getElementById(id)
@@ -33,8 +25,9 @@ function resetSquareBackgrounds() {
     }
 }
 
-const Container: FC = memo(function Container() {
+export default function () {
     const game = new Game()
+    const squares = game.board.squares.flat()
 
     const [isMounted, setIsMounted] = useState(false)
     const [flipped, setFlipped] = useState(false)
@@ -70,63 +63,38 @@ const Container: FC = memo(function Container() {
         setIsMounted(true)
     }, [])
 
-    const [squares, setSquares] = useState<SquareState[]>(
-        game.board.squares.flat().map((square) => {
-            return {
-                accepts: ['piece'],
-                col: square.col,
-                row: square.row,
-                piece: square.piece,
-            }
-        })
-    )
-
-    const handleDrop = useCallback(
-        (index: number, state: SquareState) => {
-            const dragIndex = state.row * 8 + state.col
-
-            setSquares(
-                update(squares, {
-                    [dragIndex]: {
-                        piece: {
-                            $set: null,
-                        },
-                    },
-                    [index]: {
-                        piece: {
-                            $set: state.piece,
-                        },
-                    },
-                })
-            )
-        },
-        [squares]
-    )
+    const [parent, setParent] = useState<UniqueIdentifier | null>(null)
+    const draggableMarkup = <DraggablePiece piece={new King()} />
 
     return (
         <>
             <div>
                 {isMounted && (
                     <div className="flex h-fit w-fit flex-col items-center md:flex-row md:items-start">
-                        <div
-                            style={{
-                                height: size,
-                                width: size,
-                                transform: `rotate(${flipped ? '-0.25' : '0.25'}turn)`,
+                        <DndContext
+                            onDragEnd={({ over }) => {
+                                setParent(over ? over.id : null)
                             }}
-                            className="board flex flex-wrap outline-8 outline-black"
-                            onClick={resetSquareBackgrounds}
                         >
-                            {squares.map(({ piece, col, row }, index) => (
-                                <SquareElement
-                                    col={col}
-                                    row={row}
-                                    piece={piece}
-                                    onDrop={(state: SquareState) => handleDrop(index, state)}
-                                    key={index}
-                                />
-                            ))}
-                        </div>
+                            {parent === null ? draggableMarkup : null}
+                            <div
+                                style={{
+                                    height: size,
+                                    width: size,
+                                    // transform: `rotate(${flipped ? '-0.25' : '0.25'}turn)`,
+                                }}
+                                className="board flex flex-wrap outline-8 outline-black"
+                                onClick={resetSquareBackgrounds}
+                            >
+                                {squares.map(({ col, row }, index) => (
+                                    // We updated the Droppable component so it would accept an `id`
+                                    // prop and pass it to `useDroppable`
+                                    <DroppableSquare key={index} col={col} row={row}>
+                                        {parent === index && draggableMarkup}
+                                    </DroppableSquare>
+                                ))}
+                            </div>
+                        </DndContext>
 
                         <Button
                             type="button"
@@ -147,13 +115,5 @@ const Container: FC = memo(function Container() {
                 )}
             </div>
         </>
-    )
-})
-
-export default function Home() {
-    return (
-        <DndProvider backend={HTML5Backend}>
-            <Container />
-        </DndProvider>
     )
 }
