@@ -20,15 +20,21 @@ function universalCheck(_target: Object, _propertyKey: string, descriptor: Typed
 
 export abstract class Piece {
     public color: Color
+    abstract character: string
 
     constructor(color: Color = 'white') {
         this.color = color
     }
 
     abstract canMove(board: Board, start: Square, end: Square): boolean
+
+    getCharacter() {
+        return this.character
+    }
 }
 
 export class King extends Piece {
+    public character = '♚'
     public canCastle = true
 
     @universalCheck
@@ -38,6 +44,8 @@ export class King extends Piece {
 }
 
 export class Queen extends Piece {
+    public character = '♛'
+
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
         throw new Error('Method not implemented.')
@@ -45,6 +53,8 @@ export class Queen extends Piece {
 }
 
 export class Bishop extends Piece {
+    public character = '♝'
+
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
         throw new Error('Method not implemented.')
@@ -52,6 +62,8 @@ export class Bishop extends Piece {
 }
 
 export class Knight extends Piece {
+    public character = '♞'
+
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
         throw new Error('Method not implemented.')
@@ -59,6 +71,8 @@ export class Knight extends Piece {
 }
 
 export class Rook extends Piece {
+    public character = '♜'
+
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
         throw new Error('Method not implemented.')
@@ -66,6 +80,8 @@ export class Rook extends Piece {
 }
 
 export class Pawn extends Piece {
+    public character = '♟'
+
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
         throw new Error('Method not implemented.')
