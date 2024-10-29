@@ -1,10 +1,9 @@
 'use client'
 
-import { DndContext, UniqueIdentifier } from '@dnd-kit/core'
 import { useEffect, useState } from 'react'
+import { DndContext } from '@dnd-kit/core'
 import { Button } from 'flowbite-react'
 
-import { King } from '../../lib/chess/pieces'
 import { Game } from '../../lib/chess'
 import DroppableSquare from './Square'
 import DraggablePiece from './Piece'
@@ -27,8 +26,8 @@ function resetSquareBackgrounds() {
 
 export default function () {
     const game = new Game()
-    const squares = game.board.squares.flat()
 
+    const [squares, setSquares] = useState(game.board.squares.flat())
     const [isMounted, setIsMounted] = useState(false)
     const [flipped, setFlipped] = useState(false)
     const [size, setSize] = useState(0)
@@ -63,20 +62,40 @@ export default function () {
         setIsMounted(true)
     }, [])
 
-    const [parent, setParent] = useState<UniqueIdentifier | null>(null)
-    const draggableMarkup = <DraggablePiece piece={new King()} />
-
     return (
         <>
             <div>
                 {isMounted && (
                     <div className="flex h-fit w-fit flex-col items-center md:flex-row md:items-start">
                         <DndContext
-                            onDragEnd={({ over }) => {
-                                setParent(over ? over.id : null)
+                            onDragEnd={({ active, over }) => {
+                                if (!over) return
+
+                                const [col, row] = active.id
+                                    .toString()
+                                    .split('-')
+                                    .map((n) => Number(n))
+
+                                let piece =
+                                    squares.find(
+                                        (square) => square.col === col && square.row === row && square.piece
+                                    )?.piece ?? null
+
+                                setSquares(
+                                    squares.map((square, index) => {
+                                        if (square.col === col && square.row === row && square.piece) {
+                                            square.piece = null
+                                        }
+
+                                        if (index === over?.id) {
+                                            square.piece = piece
+                                        }
+
+                                        return square
+                                    })
+                                )
                             }}
                         >
-                            {parent === null ? draggableMarkup : null}
                             <div
                                 style={{
                                     height: size,
@@ -86,9 +105,9 @@ export default function () {
                                 className="board flex flex-wrap outline-8 outline-black"
                                 onClick={resetSquareBackgrounds}
                             >
-                                {squares.map(({ col, row }, index) => (
+                                {squares.map(({ col, row, piece }, index) => (
                                     <DroppableSquare key={index} col={col} row={row}>
-                                        {parent === index && draggableMarkup}
+                                        {piece && <DraggablePiece piece={piece} id={`${col}-${row}`} />}
                                     </DroppableSquare>
                                 ))}
                             </div>
