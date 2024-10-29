@@ -20,7 +20,7 @@ function universalCheck(_target: Object, _propertyKey: string, descriptor: Typed
 
 export abstract class Piece {
     public color: Color
-    abstract character: string
+    abstract character: string // It will look different with the custom font.
 
     constructor(color: Color = 'white') {
         this.color = color
@@ -34,7 +34,7 @@ export abstract class Piece {
 }
 
 export class King extends Piece {
-    public character = '♚'
+    public character = 'l'
     public canCastle = true
 
     @universalCheck
@@ -44,7 +44,7 @@ export class King extends Piece {
 }
 
 export class Queen extends Piece {
-    public character = '♛'
+    public character = 'w'
 
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
@@ -53,7 +53,7 @@ export class Queen extends Piece {
 }
 
 export class Bishop extends Piece {
-    public character = '♝'
+    public character = 'v'
 
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
@@ -62,7 +62,7 @@ export class Bishop extends Piece {
 }
 
 export class Knight extends Piece {
-    public character = '♞'
+    public character = 'm'
 
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
@@ -71,7 +71,7 @@ export class Knight extends Piece {
 }
 
 export class Rook extends Piece {
-    public character = '♜'
+    public character = 't'
 
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
@@ -80,7 +80,7 @@ export class Rook extends Piece {
 }
 
 export class Pawn extends Piece {
-    public character = '♟'
+    public character = 'o'
 
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
