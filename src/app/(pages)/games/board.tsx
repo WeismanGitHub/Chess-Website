@@ -5,8 +5,8 @@ import { DndContext } from '@dnd-kit/core'
 import { Button } from 'flowbite-react'
 
 import { Game } from '../../../lib/chess'
-import DroppableSquare from './Square'
-import DraggablePiece from './Piece'
+import DroppableSquare from './square'
+import DraggablePiece from './piece'
 
 function setBackgroundColor(id: string, value: string) {
     const square = document.getElementById(id)
