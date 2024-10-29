@@ -21,12 +21,6 @@ export default function ({ col, row, children }: Props) {
         <>
             <div
                 ref={setNodeRef}
-                onContextMenu={(e) => {
-                    e.preventDefault()
-
-                    const overlay = document.getElementById(`overlay-${col}-${row}`)!
-                    overlay.hidden = false
-                }}
                 id={`square-${col}${row}`}
                 style={{
                     width: '12.5%',
@@ -37,26 +31,27 @@ export default function ({ col, row, children }: Props) {
                 className="flex justify-center align-middle"
             >
                 {children}
-                {/* <div
+                <div
                     style={{
                         width: '100%',
                         height: '100%',
                         position: 'absolute',
                         top: 0,
                         left: 0,
-                        // backgroundColor: `rgb(${isActive ? '14 159 110' : '240 82 82'} / 0.85)`,
+                        backgroundColor: 'transparent',
                     }}
-                    hidden
                     aria-hidden
-                    id={`overlay-${col}-${row}`}
+                    id={`overlay-${col}${row}`}
                     onContextMenu={(e) => {
                         e.preventDefault()
-                        console.log(e)
 
-                        const invisible = 'rgb(0 0 0 / 0)'
-                        e.currentTarget.style.backgroundColor = invisible
+                        const isInvisible = e.currentTarget.style.backgroundColor == 'transparent'
+
+                        e.currentTarget.style.backgroundColor = isInvisible
+                            ? 'rgb(240 82 82 / 0.85)'
+                            : 'transparent'
                     }}
-                /> */}
+                />
             </div>
         </>
     )
