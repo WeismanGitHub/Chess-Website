@@ -19,7 +19,7 @@ function setBackgroundColor(id: string, value: string) {
 function resetSquareBackgrounds() {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            setBackgroundColor(`overlay-${i}-${j}`, 'rgb(0 0 0 / 0)') // Invisible
+            setBackgroundColor(`overlay-${i}${j}`, 'rgb(0 0 0 / 0)') // Invisible
         }
     }
 }
@@ -72,13 +72,12 @@ export default function () {
 
                                 const [col, row] = active.id
                                     .toString()
-                                    .split('-')
+                                    .split('')
                                     .map((n) => Number(n))
 
                                 let piece =
-                                    squares.find(
-                                        (square) => square.col === col && square.row === row && square.piece
-                                    )?.piece ?? null
+                                    squares.find((square) => square.col == col && square.row == row)?.piece ??
+                                    null
 
                                 setSquares(
                                     squares.map((square) => {
@@ -86,7 +85,7 @@ export default function () {
                                             square.piece = null
                                         }
 
-                                        if (over.id == `${square.row}${square.col}`) {
+                                        if (over.id == `${square.col}${square.row}`) {
                                             square.piece = piece
                                         }
 
@@ -108,9 +107,9 @@ export default function () {
                                         {piece && (
                                             <DraggablePiece
                                                 size={size}
-                                                key={`${col}-${row}`}
+                                                key={`${col}${row}`}
                                                 piece={piece}
-                                                id={`${col}-${row}`}
+                                                id={`${col}${row}`}
                                             />
                                         )}
                                     </DroppableSquare>

@@ -9,7 +9,7 @@ interface Props {
 
 export default function ({ col, row, children }: Props) {
     const { isOver, setNodeRef } = useDroppable({
-        id: `${row}${col}`,
+        id: `${col}${row}`,
     })
 
     const evenCol = col % 2 === 1
@@ -27,7 +27,7 @@ export default function ({ col, row, children }: Props) {
                     const overlay = document.getElementById(`overlay-${col}-${row}`)!
                     overlay.hidden = false
                 }}
-                id={`square-${col}-${row}`}
+                id={`square-${col}${row}`}
                 style={{
                     width: '12.5%',
                     height: '12.5%',
