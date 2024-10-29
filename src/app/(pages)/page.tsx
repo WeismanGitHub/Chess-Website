@@ -100,7 +100,7 @@ export default function () {
                                 style={{
                                     height: size,
                                     width: size,
-                                    // transform: `rotate(${flipped ? '-0.25' : '0.25'}turn)`,
+                                    transform: `rotate(${flipped ? '180' : '0'}deg)`,
                                 }}
                                 className="board flex flex-wrap outline-8 outline-black"
                                 onClick={resetSquareBackgrounds}

@@ -13,7 +13,7 @@ export default function ({ piece, id, size }: { piece: Piece; id: string; size: 
             ref={setNodeRef}
             {...listeners}
             {...attributes}
-            className="unselectable h-fit w-fit cursor-grab"
+            className="unselectable piece h-fit w-fit cursor-grab"
             style={{
                 transform: CSS.Translate.toString(transform),
                 WebkitTextStroke: `0.5px ${piece.color == 'white' ? 'black' : 'white'}`,
