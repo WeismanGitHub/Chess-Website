@@ -3,8 +3,8 @@ import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import React from 'react'
 
-export default function ({ piece, id }: { piece: Piece; id: string }) {
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+export default function ({ piece, id, size }: { piece: Piece; id: string; size: number }) {
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id,
     })
 
@@ -18,7 +18,8 @@ export default function ({ piece, id }: { piece: Piece; id: string }) {
                 transform: CSS.Translate.toString(transform),
                 WebkitTextStroke: `0.5px ${piece.color == 'white' ? 'black' : 'white'}`,
                 WebkitTextFillColor: piece.color,
-                fontSize: 30,
+                opacity: isDragging ? 0.9 : 1,
+                fontSize: size / 12,
                 zIndex: 100,
             }}
         >

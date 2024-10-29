@@ -107,7 +107,14 @@ export default function () {
                             >
                                 {squares.map(({ col, row, piece }, index) => (
                                     <DroppableSquare key={index} col={col} row={row}>
-                                        {piece && <DraggablePiece piece={piece} id={`${col}-${row}`} />}
+                                        {piece && (
+                                            <DraggablePiece
+                                                size={size}
+                                                key={`${col}-${row}`}
+                                                piece={piece}
+                                                id={`${col}-${row}`}
+                                            />
+                                        )}
                                     </DroppableSquare>
                                 ))}
                             </div>
