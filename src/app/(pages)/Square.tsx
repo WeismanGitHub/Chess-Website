@@ -9,7 +9,7 @@ interface Props {
 
 export default function ({ col, row, children }: Props) {
     const { isOver, setNodeRef } = useDroppable({
-        id: row * 8 + col,
+        id: `${row}${col}`,
     })
 
     const evenCol = col % 2 === 1

@@ -63,11 +63,3 @@ body {
         outline-style: solid;
     }
 }
-
-.board .piece {
-    transform: rotate(-180deg);
-}
-
-.board:not([style*='rotate(180deg)']) .piece {
-    transform: rotate(0deg);
-}

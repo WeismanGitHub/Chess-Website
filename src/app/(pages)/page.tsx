@@ -29,7 +29,6 @@ export default function () {
 
     const [squares, setSquares] = useState(game.board.squares.flat())
     const [isMounted, setIsMounted] = useState(false)
-    const [flipped, setFlipped] = useState(false)
     const [size, setSize] = useState(0)
 
     function updateWidth() {
@@ -82,12 +81,12 @@ export default function () {
                                     )?.piece ?? null
 
                                 setSquares(
-                                    squares.map((square, index) => {
-                                        if (square.col === col && square.row === row && square.piece) {
+                                    squares.map((square) => {
+                                        if (square.col === col && square.row === row) {
                                             square.piece = null
                                         }
 
-                                        if (index === over?.id) {
+                                        if (over.id == `${square.row}${square.col}`) {
                                             square.piece = piece
                                         }
 
@@ -100,13 +99,12 @@ export default function () {
                                 style={{
                                     height: size,
                                     width: size,
-                                    transform: `rotate(${flipped ? '180' : '0'}deg)`,
                                 }}
                                 className="board flex flex-wrap outline-8 outline-black"
                                 onClick={resetSquareBackgrounds}
                             >
-                                {squares.map(({ col, row, piece }, index) => (
-                                    <DroppableSquare key={index} col={col} row={row}>
+                                {squares.map(({ col, row, piece }) => (
+                                    <DroppableSquare key={`${col}${row}`} col={col} row={row}>
                                         {piece && (
                                             <DraggablePiece
                                                 size={size}
@@ -122,7 +120,7 @@ export default function () {
 
                         <Button
                             type="button"
-                            onClick={() => setFlipped(!flipped)}
+                            onClick={() => setSquares(squares.toReversed())}
                             className="m-3 ms-4 inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
                         >
                             <svg
