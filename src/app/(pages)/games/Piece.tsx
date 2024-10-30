@@ -22,10 +22,9 @@ export default function ({ piece, id, size }: { piece: Piece; id: string; size: 
             className="unselectable piece h-fit w-fit cursor-grab"
             style={{
                 transform: CSS.Translate.toString(transform),
-                opacity: isDragging ? 0.9 : 1,
                 WebkitTextFillColor: piece.color === 'white' ? '#aab1b3' : '#011217',
                 fontSize: size / 12,
-                zIndex: 100,
+                zIndex: isDragging ? 100 : 1,
                 ...chessFont.style,
             }}
         >
