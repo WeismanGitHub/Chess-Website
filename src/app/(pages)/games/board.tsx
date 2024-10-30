@@ -119,6 +119,7 @@ export default function () {
 
                         <Button
                             type="button"
+                            // @ts-ignore TypeScript doesn't recognize toReversed().
                             onClick={() => setSquares(squares.toReversed())}
                             className="m-3 ms-4 inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
                         >
