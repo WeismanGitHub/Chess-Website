@@ -31,7 +31,7 @@ export default function () {
     const [isMounted, setIsMounted] = useState(false)
     const [size, setSize] = useState(0)
 
-    function updateWidth() {
+    function updateSize() {
         if (window.innerHeight > window.innerWidth) {
             // vertical screen
             if (window.innerWidth < 500) {
@@ -51,10 +51,10 @@ export default function () {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            updateWidth()
+            updateSize()
 
             window.addEventListener('resize', () => {
-                updateWidth()
+                updateSize()
             })
         }
 
