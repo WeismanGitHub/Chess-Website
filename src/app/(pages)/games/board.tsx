@@ -8,7 +8,7 @@ import { Game } from '../../../lib/chess'
 import DroppableSquare from './square'
 import DraggablePiece from './piece'
 
-function setBackgroundColor(id: string, value: string) {
+export function setBackgroundColor(id: string, value: string) {
     const square = document.getElementById(id)
 
     if (square) {
@@ -16,7 +16,7 @@ function setBackgroundColor(id: string, value: string) {
     }
 }
 
-function resetSquareBackgrounds() {
+export function resetSquareBackgrounds() {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             setBackgroundColor(`overlay-${i}${j}`, 'transparent')
@@ -103,7 +103,7 @@ export default function () {
                                 onClick={resetSquareBackgrounds}
                             >
                                 {squares.map(({ col, row, piece }) => (
-                                    <DroppableSquare key={`${col}${row}`} col={col} row={row}>
+                                    <DroppableSquare game={game} key={`${col}${row}`} col={col} row={row}>
                                         {piece && (
                                             <DraggablePiece
                                                 size={size}
