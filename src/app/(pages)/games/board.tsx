@@ -65,7 +65,7 @@ export default function () {
         <>
             <div>
                 {isMounted && (
-                    <div className="flex h-fit w-fit flex-col items-center md:flex-row md:items-start">
+                    <div className="flex h-fit w-fit flex-col-reverse items-center md:flex-row md:items-start">
                         <Button
                             type="button"
                             // @ts-ignore TypeScript doesn't recognize toReversed().
