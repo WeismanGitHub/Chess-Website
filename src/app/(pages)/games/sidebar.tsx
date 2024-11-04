@@ -25,6 +25,12 @@ export default function Chat({ socket }: { socket: Socket<DefaultEventsMap, Defa
             </li>,
         ])
     })
+    
+    socket.emit('')
 
-    return <div className="h-full w-full"></div>
+    return (
+        <div className="w-25 h-full">
+            <ul>{messages}</ul>
+        </div>
+    )
 }
