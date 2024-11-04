@@ -66,6 +66,23 @@ export default function () {
             <div>
                 {isMounted && (
                     <div className="flex h-fit w-fit flex-col items-center md:flex-row md:items-start">
+                        <Button
+                            type="button"
+                            // @ts-ignore TypeScript doesn't recognize toReversed().
+                            onClick={() => setSquares(squares.toReversed())}
+                            className="m-1 inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                fill="currentColor"
+                                viewBox="0 0 16 16"
+                            >
+                                <path d="M11 5.466V4H5a4 4 0 0 0-3.584 5.777.5.5 0 1 1-.896.446A5 5 0 0 1 5 3h6V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m3.81.086a.5.5 0 0 1 .67.225A5 5 0 0 1 11 13H5v1.466a.25.25 0 0 1-.41.192l-2.36-1.966a.25.25 0 0 1 0-.384l2.36-1.966a.25.25 0 0 1 .41.192V12h6a4 4 0 0 0 3.585-5.777.5.5 0 0 1 .225-.67Z" />
+                            </svg>
+                            <span className="sr-only">reverse board</span>
+                        </Button>
+
                         <DndContext
                             onDragEnd={({ active, over }) => {
                                 if (!over) return
@@ -99,7 +116,7 @@ export default function () {
                                     height: size,
                                     width: size,
                                 }}
-                                className="board flex flex-wrap outline-8 outline-black"
+                                className="board m-3 flex flex-wrap outline-8 outline-black"
                                 onClick={resetSquareBackgrounds}
                             >
                                 {squares.map(({ col, row, piece }) => (
@@ -116,23 +133,6 @@ export default function () {
                                 ))}
                             </div>
                         </DndContext>
-
-                        <Button
-                            type="button"
-                            // @ts-ignore TypeScript doesn't recognize toReversed().
-                            onClick={() => setSquares(squares.toReversed())}
-                            className="m-3 ms-4 inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="currentColor"
-                                viewBox="0 0 16 16"
-                            >
-                                <path d="M11 5.466V4H5a4 4 0 0 0-3.584 5.777.5.5 0 1 1-.896.446A5 5 0 0 1 5 3h6V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m3.81.086a.5.5 0 0 1 .67.225A5 5 0 0 1 11 13H5v1.466a.25.25 0 0 1-.41.192l-2.36-1.966a.25.25 0 0 1 0-.384l2.36-1.966a.25.25 0 0 1 .41.192V12h6a4 4 0 0 0 3.585-5.777.5.5 0 0 1 .225-.67Z" />
-                            </svg>
-                            <span className="sr-only">reverse board</span>
-                        </Button>
                     </div>
                 )}
             </div>
