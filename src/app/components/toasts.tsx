@@ -14,7 +14,10 @@ function toastWrapper(toast: React.ReactElement, classes: string | null = null) 
         return (
             <>
                 {show && (
-                    <Toast className={`toast p absolute right-0 top-0 mt-5 sm:me-5 ${classes}`}>
+                    <Toast
+                        style={{ zIndex: 50 }}
+                        className={`toast p absolute right-0 top-0 mt-5 sm:me-5 ${classes}`}
+                    >
                         {toast}
                         <div className="ml-3 text-sm font-normal">{message}</div>
                         <Toast.Toggle className="bg-transparent" onDismiss={handleDismiss} />
