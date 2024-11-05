@@ -14,14 +14,30 @@ import Board from './board'
 
 export default function () {
     const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | null>(io())
-    const [message, setMessage] = useState<string | null>(null)
+    const [toast, setToast] = useState<string | null>(null)
+
+    if (socket) {
+        socket.on('connect', () => {
+            socket.emit(
+                'create lobby',
+                { name: 's', password: 's', minutes: 30 },
+                ({ success, data }: { success: boolean; data: any }) => {
+                    if (success) {
+                        return setSocket(socket)
+                    }
+
+                    setToast(data)
+                }
+            )
+        })
+    }
 
     return (
         <>
             <FailureToast
-                message={message ?? ''}
-                show={message !== null}
-                handleDismiss={() => setMessage(null)}
+                message={toast ?? ''}
+                show={toast !== null}
+                handleDismiss={() => setToast(null)}
             />
 
             <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
@@ -74,7 +90,7 @@ export default function () {
                                                             return setSocket(socket)
                                                         }
 
-                                                        setMessage(data)
+                                                        setToast(data)
                                                     }
                                                 )
                                             })
@@ -330,7 +346,7 @@ export default function () {
                                                             return setSocket(socket)
                                                         }
 
-                                                        setMessage(data)
+                                                        setToast(data)
                                                     }
                                                 )
                                             })
