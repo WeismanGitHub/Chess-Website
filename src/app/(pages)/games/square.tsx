@@ -1,13 +1,16 @@
 import { useDroppable } from '@dnd-kit/core'
-import React from 'react'
+import { Game } from '../../../lib/chess'
+import React, { useEffect } from 'react'
+import Colors from './colors'
 
 interface Props {
     col: number
     row: number
     children: any
+    game: Game
 }
 
-export default function ({ col, row, children }: Props) {
+export default function ({ col, row, children, game }: Props) {
     const { isOver, setNodeRef } = useDroppable({
         id: `${col}${row}`,
     })
@@ -16,6 +19,16 @@ export default function ({ col, row, children }: Props) {
     const evenRow = row % 2 === 1
 
     const dark = evenRow ? evenCol : !evenCol
+
+    useEffect(() => {
+        const overlay = document.getElementById(`overlay-${col}${row}`)!
+
+        if (isOver ) { // && game.isValidMove()) {
+            overlay.style.backgroundColor = Colors.over
+        } else {
+            overlay.style.backgroundColor = 'transparent'
+        }
+    }, [isOver])
 
     return (
         <>
