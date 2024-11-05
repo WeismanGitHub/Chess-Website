@@ -16,7 +16,7 @@ function toastWrapper(toast: React.ReactElement, classes: string | null = null) 
                 {show && (
                     <Toast
                         style={{ zIndex: 50 }}
-                        className={`toast p absolute right-0 top-0 mt-5 sm:me-5 ${classes}`}
+                        className={`toast p absolute right-0 top-0 mt-5 break-all sm:me-5 ${classes}`}
                     >
                         {toast}
                         <div className="ml-3 text-sm font-normal">{message}</div>
