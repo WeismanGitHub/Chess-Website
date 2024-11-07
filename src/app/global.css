@@ -20,38 +20,6 @@ body {
     @apply rounded outline-none outline-cyan-500;
 }
 
-@keyframes failure-toast-flash {
-    0% {
-        @apply bg-white;
-    }
-    50% {
-        @apply bg-red-300;
-    }
-    100% {
-        @apply bg-white;
-    }
-}
-
-.failure-toast-flash {
-    animation: failure-toast-flash 1.5s ease-in-out forwards;
-}
-
-@keyframes success-toast-flash {
-    0% {
-        @apply bg-white;
-    }
-    50% {
-        @apply bg-green-300;
-    }
-    100% {
-        @apply bg-white;
-    }
-}
-
-.success-toast-flash {
-    animation: success-toast-flash 1s ease-in-out forwards;
-}
-
 .unselectable {
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
