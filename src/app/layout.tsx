@@ -1,3 +1,4 @@
+import { ToastContainer } from 'react-toastify'
 import Navbar from './components/navbar'
 import { Inter } from 'next/font/google'
 import type { Metadata } from 'next'
@@ -33,6 +34,7 @@ export default function RootLayout({
                     />
                     <main className={`${inter.className} flex flex-1 items-center justify-center`}>
                         {children}
+                        <ToastContainer />
                     </main>
                 </div>
             </body>
