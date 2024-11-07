@@ -70,7 +70,7 @@ export default function () {
                     <img src="/icon.svg" className="h-6 sm:h-9" alt="pawn logo" />
                     <span className="self-center whitespace-nowrap text-xl font-semibold">Chess</span>
                 </Navbar.Brand>
-                <Navbar.Toggle />
+                <Navbar.Toggle id="navbar-toggle" />
                 <Navbar.Collapse>
                     <Navbar.Link className="nav-link" as={Link} href="/" active={path == '/'}>
                         Home

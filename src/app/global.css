@@ -16,6 +16,19 @@ body {
     }
 }
 
+.nav-link:hover {
+    @apply bg-teal-700/10 !important;
+    @apply md:bg-transparent !important;
+}
+
+#navbar-toggle {
+    @apply border border-transparent text-teal-700 transition-[color,background-color,border-color,text-decoration-color,fill,stroke,box-shadow] focus:outline-none focus:ring-2 focus:ring-cyan-300 enabled:hover:bg-cyan-800;
+}
+
+#navbar-toggle:hover {
+    @apply bg-teal-700/10 !important;
+}
+
 *:focus-visible {
     @apply rounded outline-none outline-cyan-500;
 }
