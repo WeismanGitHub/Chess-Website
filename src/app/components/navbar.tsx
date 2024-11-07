@@ -88,6 +88,8 @@ export default function () {
                             className="nav-link cursor-pointer"
                             onClick={() => setOpenModal(true)}
                             role="button"
+                            as={Link}
+                            href="#"
                         >
                             Logout
                         </Navbar.Link>
