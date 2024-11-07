@@ -1,25 +1,18 @@
 'use client'
 
 import { Button, Label, TextInput } from 'flowbite-react'
-import { FailureToast } from '../../../components/toasts'
 import { credentialsSchema } from '../../../../lib/zod'
+import toaster from '../../../components/toasts'
 import { login } from '../../../actions/auth'
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
 import { Formik, Form } from 'formik'
+import React from 'react'
 
 export default function () {
-    const [message, setMessage] = useState<string | null>(null)
     const router = useRouter()
 
     return (
         <>
-            <FailureToast
-                message={message ?? ''}
-                show={message !== null}
-                handleDismiss={() => setMessage(null)}
-            />
-
             <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
                 <a href="/" className="mb-6 flex items-center text-4xl font-semibold">
                     <img className="h-12 w-12" src="/icon.svg" alt="pawn logo" />
@@ -53,8 +46,6 @@ export default function () {
                                 return errors
                             }}
                             onSubmit={async (values) => {
-                                setMessage(null)
-
                                 const res = await login(values)
 
                                 if (res.success) {
@@ -63,7 +54,7 @@ export default function () {
                                     return router.push('/')
                                 }
 
-                                setMessage(res.message)
+                                toaster.error(res.message)
                             }}
                             validateOnChange={true}
                             validateOnBlur={true}

@@ -4,14 +4,13 @@ import { Button, Modal, Navbar } from 'flowbite-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { logout } from '../actions/auth'
-import { FailureToast } from './toasts'
+import toaster from './toasts'
 import Link from 'next/link'
 
 export default function () {
     const path = usePathname()
     const router = useRouter()
 
-    const [message, setMessage] = useState<string | null>(null)
     const [authenticated, setAuthenticated] = useState(false)
     const [openModal, setOpenModal] = useState(false)
 
@@ -23,11 +22,6 @@ export default function () {
 
     return (
         <>
-            <FailureToast
-                message={message ?? ''}
-                show={message !== null}
-                handleDismiss={() => setMessage(null)}
-            />
             <Modal dismissible show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
                 <Modal.Header />
                 <Modal.Body>
@@ -42,8 +36,6 @@ export default function () {
                             <Button
                                 color="failure"
                                 onClick={async () => {
-                                    setMessage(null)
-
                                     const res = await logout()
 
                                     if (res.success) {
@@ -53,7 +45,7 @@ export default function () {
                                         return router.push('/auth/login')
                                     }
 
-                                    setMessage(res.message)
+                                    toaster.error(res.message)
                                 }}
                             >
                                 Yes, I'm sure

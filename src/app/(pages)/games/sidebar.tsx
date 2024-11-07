@@ -1,8 +1,9 @@
 'use client'
 
-import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { Button, TextInput } from 'flowbite-react'
+import toaster from '../../components/toasts'
 import { Socket } from 'socket.io-client'
 
 function Flag() {
@@ -20,13 +21,7 @@ function Flag() {
     )
 }
 
-export default function Chat({
-    socket,
-    setToast,
-}: {
-    socket: Socket<DefaultEventsMap, DefaultEventsMap>
-    setToast: Dispatch<SetStateAction<string | null>>
-}) {
+export default function Chat({ socket }: { socket: Socket<DefaultEventsMap, DefaultEventsMap> }) {
     const [messages, setMessages] = useState<ReactNode[]>([])
     const [message, setMessage] = useState('')
     const messageEnd = useRef(null)
@@ -54,7 +49,7 @@ export default function Chat({
         socket.emit('send message', message, ({ success, data }: { success: boolean; data: any }) => {
             if (!success) {
                 console.log(data)
-                setToast(data)
+                toaster.error(data)
             } else {
                 setMessage('')
             }
