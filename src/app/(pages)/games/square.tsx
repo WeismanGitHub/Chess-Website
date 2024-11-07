@@ -1,13 +1,17 @@
 import { useDroppable } from '@dnd-kit/core'
 import { Game } from '../../../lib/chess'
 import React, { useEffect } from 'react'
-import Colors from './colors'
 
 interface Props {
     col: number
     row: number
     children: any
     game: Game
+}
+
+export const Colors = {
+    over: 'rgb(4 108 78 / 0.85)',
+    highlight: 'rgb(240 82 82 / 0.85)',
 }
 
 export default function ({ col, row, children, game }: Props) {
