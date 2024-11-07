@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { DndContext } from '@dnd-kit/core'
 import { Button } from 'flowbite-react'
 
-import { Game } from '../../../lib/chess'
+import { Game } from '../../lib/chess/'
 import DroppableSquare from './square'
 import DraggablePiece from './piece'
 

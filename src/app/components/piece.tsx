@@ -1,4 +1,4 @@
-import { Piece } from '../../../lib/chess/pieces'
+import { Piece } from '../../lib/chess/pieces'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import localFont from 'next/font/local'

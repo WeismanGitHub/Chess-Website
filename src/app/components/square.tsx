@@ -1,6 +1,6 @@
 import { useDroppable } from '@dnd-kit/core'
-import { Game } from '../../../lib/chess'
 import React, { useEffect } from 'react'
+import { Game } from '../../lib/chess'
 
 interface Props {
     col: number
