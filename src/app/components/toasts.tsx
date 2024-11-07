@@ -19,7 +19,6 @@ function CustomToast({ title, text }: ToastProps) {
 
 const options: ToastOptions = {
     draggablePercent: 60,
-    autoClose: false,
     draggable: true,
     closeButton: <></>,
     closeOnClick: true,
@@ -27,10 +26,10 @@ const options: ToastOptions = {
 
 const toaster = (props: ToastProps): Id => toast(<CustomToast {...props} />, options)
 
-toaster.success = ({ text, title = 'Success' }: ToastProps): Id =>
+toaster.success = (text: string, title: string = 'Success'): Id =>
     toast.success(<CustomToast text={text} title={title} />, options)
 
-toaster.error = ({ text, title = 'Error' }: ToastProps): Id =>
+toaster.error = (text: string, title: string = 'Error'): Id =>
     toast.error(<CustomToast text={text} title={title} />, options)
 
 export default toaster
