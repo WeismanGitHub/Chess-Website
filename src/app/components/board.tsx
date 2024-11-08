@@ -84,6 +84,12 @@ export default function () {
                         </Button>
 
                         <DndContext
+                            accessibility={{
+                                screenReaderInstructions: {
+                                    draggable:
+                                        'To pick up a piece, press space or enter. While dragging, use the arrow keys to move the piece in any given direction. Press space or enter again to drop the piece in its new square, or press escape to cancel.',
+                                },
+                            }}
                             onDragEnd={({ active, over }) => {
                                 if (!over) return
 
