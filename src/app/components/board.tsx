@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { DndContext } from '@dnd-kit/core'
+import { DndContext, UniqueIdentifier } from '@dnd-kit/core'
 import { Button } from 'flowbite-react'
 
 import { Game } from '../../lib/chess/'
@@ -24,10 +24,40 @@ export function resetSquareBackgrounds() {
     }
 }
 
+function parsePieceId(id: UniqueIdentifier): [string, number, number] {
+    const [name, col, row] = id.toString().split(' ')
+
+    return [name, Number(col), Number(row)]
+}
+
+function parseSquareId(id: UniqueIdentifier): [number, number] {
+    const [col, row] = id.toString().split(' ')
+
+    return [Number(col), Number(row)]
+}
+
+function createReadableSquare(id: UniqueIdentifier): string {
+    const [col, row] = parseSquareId(id)
+
+    return createReadablePosition(col, row)
+}
+
+function createReadablePiece(id: UniqueIdentifier): string {
+    const [name, col, row] = parsePieceId(id)
+
+    return `${createReadablePosition(col, row)} ${name}`
+}
+
+function createReadablePosition(col: number, row: number): string {
+    const letters = 'HGFEDCBA'
+
+    return `${letters[col]}${row + 1}`
+}
+
 export default function () {
     const game = new Game()
 
-    const [squares, setSquares] = useState(game.board.squares.flat())
+    const [squares, setSquares] = useState(game.board.squares.flat().toReversed())
     const [isMounted, setIsMounted] = useState(false)
     const [size, setSize] = useState(0)
 
@@ -68,7 +98,6 @@ export default function () {
                     <div className="flex h-fit w-fit flex-col-reverse items-center md:flex-row md:items-start">
                         <Button
                             type="button"
-                            // @ts-ignore TypeScript doesn't recognize toReversed().
                             onClick={() => setSquares(squares.toReversed())}
                             className="m-1 inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
                         >
@@ -89,14 +118,33 @@ export default function () {
                                     draggable:
                                         'To pick up a piece, press space or enter. While dragging, use the arrow keys to move the piece in any given direction. Press space or enter again to drop the piece in its new square, or press escape to cancel.',
                                 },
+                                announcements: {
+                                    onDragStart({ active }) {
+                                        return `Picked up ${createReadablePiece(active.id)}.`
+                                    },
+                                    onDragOver({ active, over }) {
+                                        if (over) {
+                                            return `${createReadablePiece(active.id)} was moved over ${createReadableSquare(over.id)}.`
+                                        }
+
+                                        return `${createReadablePiece(active.id)} is no longer over a square.`
+                                    },
+                                    onDragEnd({ active, over }) {
+                                        if (over) {
+                                            return `${createReadablePiece(active.id)} was dropped over ${createReadableSquare(over.id)}`
+                                        }
+
+                                        return `${createReadablePiece(active.id)} was dropped.`
+                                    },
+                                    onDragCancel({ active }) {
+                                        return `Dragging was cancelled. ${createReadablePiece(active.id)} was dropped.`
+                                    },
+                                },
                             }}
                             onDragEnd={({ active, over }) => {
                                 if (!over) return
 
-                                const [col, row] = active.id
-                                    .toString()
-                                    .split('')
-                                    .map((n) => Number(n))
+                                const [_name, col, row] = parsePieceId(active.id)
 
                                 let piece =
                                     squares.find((square) => square.col == col && square.row == row)?.piece ??
@@ -108,7 +156,7 @@ export default function () {
                                             square.piece = null
                                         }
 
-                                        if (over.id == `${square.col}${square.row}`) {
+                                        if (over.id == `${square.col} ${square.row}`) {
                                             square.piece = piece
                                         }
 
@@ -124,6 +172,7 @@ export default function () {
                                 }}
                                 className="board m-3 flex flex-wrap outline-8 outline-black"
                                 onClick={resetSquareBackgrounds}
+                                aria-live="assertive"
                             >
                                 {squares.map(({ col, row, piece }) => (
                                     <DroppableSquare game={game} key={`${col}${row}`} col={col} row={row}>
@@ -132,7 +181,7 @@ export default function () {
                                                 size={size}
                                                 key={`${col}${row}`}
                                                 piece={piece}
-                                                id={`${col}${row}`}
+                                                id={`${piece.constructor.name} ${col} ${row}`}
                                             />
                                         )}
                                     </DroppableSquare>
