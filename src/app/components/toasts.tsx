@@ -26,10 +26,10 @@ const options: ToastOptions = {
 
 const toaster = (props: ToastProps): Id => toast(<CustomToast {...props} />, options)
 
-toaster.success = (text: string, title: string = 'Success'): Id =>
+toaster.success = (text: string, title: string = 'Success!'): Id =>
     toast.success(<CustomToast text={text} title={title} />, options)
 
-toaster.error = (text: string, title: string = 'Error'): Id =>
+toaster.error = (text: string, title: string = 'Something went wrong!'): Id =>
     toast.error(<CustomToast text={text} title={title} />, options)
 
 export default toaster
