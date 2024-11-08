@@ -16,13 +16,13 @@ export const Colors = {
 
 export default function ({ col, row, children, game }: Props) {
     const { isOver, setNodeRef } = useDroppable({
-        id: `${col}${row}`,
+        id: `${col} ${row}`,
     })
 
     const evenCol = col % 2 === 1
     const evenRow = row % 2 === 1
 
-    const dark = evenRow ? evenCol : !evenCol
+    const dark = evenRow ? !evenCol : evenCol
 
     useEffect(() => {
         const overlay = document.getElementById(`overlay-${col}${row}`)!
