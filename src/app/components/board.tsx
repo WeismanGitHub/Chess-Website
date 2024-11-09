@@ -96,7 +96,7 @@ export default function () {
         <>
             <div>
                 {isMounted && (
-                    <div className="flex h-fit w-fit flex-col-reverse items-center md:flex-row md:items-start">
+                    <div className="flex h-fit w-fit flex-col-reverse items-center md:flex-row">
                         <Button
                             type="button"
                             onClick={() => setSquares(squares.toReversed())}
