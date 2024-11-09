@@ -7,6 +7,8 @@ interface Props {
     row: number
     children: any
     game: Game
+    showFiles: boolean
+    showRows: boolean
 }
 
 export const Colors = {
@@ -14,7 +16,7 @@ export const Colors = {
     highlight: 'rgb(240 82 82 / 0.85)',
 }
 
-export default function ({ col, row, children, game }: Props) {
+export default function ({ col, row, children, game, showFiles: showFile, showRows: showRow }: Props) {
     const { isOver, setNodeRef } = useDroppable({
         id: `${col} ${row}`,
     })
@@ -48,6 +50,10 @@ export default function ({ col, row, children, game }: Props) {
                 }}
                 className="flex justify-center align-middle"
             >
+                <div aria-hidden style={{ color: dark ? '#e8f2f5' : '#0e7490' }} className="text-xs">
+                    {showRow && <strong className="absolute bottom-0 right-0 p-1">{'HGFEDCBA'[col]}</strong>}
+                    {showFile && <strong className="absolute left-0 top-0 p-1">{row + 1}</strong>}
+                </div>
                 {children}
                 <div
                     style={{

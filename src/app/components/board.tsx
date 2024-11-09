@@ -58,9 +58,18 @@ function createReadablePosition(col: number, row: number): string {
 export default function () {
     const game = new Game()
 
+    if (!localStorage.getItem('showNotation')) {
+        localStorage.setItem('showNotation', 'yes')
+    }
+
     const [squares, setSquares] = useState(game.board.squares.flat().toReversed())
+    const [showNotation, setShowNotation] = useState(localStorage.getItem('showNotation') === 'yes')
     const [isMounted, setIsMounted] = useState(false)
     const [size, setSize] = useState(0)
+
+    useEffect(() => {
+        localStorage.setItem('showNotation', showNotation ? 'yes' : 'no')
+    }, [showNotation])
 
     function updateSize() {
         if (window.innerHeight > window.innerWidth) {
@@ -96,22 +105,39 @@ export default function () {
         <>
             <div>
                 {isMounted && (
-                    <div className="flex h-fit w-fit flex-col-reverse items-center md:flex-row">
-                        <Button
-                            type="button"
-                            onClick={() => setSquares(squares.toReversed())}
-                            className="m-1 inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="currentColor"
-                                viewBox="0 0 16 16"
+                    <div className="flex h-fit w-fit flex-col-reverse items-center gap-2 md:flex-row">
+                        <div className="flex flex-row gap-2 md:flex-col">
+                            <Button
+                                onClick={() => setSquares(squares.toReversed())}
+                                className="inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
                             >
-                                <path d="M11 5.466V4H5a4 4 0 0 0-3.584 5.777.5.5 0 1 1-.896.446A5 5 0 0 1 5 3h6V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m3.81.086a.5.5 0 0 1 .67.225A5 5 0 0 1 11 13H5v1.466a.25.25 0 0 1-.41.192l-2.36-1.966a.25.25 0 0 1 0-.384l2.36-1.966a.25.25 0 0 1 .41.192V12h6a4 4 0 0 0 3.585-5.777.5.5 0 0 1 .225-.67Z" />
-                            </svg>
-                            <span className="sr-only">reverse board</span>
-                        </Button>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="currentColor"
+                                    viewBox="0 0 16 16"
+                                >
+                                    <path d="M11 5.466V4H5a4 4 0 0 0-3.584 5.777.5.5 0 1 1-.896.446A5 5 0 0 1 5 3h6V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m3.81.086a.5.5 0 0 1 .67.225A5 5 0 0 1 11 13H5v1.466a.25.25 0 0 1-.41.192l-2.36-1.966a.25.25 0 0 1 0-.384l2.36-1.966a.25.25 0 0 1 .41.192V12h6a4 4 0 0 0 3.585-5.777.5.5 0 0 1 .225-.67Z" />
+                                </svg>
+                                <span className="sr-only">reverse board</span>
+                            </Button>
+                            <Button
+                                onClick={() => setShowNotation(!showNotation)}
+                                className="inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    fill="currentColor"
+                                    className="bi bi-grid-fill"
+                                    viewBox="0 0 16 16"
+                                >
+                                    <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5z" />
+                                </svg>
+                                <span className="sr-only">toggle notation</span>
+                            </Button>
+                        </div>
 
                         <DndContext
                             modifiers={[restrictToWindowEdges, snapCenterToCursor]}
@@ -172,21 +198,35 @@ export default function () {
                                     height: size,
                                     width: size,
                                 }}
-                                className="board m-3 flex flex-wrap outline-8 outline-black"
+                                className="board box-border flex flex-wrap rounded border-4 border-black"
                                 onClick={resetSquareBackgrounds}
                             >
-                                {squares.map(({ col, row, piece }) => (
-                                    <DroppableSquare game={game} key={`${col}${row}`} col={col} row={row}>
-                                        {piece && (
-                                            <DraggablePiece
-                                                size={size}
-                                                key={`${col}${row}`}
-                                                piece={piece}
-                                                id={`${piece.constructor.name} ${col} ${row}`}
-                                            />
-                                        )}
-                                    </DroppableSquare>
-                                ))}
+                                {squares.map(({ col, row, piece }) => {
+                                    const boardIsReversed = squares[0].piece?.color === 'white'
+
+                                    const showFiles = showNotation && col === (boardIsReversed ? 0 : 7)
+                                    const showRows = showNotation && row === (boardIsReversed ? 7 : 0)
+
+                                    return (
+                                        <DroppableSquare
+                                            showFiles={showFiles}
+                                            showRows={showRows}
+                                            game={game}
+                                            key={`${col}${row}`}
+                                            col={col}
+                                            row={row}
+                                        >
+                                            {piece && (
+                                                <DraggablePiece
+                                                    size={size}
+                                                    key={`${col}${row}`}
+                                                    piece={piece}
+                                                    id={`${piece.constructor.name} ${col} ${row}`}
+                                                />
+                                            )}
+                                        </DroppableSquare>
+                                    )
+                                })}
                             </div>
                         </DndContext>
                     </div>
