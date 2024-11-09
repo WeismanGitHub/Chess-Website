@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers'
 import { DndContext, UniqueIdentifier } from '@dnd-kit/core'
+import { useEffect, useState } from 'react'
 import { Button } from 'flowbite-react'
 
 import { Game } from '../../lib/chess/'
 import DroppableSquare from './square'
 import DraggablePiece from './piece'
-import { restrictToWindowEdges } from '@dnd-kit/modifiers'
 
 export function setBackgroundColor(id: string, value: string) {
     const square = document.getElementById(id)
@@ -114,7 +114,7 @@ export default function () {
                         </Button>
 
                         <DndContext
-                            modifiers={[restrictToWindowEdges]}
+                            modifiers={[restrictToWindowEdges, snapCenterToCursor]}
                             accessibility={{
                                 screenReaderInstructions: {
                                     draggable:
