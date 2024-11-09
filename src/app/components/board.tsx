@@ -7,6 +7,7 @@ import { Button } from 'flowbite-react'
 import { Game } from '../../lib/chess/'
 import DroppableSquare from './square'
 import DraggablePiece from './piece'
+import { restrictToWindowEdges } from '@dnd-kit/modifiers'
 
 export function setBackgroundColor(id: string, value: string) {
     const square = document.getElementById(id)
@@ -113,6 +114,7 @@ export default function () {
                         </Button>
 
                         <DndContext
+                            modifiers={[restrictToWindowEdges]}
                             accessibility={{
                                 screenReaderInstructions: {
                                     draggable:
@@ -172,7 +174,6 @@ export default function () {
                                 }}
                                 className="board m-3 flex flex-wrap outline-8 outline-black"
                                 onClick={resetSquareBackgrounds}
-                                aria-live="assertive"
                             >
                                 {squares.map(({ col, row, piece }) => (
                                     <DroppableSquare game={game} key={`${col}${row}`} col={col} row={row}>
