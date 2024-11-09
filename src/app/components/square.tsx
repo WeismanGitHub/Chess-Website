@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const Colors = {
-    over: 'rgb(4 108 78 / 0.85)',
+    over: 'rgb(4 108 78 / 0.70)',
     highlight: 'rgb(240 82 82 / 0.85)',
 }
 
