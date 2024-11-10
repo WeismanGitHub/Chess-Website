@@ -57,10 +57,11 @@ export default function Chat({ socket }: { socket: Socket<DefaultEventsMap, Defa
     }
 
     return (
-        <div className="m-1 flex flex-grow flex-col p-5 md:p-0">
-            <div className="h-75"></div>
-            <div className="h-25">
-                <ul>{messages}</ul>
+        <div className="flex flex-grow flex-col rounded-lg bg-white shadow">
+            <div style={{ height: '50%' }} className="bg-transparent"></div>
+            <hr className="shadow" />
+            <div style={{ height: '50%' }} className="flex flex-col bg-transparent">
+                <ul className="w-full flex-grow">{messages}</ul>
                 <form
                     className="flex flex-row"
                     onSubmit={(e) => {
