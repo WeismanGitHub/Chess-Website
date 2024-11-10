@@ -35,12 +35,12 @@ export default function () {
         <>
             <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
                 {socket ? (
-                    <div className="flex h-full w-full flex-row flex-wrap justify-center">
+                    <div className="flex h-full w-full flex-row flex-wrap justify-center gap-2">
                         <Board />
                         <Sidebar socket={socket} />
                     </div>
                 ) : (
-                    <div className="w-full overflow-hidden rounded-lg bg-white shadow sm:max-w-md md:mt-0 lg:m-5 xl:p-0">
+                    <div className="w-full rounded-lg bg-white shadow sm:max-w-md md:mt-0 lg:m-5 xl:p-0">
                         <Tabs aria-label="lobby tabs" variant="fullWidth">
                             <Tabs.Item active title="Create">
                                 <div className="space-y-4 p-6 pt-0 sm:p-8 sm:pt-0 md:space-y-6">

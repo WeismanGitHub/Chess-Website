@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className="overflow-x-hidden">
+            <body className="">
                 {/* Background Gradient https://github.com/ibelick/background-snippets */}
                 <div className="flex min-h-screen flex-col">
                     <header>
