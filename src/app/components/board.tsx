@@ -58,18 +58,10 @@ function createReadablePosition(col: number, row: number): string {
 export default function () {
     const game = new Game()
 
-    if (!localStorage.getItem('showNotation')) {
-        localStorage.setItem('showNotation', 'yes')
-    }
-
     const [squares, setSquares] = useState(game.board.squares.flat().toReversed())
-    const [showNotation, setShowNotation] = useState(localStorage.getItem('showNotation') === 'yes')
+    const [showNotation, setShowNotation] = useState(true)
     const [isMounted, setIsMounted] = useState(false)
     const [size, setSize] = useState(0)
-
-    useEffect(() => {
-        localStorage.setItem('showNotation', showNotation ? 'yes' : 'no')
-    }, [showNotation])
 
     function updateSize() {
         if (window.innerHeight > window.innerWidth) {
@@ -98,6 +90,13 @@ export default function () {
             })
         }
 
+        if (!localStorage.getItem('showNotation')) {
+            localStorage.setItem('showNotation', 'yes')
+            setShowNotation(true)
+        } else {
+            setShowNotation(localStorage.getItem('showNotation') === 'yes')
+        }
+
         setIsMounted(true)
     }, [])
 
@@ -122,7 +121,10 @@ export default function () {
                                 <span className="sr-only">reverse board</span>
                             </Button>
                             <Button
-                                onClick={() => setShowNotation(!showNotation)}
+                                onClick={() => {
+                                    localStorage.setItem('showNotation', !showNotation ? 'yes' : 'no')
+                                    setShowNotation(!showNotation)
+                                }}
                                 className="inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
                             >
                                 <svg
@@ -130,10 +132,10 @@ export default function () {
                                     width="16"
                                     height="16"
                                     fill="currentColor"
-                                    className="bi bi-grid-fill"
+                                    className="bi bi-graph-up"
                                     viewBox="0 0 16 16"
                                 >
-                                    <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5z" />
+                                    <path fill-rule="evenodd" d="M0 0h1v15h15v1H0z" />
                                 </svg>
                                 <span className="sr-only">toggle notation</span>
                             </Button>
