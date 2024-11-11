@@ -17,7 +17,7 @@ export function setBackgroundColor(id: string, value: string) {
     }
 }
 
-export function resetSquareBackgrounds() {
+export function resetOverlays() {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             setBackgroundColor(`overlay-${i}${j}`, 'transparent')
@@ -199,7 +199,7 @@ export default function () {
                                     width: size,
                                 }}
                                 className="board box-border flex flex-wrap rounded border-4 border-black"
-                                onClick={resetSquareBackgrounds}
+                                onClick={resetOverlays}
                             >
                                 {squares.map(({ col, row, piece }) => {
                                     const boardIsReversed = squares[0].piece?.color === 'white'
