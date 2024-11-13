@@ -2,8 +2,8 @@
 
 import { lobbyJoinSchema, lobbyCreateSchema } from '../../../lib/zod'
 import React, { Dispatch, SetStateAction, useState } from 'react'
-import { Button, Label, Tabs, TextInput } from 'flowbite-react'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
+import { Button, Label, TextInput } from 'flowbite-react'
 import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
 
@@ -29,397 +29,387 @@ function LobbyTabs({
 }: {
     setSocket: Dispatch<SetStateAction<Socket<DefaultEventsMap, DefaultEventsMap> | null>>
 }) {
+    const [tab, setTab] = useState<'create' | 'join'>('create')
+
     return (
         <div className="w-full rounded-lg bg-white shadow sm:max-w-md md:mt-0 lg:m-5 xl:p-0">
-            <Tabs aria-label="lobby tabs" variant="fullWidth">
-                <Tabs.Item active title="Create">
-                    <div className="space-y-4 p-6 pt-0 sm:p-8 sm:pt-0 md:space-y-6">
-                        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                            Create a lobby
-                        </h1>
-                        <Formik
-                            initialValues={{
-                                name: '',
-                                password: '',
-                                minutes: 30,
-                            }}
-                            validate={(values) => {
-                                const errors: {
-                                    name?: string
-                                    password?: string
-                                    minutes?: string
-                                } = {}
+            <ul role="tablist" className="flex text-center text-sm font-medium text-gray-500 shadow">
+                <li className="w-full focus-within:z-10">
+                    <button
+                        role="tab"
+                        onClick={() => setTab('create')}
+                        className={`inline-block w-full rounded-tl-lg border-r border-gray-200 p-4 hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 ${tab == 'create' ? 'bg-gray-100' : 'bg-white'}`}
+                        aria-current="page"
+                    >
+                        Create
+                    </button>
+                </li>
+                <li className="w-full focus-within:z-10">
+                    <button
+                        onClick={() => setTab('join')}
+                        role="tab"
+                        className={`inline-block w-full rounded-tr-lg border-l border-gray-200 p-4 hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 ${tab == 'join' ? 'bg-gray-100' : 'bg-white'}`}
+                    >
+                        Join
+                    </button>
+                </li>
+            </ul>
+            <div hidden={tab !== 'create'} className="space-y-4 p-6 sm:p-8 md:space-y-6">
+                <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                    Create a lobby
+                </h1>
+                <Formik
+                    initialValues={{
+                        name: '',
+                        password: '',
+                        minutes: 30,
+                    }}
+                    validate={(values) => {
+                        const errors: {
+                            name?: string
+                            password?: string
+                            minutes?: string
+                        } = {}
 
-                                const res = lobbyCreateSchema.safeParse(values)
+                        const res = lobbyCreateSchema.safeParse(values)
 
-                                if (!res.success) {
-                                    const fieldErrors = res.error.flatten().fieldErrors
-                                    errors.name = fieldErrors.name?.[0]
-                                    errors.password = fieldErrors.password?.[0]
-                                    errors.minutes = fieldErrors.minutes?.[0]
-                                }
+                        if (!res.success) {
+                            const fieldErrors = res.error.flatten().fieldErrors
+                            errors.name = fieldErrors.name?.[0]
+                            errors.password = fieldErrors.password?.[0]
+                            errors.minutes = fieldErrors.minutes?.[0]
+                        }
 
-                                return errors
-                            }}
-                            onSubmit={async (values) => {
-                                const socket = io()
+                        return errors
+                    }}
+                    onSubmit={async (values) => {
+                        const socket = io()
 
-                                socket.on('connect', () => {
-                                    socket.emit(
-                                        'create lobby',
-                                        values,
-                                        ({ success, data }: { success: boolean; data: any }) => {
-                                            if (success) {
-                                                return setSocket(socket)
-                                            }
-
-                                            toaster.error(data)
-                                        }
-                                    )
-                                })
-                            }}
-                            validateOnChange={true}
-                            validateOnBlur={true}
-                        >
-                            {({
-                                handleSubmit,
-                                handleChange,
-                                handleBlur,
+                        socket.on('connect', () => {
+                            socket.emit(
+                                'create lobby',
                                 values,
-                                errors,
-                                touched,
-                                setTouched,
-                                setFieldValue,
-                            }) => {
-                                return (
-                                    <Form
-                                        className="mb-4 space-y-4 md:space-y-6"
-                                        noValidate
-                                        onSubmit={handleSubmit}
+                                ({ success, data }: { success: boolean; data: any }) => {
+                                    if (success) {
+                                        return setSocket(socket)
+                                    }
+
+                                    toaster.error(data)
+                                }
+                            )
+                        })
+                    }}
+                    validateOnChange={true}
+                    validateOnBlur={true}
+                >
+                    {({
+                        handleSubmit,
+                        handleChange,
+                        handleBlur,
+                        values,
+                        errors,
+                        touched,
+                        setTouched,
+                        setFieldValue,
+                    }) => {
+                        return (
+                            <Form className="mb-4 space-y-4 md:space-y-6" noValidate onSubmit={handleSubmit}>
+                                <div>
+                                    <Label
+                                        htmlFor="name"
+                                        className="mb-2 block text-sm font-medium text-gray-900"
                                     >
-                                        <div>
-                                            <Label
-                                                htmlFor="name"
-                                                className="mb-2 block text-sm font-medium text-gray-900"
+                                        Name
+                                    </Label>
+                                    <TextInput
+                                        type="text"
+                                        name="name"
+                                        id="name"
+                                        value={values.name}
+                                        placeholder="lobby name"
+                                        required={true}
+                                        onBlur={handleBlur}
+                                        onChange={(target) => {
+                                            setTouched({
+                                                name: true,
+                                                ...touched,
+                                            })
+
+                                            handleChange(target)
+                                        }}
+                                        helperText={
+                                            touched.name && errors.name ? (
+                                                <span>{errors.name}</span>
+                                            ) : undefined
+                                        }
+                                        color={touched.name && errors.name ? 'failure' : undefined}
+                                    />
+                                </div>
+                                <div>
+                                    <Label
+                                        htmlFor="password"
+                                        className="mb-2 block text-sm font-medium text-gray-900"
+                                    >
+                                        Password
+                                    </Label>
+                                    <TextInput
+                                        value={values.password}
+                                        onChange={(target) => {
+                                            setTouched({
+                                                password: true,
+                                                ...touched,
+                                            })
+                                            handleChange(target)
+                                        }}
+                                        autoComplete="on"
+                                        type="text"
+                                        onBlur={handleBlur}
+                                        name="password"
+                                        id="password"
+                                        placeholder="••••••••••"
+                                        required={true}
+                                        helperText={
+                                            touched.password && errors.password ? (
+                                                <span>{errors.password}</span>
+                                            ) : undefined
+                                        }
+                                        color={touched.password && errors.password ? 'failure' : undefined}
+                                    />
+                                </div>
+                                <div className="m-0 flex w-full flex-col items-center justify-center">
+                                    <div className="relative mx-auto flex max-w-[11rem] items-center">
+                                        <button
+                                            type="button"
+                                            id="decrement-button"
+                                            data-input-counter-decrement="quantity-input"
+                                            className={`h-11 rounded-s-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-100 ${errors.minutes ? 'border-red-500 bg-red-50 text-red-900 hover:bg-red-100 focus:border-red-500 focus:ring-red-500' : ''}`}
+                                            onClick={() => {
+                                                setTouched({
+                                                    minutes: true,
+                                                    ...touched,
+                                                })
+
+                                                setFieldValue('minutes', values.minutes - 1)
+                                            }}
+                                        >
+                                            <svg
+                                                className="h-3 w-3 text-gray-900"
+                                                aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 18 2"
                                             >
-                                                Name
-                                            </Label>
-                                            <TextInput
-                                                type="text"
-                                                name="name"
-                                                id="name"
-                                                value={values.name}
-                                                placeholder="lobby name"
-                                                required={true}
-                                                onBlur={handleBlur}
-                                                onChange={(target) => {
-                                                    setTouched({
-                                                        name: true,
-                                                        ...touched,
-                                                    })
-
-                                                    handleChange(target)
-                                                }}
-                                                helperText={
-                                                    touched.name && errors.name ? (
-                                                        <span>{errors.name}</span>
-                                                    ) : undefined
-                                                }
-                                                color={touched.name && errors.name ? 'failure' : undefined}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label
-                                                htmlFor="password"
-                                                className="mb-2 block text-sm font-medium text-gray-900"
-                                            >
-                                                Password
-                                            </Label>
-                                            <TextInput
-                                                value={values.password}
-                                                onChange={(target) => {
-                                                    setTouched({
-                                                        password: true,
-                                                        ...touched,
-                                                    })
-                                                    handleChange(target)
-                                                }}
-                                                autoComplete="on"
-                                                type="text"
-                                                onBlur={handleBlur}
-                                                name="password"
-                                                id="password"
-                                                placeholder="••••••••••"
-                                                required={true}
-                                                helperText={
-                                                    touched.password && errors.password ? (
-                                                        <span>{errors.password}</span>
-                                                    ) : undefined
-                                                }
-                                                color={
-                                                    touched.password && errors.password
-                                                        ? 'failure'
-                                                        : undefined
-                                                }
-                                            />
-                                        </div>
-                                        <div className="m-0 flex w-full flex-col items-center justify-center">
-                                            <div className="relative mx-auto flex max-w-[11rem] items-center">
-                                                <button
-                                                    type="button"
-                                                    id="decrement-button"
-                                                    data-input-counter-decrement="quantity-input"
-                                                    className={`h-11 rounded-s-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-100 ${errors.minutes ? 'border-red-500 bg-red-50 text-red-900 hover:bg-red-100 focus:border-red-500 focus:ring-red-500' : ''}`}
-                                                    onClick={() => {
-                                                        setTouched({
-                                                            minutes: true,
-                                                            ...touched,
-                                                        })
-
-                                                        setFieldValue('minutes', values.minutes - 1)
-                                                    }}
-                                                >
-                                                    <svg
-                                                        className="h-3 w-3 text-gray-900"
-                                                        aria-hidden="true"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 18 2"
-                                                    >
-                                                        <path
-                                                            stroke="currentColor"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="2"
-                                                            d="M1 1h16"
-                                                        />
-                                                    </svg>
-                                                </button>
-                                                <input
-                                                    type="text"
-                                                    id="quantity-input"
-                                                    data-input-counter
-                                                    style={{ zIndex: 20 }}
-                                                    aria-describedby="helper-text-explanation"
-                                                    className={`block h-11 w-full rounded-none border-gray-300 bg-gray-50 py-2.5 pt-0 text-center text-sm text-gray-900 focus:rounded-sm focus:border-none focus:ring-2 focus:ring-cyan-500 ${errors.minutes ? 'border-red-500 bg-red-50 text-red-900 focus:ring-red-500' : ''}`}
-                                                    required
-                                                    placeholder="0"
-                                                    value={values.minutes}
-                                                    onChange={(e) => {
-                                                        setTouched({
-                                                            minutes: true,
-                                                            ...touched,
-                                                        })
-
-                                                        const value = Number(e.target.value)
-
-                                                        if (e.target.value == '-') {
-                                                            return setFieldValue('minutes', 0)
-                                                        }
-
-                                                        if (!Number.isNaN(value)) {
-                                                            setFieldValue('minutes', value)
-                                                        }
-                                                    }}
+                                                <path
+                                                    stroke="currentColor"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M1 1h16"
                                                 />
-                                                <div
-                                                    className={`absolute bottom-1 start-1/2 flex -translate-x-1/2 items-center space-x-1 stroke-gray-400 text-xs text-gray-400 rtl:translate-x-1/2 rtl:space-x-reverse ${errors.minutes ? 'stroke-red-900 text-red-900' : ''}`}
-                                                    style={{ zIndex: 20 }}
-                                                >
-                                                    <StopwatchIcon />
-                                                    <span className="m-0 p-0">Minutes</span>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    id="increment-button"
-                                                    onClick={() => {
-                                                        setTouched({
-                                                            minutes: true,
-                                                            ...touched,
-                                                        })
+                                            </svg>
+                                        </button>
+                                        <input
+                                            type="text"
+                                            id="quantity-input"
+                                            data-input-counter
+                                            style={{ zIndex: 20 }}
+                                            aria-describedby="helper-text-explanation"
+                                            className={`block h-11 w-full rounded-none border-gray-300 bg-gray-50 py-2.5 pt-0 text-center text-sm text-gray-900 focus:rounded-sm focus:border-none focus:ring-2 focus:ring-cyan-500 ${errors.minutes ? 'border-red-500 bg-red-50 text-red-900 focus:ring-red-500' : ''}`}
+                                            required
+                                            placeholder="0"
+                                            value={values.minutes}
+                                            onChange={(e) => {
+                                                setTouched({
+                                                    minutes: true,
+                                                    ...touched,
+                                                })
 
-                                                        setFieldValue('minutes', values.minutes + 1)
-                                                    }}
-                                                    style={{ zIndex: 1 }}
-                                                    data-input-counter-increment="quantity-input"
-                                                    className={`h-11 rounded-e-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-100 ${errors.minutes ? 'border-red-500 bg-red-50 text-red-900 hover:bg-red-100 focus:border-red-500 focus:ring-red-500' : ''}`}
-                                                >
-                                                    <svg
-                                                        className="h-3 w-3 text-gray-900"
-                                                        aria-hidden="true"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 18 18"
-                                                    >
-                                                        <path
-                                                            stroke="currentColor"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="2"
-                                                            d="M9 1v16M1 9h16"
-                                                        />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                            <p
-                                                style={{ marginTop: '1%' }}
-                                                className="w-fit text-sm text-red-600"
-                                            >
-                                                {errors.minutes}
-                                            </p>
-                                        </div>
-                                        <Button
-                                            type="submit"
-                                            className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
+                                                const value = Number(e.target.value)
+
+                                                if (e.target.value == '-') {
+                                                    return setFieldValue('minutes', 0)
+                                                }
+
+                                                if (!Number.isNaN(value)) {
+                                                    setFieldValue('minutes', value)
+                                                }
+                                            }}
+                                        />
+                                        <div
+                                            className={`absolute bottom-1 start-1/2 flex -translate-x-1/2 items-center space-x-1 stroke-gray-400 pt-0 text-xs text-gray-400 rtl:translate-x-1/2 rtl:space-x-reverse ${errors.minutes ? 'stroke-red-900 text-red-900' : ''}`}
+                                            style={{ zIndex: 20 }}
                                         >
-                                            Create lobby
-                                        </Button>
-                                    </Form>
-                                )
-                            }}
-                        </Formik>
-                    </div>
-                </Tabs.Item>
-                <Tabs.Item title="Join">
-                    <div className="space-y-4 p-6 pt-0 sm:p-8 sm:pt-0 md:space-y-6">
-                        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                            Join a lobby
-                        </h1>
-                        <Formik
-                            initialValues={{
-                                name: '',
-                                password: '',
-                            }}
-                            validate={(values) => {
-                                const errors: {
-                                    name?: string
-                                    password?: string
-                                } = {}
+                                            <StopwatchIcon />
+                                            <span className="m-0 p-0">Minutes</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            id="increment-button"
+                                            onClick={() => {
+                                                setTouched({
+                                                    minutes: true,
+                                                    ...touched,
+                                                })
 
-                                const res = lobbyJoinSchema.safeParse(values)
+                                                setFieldValue('minutes', values.minutes + 1)
+                                            }}
+                                            style={{ zIndex: 1 }}
+                                            data-input-counter-increment="quantity-input"
+                                            className={`h-11 rounded-e-lg border border-gray-300 bg-gray-100 p-3 hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-100 ${errors.minutes ? 'border-red-500 bg-red-50 text-red-900 hover:bg-red-100 focus:border-red-500 focus:ring-red-500' : ''}`}
+                                        >
+                                            <svg
+                                                className="h-3 w-3 text-gray-900"
+                                                aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 18 18"
+                                            >
+                                                <path
+                                                    stroke="currentColor"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M9 1v16M1 9h16"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <p style={{ marginTop: '1%' }} className="w-fit text-sm text-red-600">
+                                        {errors.minutes}
+                                    </p>
+                                </div>
+                                <Button
+                                    type="submit"
+                                    className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
+                                >
+                                    Create lobby
+                                </Button>
+                            </Form>
+                        )
+                    }}
+                </Formik>
+            </div>
+            <div hidden={tab !== 'join'} className="space-y-4 p-6 sm:p-8 md:space-y-6">
+                <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                    Join a lobby
+                </h1>
+                <Formik
+                    initialValues={{
+                        name: '',
+                        password: '',
+                    }}
+                    validate={(values) => {
+                        const errors: {
+                            name?: string
+                            password?: string
+                        } = {}
 
-                                if (!res.success) {
-                                    const fieldErrors = res.error.flatten().fieldErrors
-                                    errors.name = fieldErrors.name?.[0]
-                                    errors.password = fieldErrors.password?.[0]
-                                }
+                        const res = lobbyJoinSchema.safeParse(values)
 
-                                return errors
-                            }}
-                            onSubmit={async (values) => {
-                                const socket = io()
+                        if (!res.success) {
+                            const fieldErrors = res.error.flatten().fieldErrors
+                            errors.name = fieldErrors.name?.[0]
+                            errors.password = fieldErrors.password?.[0]
+                        }
 
-                                socket.on('connect', () => {
-                                    socket.emit(
-                                        'join lobby',
-                                        values,
-                                        ({ success, data }: { success: boolean; data: any }) => {
-                                            if (success) {
-                                                return setSocket(socket)
-                                            }
+                        return errors
+                    }}
+                    onSubmit={async (values) => {
+                        const socket = io()
 
-                                            toaster.error(data)
-                                        }
-                                    )
-                                })
-                            }}
-                            validateOnChange={true}
-                            validateOnBlur={true}
-                        >
-                            {({
-                                handleSubmit,
-                                handleChange,
-                                handleBlur,
+                        socket.on('connect', () => {
+                            socket.emit(
+                                'join lobby',
                                 values,
-                                errors,
-                                touched,
-                                setTouched,
-                            }) => {
-                                return (
-                                    <Form
-                                        className="mb-4 space-y-4 md:space-y-6"
-                                        noValidate
-                                        onSubmit={handleSubmit}
-                                    >
-                                        <div>
-                                            <Label
-                                                htmlFor="name"
-                                                className="mb-2 block text-sm font-medium text-gray-900"
-                                            >
-                                                Name
-                                            </Label>
-                                            <TextInput
-                                                type="text"
-                                                name="name"
-                                                id="name"
-                                                value={values.name}
-                                                placeholder="lobby name"
-                                                required={true}
-                                                onBlur={handleBlur}
-                                                onChange={(target) => {
-                                                    setTouched({
-                                                        name: true,
-                                                        ...touched,
-                                                    })
+                                ({ success, data }: { success: boolean; data: any }) => {
+                                    if (success) {
+                                        return setSocket(socket)
+                                    }
 
-                                                    handleChange(target)
-                                                }}
-                                                helperText={
-                                                    touched.name && errors.name ? (
-                                                        <span>{errors.name}</span>
-                                                    ) : undefined
-                                                }
-                                                color={touched.name && errors.name ? 'failure' : undefined}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label
-                                                htmlFor="password"
-                                                className="mb-2 block text-sm font-medium text-gray-900"
-                                            >
-                                                Password
-                                            </Label>
-                                            <TextInput
-                                                value={values.password}
-                                                onChange={(target) => {
-                                                    setTouched({
-                                                        password: true,
-                                                        ...touched,
-                                                    })
-                                                    handleChange(target)
-                                                }}
-                                                autoComplete="on"
-                                                type="text"
-                                                onBlur={handleBlur}
-                                                name="password"
-                                                id="password"
-                                                placeholder="••••••••••"
-                                                required={true}
-                                                helperText={
-                                                    touched.password && errors.password ? (
-                                                        <span>{errors.password}</span>
-                                                    ) : undefined
-                                                }
-                                                color={
-                                                    touched.password && errors.password
-                                                        ? 'failure'
-                                                        : undefined
-                                                }
-                                            />
-                                        </div>
-                                        <Button
-                                            type="submit"
-                                            className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
-                                        >
-                                            Create lobby
-                                        </Button>
-                                    </Form>
-                                )
-                            }}
-                        </Formik>
-                    </div>
-                </Tabs.Item>
-            </Tabs>
+                                    toaster.error(data)
+                                }
+                            )
+                        })
+                    }}
+                    validateOnChange={true}
+                    validateOnBlur={true}
+                >
+                    {({ handleSubmit, handleChange, handleBlur, values, errors, touched, setTouched }) => {
+                        return (
+                            <Form className="mb-4 space-y-4 md:space-y-6" noValidate onSubmit={handleSubmit}>
+                                <div>
+                                    <Label
+                                        htmlFor="name"
+                                        className="mb-2 block text-sm font-medium text-gray-900"
+                                    >
+                                        Name
+                                    </Label>
+                                    <TextInput
+                                        type="text"
+                                        name="name"
+                                        id="name"
+                                        value={values.name}
+                                        placeholder="lobby name"
+                                        required={true}
+                                        onBlur={handleBlur}
+                                        onChange={(target) => {
+                                            setTouched({
+                                                name: true,
+                                                ...touched,
+                                            })
+
+                                            handleChange(target)
+                                        }}
+                                        helperText={
+                                            touched.name && errors.name ? (
+                                                <span>{errors.name}</span>
+                                            ) : undefined
+                                        }
+                                        color={touched.name && errors.name ? 'failure' : undefined}
+                                    />
+                                </div>
+                                <div>
+                                    <Label
+                                        htmlFor="password"
+                                        className="mb-2 block text-sm font-medium text-gray-900"
+                                    >
+                                        Password
+                                    </Label>
+                                    <TextInput
+                                        value={values.password}
+                                        onChange={(target) => {
+                                            setTouched({
+                                                password: true,
+                                                ...touched,
+                                            })
+                                            handleChange(target)
+                                        }}
+                                        autoComplete="on"
+                                        type="text"
+                                        onBlur={handleBlur}
+                                        name="password"
+                                        id="password"
+                                        placeholder="••••••••••"
+                                        required={true}
+                                        helperText={
+                                            touched.password && errors.password ? (
+                                                <span>{errors.password}</span>
+                                            ) : undefined
+                                        }
+                                        color={touched.password && errors.password ? 'failure' : undefined}
+                                    />
+                                </div>
+                                <Button
+                                    type="submit"
+                                    className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
+                                >
+                                    Create lobby
+                                </Button>
+                            </Form>
+                        )
+                    }}
+                </Formik>
+            </div>
         </div>
     )
 }
