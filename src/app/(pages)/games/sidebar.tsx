@@ -21,7 +21,13 @@ function Flag() {
     )
 }
 
-export default function Chat({ socket }: { socket: Socket<DefaultEventsMap, DefaultEventsMap> }) {
+export default function Chat({
+    socket,
+    size,
+}: {
+    socket: Socket<DefaultEventsMap, DefaultEventsMap>
+    size: number
+}) {
     const [messages, setMessages] = useState<ReactNode[]>([])
     const [message, setMessage] = useState('')
     const messageEnd = useRef(null)
@@ -57,7 +63,10 @@ export default function Chat({ socket }: { socket: Socket<DefaultEventsMap, Defa
     }
 
     return (
-        <div className="flex flex-grow flex-col rounded-lg bg-white shadow">
+        <div
+            className="w-100 flex flex-grow flex-col rounded-lg bg-white shadow"
+            style={{ height: size, minWidth: '320px' }}
+        >
             <div style={{ height: '50%' }} className="bg-transparent"></div>
             <hr className="shadow" />
             <div style={{ height: '50%' }} className="flex flex-col bg-transparent">

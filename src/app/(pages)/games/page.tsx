@@ -1,7 +1,7 @@
 'use client'
 
 import { lobbyJoinSchema, lobbyCreateSchema } from '../../../lib/zod'
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { Button, Label, TextInput } from 'flowbite-react'
 import { io, Socket } from 'socket.io-client'
@@ -417,6 +417,45 @@ function LobbyTabs({
     )
 }
 
+function Game({ socket }: { socket: Socket<DefaultEventsMap, DefaultEventsMap> }) {
+    const [size, setSize] = useState(0)
+
+    function updateSize() {
+        if (window.innerHeight > window.innerWidth) {
+            // vertical screen
+            if (window.innerWidth < 500) {
+                setSize(window.innerWidth > 320 ? window.innerWidth : 320)
+            } else {
+                setSize(window.innerWidth * 0.8)
+            }
+        } else {
+            // horizontal screen
+            if (window.innerHeight < 500) {
+                setSize(window.innerHeight > 320 ? window.innerHeight : 320)
+            } else {
+                setSize(window.innerHeight * 0.8)
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            updateSize()
+
+            window.addEventListener('resize', () => {
+                updateSize()
+            })
+        }
+    }, [])
+
+    return (
+        <div className="flex h-full w-full flex-row flex-wrap justify-center gap-2">
+            <Board size={size} />
+            <Sidebar socket={socket} size={size} />
+        </div>
+    )
+}
+
 export default function () {
     const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | null>(null)
 
@@ -437,17 +476,8 @@ export default function () {
     // }
 
     return (
-        <>
-            <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
-                {socket ? (
-                    <div className="flex h-full w-full flex-row flex-wrap justify-center gap-2">
-                        <Board />
-                        <Sidebar socket={socket} />
-                    </div>
-                ) : (
-                    <LobbyTabs setSocket={setSocket} />
-                )}
-            </div>
-        </>
+        <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
+            {socket ? <Game socket={socket} /> : <LobbyTabs setSocket={setSocket} />}
+        </div>
     )
 }
