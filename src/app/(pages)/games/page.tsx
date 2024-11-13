@@ -6,11 +6,23 @@ import { Button, Label, Tabs, TextInput } from 'flowbite-react'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
-import Image from 'next/image'
 
 import toaster from '../../components/toasts'
 import Board from '../../components/board'
 import Sidebar from './sidebar'
+
+function StopwatchIcon() {
+    return (
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M12 14V11M12 6C7.85786 6 4.5 9.35786 4.5 13.5C4.5 17.6421 7.85786 21 12 21C16.1421 21 19.5 17.6421 19.5 13.5C19.5 11.5561 18.7605 9.78494 17.5474 8.4525M12 6C14.1982 6 16.1756 6.94572 17.5474 8.4525M12 6V3M19.5 6.5L17.5474 8.4525M12 3H9M12 3H15"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    )
+}
 
 function LobbyTabs({
     setSocket,
@@ -211,15 +223,10 @@ function LobbyTabs({
                                                     }}
                                                 />
                                                 <div
-                                                    className="absolute bottom-1 start-1/2 flex -translate-x-1/2 items-center space-x-1 text-xs text-gray-400 rtl:translate-x-1/2 rtl:space-x-reverse"
+                                                    className={`absolute bottom-1 start-1/2 flex -translate-x-1/2 items-center space-x-1 stroke-gray-400 text-xs text-gray-400 rtl:translate-x-1/2 rtl:space-x-reverse ${errors.minutes ? 'stroke-red-900 text-red-900' : ''}`}
                                                     style={{ zIndex: 20 }}
                                                 >
-                                                    <Image
-                                                        src="/stopwatch.svg"
-                                                        alt="stopwatch icon"
-                                                        width={15}
-                                                        height={15}
-                                                    />
+                                                    <StopwatchIcon />
                                                     <span className="m-0 p-0">Minutes</span>
                                                 </div>
                                                 <button
