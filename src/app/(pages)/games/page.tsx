@@ -33,7 +33,10 @@ function LobbyTabs({
 
     return (
         <div className="w-full rounded-lg bg-white shadow sm:max-w-md md:mt-0 lg:m-5 xl:p-0">
-            <ul role="tablist" className="flex text-center text-sm font-medium text-gray-500 shadow">
+            <ul
+                role="tablist"
+                className="flex rounded-lg text-center text-sm font-medium text-gray-500 shadow"
+            >
                 <li className="w-full focus-within:z-10">
                     <button
                         role="tab"
