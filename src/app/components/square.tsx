@@ -53,7 +53,7 @@ export default function ({ col, row, children, game, showFiles: showFile, showRo
                 <div
                     aria-hidden
                     style={{ color: dark ? '#e8f2f5' : '#0e7490', zIndex: 50 }}
-                    className="text-xs"
+                    className="unselectable text-xs"
                 >
                     {showRow && <strong className="absolute bottom-0 right-0 m-1">{'HGFEDCBA'[col]}</strong>}
                     {showFile && <strong className="absolute left-0 top-0 m-1">{row + 1}</strong>}
