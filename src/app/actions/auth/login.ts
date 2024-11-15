@@ -8,7 +8,7 @@ import errorHandler from '../error-handler'
 import { cookies } from 'next/headers'
 import { User } from '../../../models'
 
-export default errorHandler(async (body: { name: string; password: string }) => {
+export default errorHandler(async (body) => {
     const { name, password } = await credentialsSchema.parseAsync(body)
 
     await dbConnect()
