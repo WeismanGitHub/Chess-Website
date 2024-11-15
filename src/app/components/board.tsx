@@ -58,6 +58,7 @@ function createReadablePosition(col: number, row: number): string {
 export default function ({ size }: { size: number }) {
     const game = new Game()
 
+    // @ts-ignore
     const [squares, setSquares] = useState(game.board.squares.flat().toReversed())
     const [showNotation, setShowNotation] = useState(true)
 
@@ -74,6 +75,7 @@ export default function ({ size }: { size: number }) {
         <div className="flex h-fit w-fit flex-col-reverse items-center gap-2 md:flex-row">
             <div className="flex flex-row gap-2 md:flex-col">
                 <Button
+                    // @ts-ignore
                     onClick={() => setSquares(squares.toReversed())}
                     className="inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
                 >
@@ -139,7 +141,7 @@ export default function ({ size }: { size: number }) {
                 onDragEnd={({ active, over }) => {
                     if (!over) return
 
-                    const [_name, col, row] = parsePieceId(active.id)
+                    const [_, col, row] = parsePieceId(active.id)
 
                     let piece =
                         squares.find((square) => square.col == col && square.row == row)?.piece ?? null
