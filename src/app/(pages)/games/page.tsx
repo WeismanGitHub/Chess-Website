@@ -1,12 +1,13 @@
 'use client'
 
-import { lobbyJoinSchema, lobbyCreateSchema } from '../../../lib/zod'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { lobbyJoinSchema, lobbyCreateSchema } from '../../../lib/zod'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { Button, Label, TextInput } from 'flowbite-react'
 import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
 
+import { CreateLobbyResponse } from '../../../lib/socket-handler'
 import toaster from '../../components/toasts'
 import Board from '../../components/board'
 import Sidebar from './sidebar'
@@ -35,13 +36,14 @@ function LobbyTabs({
         <div className="w-full rounded-lg bg-white shadow sm:max-w-md md:mt-0 lg:m-5 xl:p-0">
             <ul
                 role="tablist"
-                className="flex rounded-lg text-center text-sm font-medium text-gray-500 shadow"
+                style={{ borderTopLeftRadius: '0.5em', borderTopRightRadius: '0.5em' }}
+                className="text-md flex text-center font-semibold text-gray-700 shadow"
             >
                 <li className="w-full focus-within:z-10">
                     <button
                         role="tab"
                         onClick={() => setTab('create')}
-                        className={`inline-block w-full rounded-tl-lg border-r border-gray-200 p-4 hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 ${tab == 'create' ? 'bg-gray-100' : 'bg-white'}`}
+                        className={`inline-block w-full rounded-tl-lg border-r border-gray-200 p-4 focus:outline-none focus:ring-4 focus:ring-cyan-300 ${tab == 'create' ? 'bg-gray-100 hover:bg-gray-100' : 'bg-white hover:bg-gray-50'}`}
                         aria-current="page"
                     >
                         Create
@@ -51,7 +53,7 @@ function LobbyTabs({
                     <button
                         onClick={() => setTab('join')}
                         role="tab"
-                        className={`inline-block w-full rounded-tr-lg border-l border-gray-200 p-4 hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 ${tab == 'join' ? 'bg-gray-100' : 'bg-white'}`}
+                        className={`inline-block w-full rounded-tr-lg border-l border-gray-200 p-4 focus:outline-none focus:ring-4 focus:ring-cyan-300 ${tab == 'join' ? 'bg-gray-100 hover:bg-gray-100' : 'bg-white hover:bg-gray-50'}`}
                     >
                         Join
                     </button>
@@ -89,17 +91,13 @@ function LobbyTabs({
                         const socket = io()
 
                         socket.on('connect', () => {
-                            socket.emit(
-                                'create lobby',
-                                values,
-                                ({ success, data }: { success: boolean; data: any }) => {
-                                    if (success) {
-                                        return setSocket(socket)
-                                    }
-
-                                    toaster.error(data)
+                            socket.emit('create lobby', values, (res: CreateLobbyResponse) => {
+                                if (res.success) {
+                                    return setSocket(socket)
                                 }
-                            )
+
+                                toaster.error(res.error)
+                            })
                         })
                     }}
                     validateOnChange={true}
@@ -476,7 +474,7 @@ export default function () {
     // }
 
     return (
-        <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
+        <div className="mx-auto flex h-full w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
             {socket ? <Game socket={socket} /> : <LobbyTabs setSocket={setSocket} />}
         </div>
     )
