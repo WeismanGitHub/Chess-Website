@@ -166,7 +166,7 @@ export default function ({ size }: { size: number }) {
                         height: size,
                         width: size,
                     }}
-                    className="board box-border flex flex-wrap rounded border-4 border-black"
+                    className="board flex flex-wrap rounded shadow-lg"
                     onClick={resetOverlays}
                 >
                     {squares.map(({ col, row, piece }) => {
