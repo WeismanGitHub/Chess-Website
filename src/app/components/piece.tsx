@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import React, { useEffect } from 'react'
 import localFont from 'next/font/local'
 import { resetOverlays } from './board'
+import { Colors } from './square'
 
 const chessFont = localFont({
     src: './chess-font.ttf',
@@ -31,6 +32,17 @@ export default function ({ piece, id, size }: { piece: Piece; id: string; size: 
                 fontSize: size / 12,
                 zIndex: isDragging ? 100 : 1,
                 ...chessFont.style,
+            }}
+            onContextMenu={(e) => {
+                e.preventDefault()
+
+                const overlay = e.currentTarget.parentNode?.querySelectorAll('div')?.[2]
+
+                if (overlay && overlay.id.startsWith('overlay')) {
+                    const isInvisible = overlay.style.backgroundColor == 'transparent'
+
+                    overlay.style.backgroundColor = isInvisible ? Colors.highlight : 'transparent'
+                }
             }}
         >
             {piece.character}
