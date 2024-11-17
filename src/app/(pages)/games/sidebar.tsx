@@ -1,6 +1,7 @@
 'use client'
 
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
+import { SendMessageResponse } from '../../../lib/socket-handler'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { Button, TextInput } from 'flowbite-react'
 import toaster from '../../components/toasts'
@@ -36,20 +37,9 @@ export default function Chat({
         ])
     })
 
-    function sendMessage() {
-        socket.emit('send message', message, ({ success, data }: { success: boolean; data: any }) => {
-            if (!success) {
-                console.log(data)
-                toaster.error(data)
-            } else {
-                setMessage('')
-            }
-        })
-    }
-
     return (
         <div
-            className="w-100 mb-6 flex flex-grow flex-col rounded-lg bg-white shadow"
+            className="w- full mb-6 flex flex-grow flex-col rounded-lg bg-white shadow"
             style={{ height: size, minWidth: '320px' }}
         >
             <div style={{ height: '50%' }} className="bg-transparent"></div>
@@ -57,12 +47,21 @@ export default function Chat({
             <div style={{ height: '50%' }} className="flex flex-col bg-transparent">
                 <ul className="w-full flex-grow">{messages}</ul>
                 <form
+                    name="sendMessageForm"
                     className="flex flex-row"
                     onSubmit={(e) => {
                         e.preventDefault()
-                        sendMessage()
+
+                        socket.emit('send message', message, (res: SendMessageResponse) => {
+                            if (res.success) {
+                                return setMessage('')
+                            }
+
+                            toaster.error(res.error)
+                        })
                     }}
                 >
+                    <input type="submit" hidden />
                     <TextInput
                         type="text"
                         className="w-full"
@@ -72,18 +71,8 @@ export default function Chat({
                         onChange={(event) => {
                             setMessage(event.target.value)
                         }}
-                        onKeyDown={(event) => {
-                            if (!message.length) return
-
-                            event.key === 'Enter' && sendMessage()
-                        }}
                     />
-                    <Button
-                        type="button"
-                        className="rounded-s-none"
-                        onClick={sendMessage}
-                        style={{ width: 'fit-content' }}
-                    >
+                    <Button type="submit" className="rounded-s-none" style={{ width: 'fit-content' }}>
                         Send
                     </Button>
                 </form>
