@@ -1,18 +1,50 @@
 import { lobbies, Lobby, Room, rooms } from './caches'
-import CustomError from './custom-error'
+import { lobbyJoinSchema, messageSchema } from './zod'
 import { Clock, Game } from './chess'
 import { Socket } from 'socket.io'
-import { lobbyJoinSchema, messageSchema } from './zod'
+import CustomError from './custom-error'
 
 type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
 
-export default function socketHandler(socket: AuthenticatedSocket) {
-    socket.on('create lobby', async (values, callback) => {
+type SocketResponse<data = void> =
+    | {
+          success: true
+          data: data
+      }
+    | {
+          success: false
+          error: string
+      }
+
+export type CreateLobbyResponse = SocketResponse
+export type JoinLobbyResponse = SocketResponse<{ opponentName: string }>
+export type SendMessageResponse = SocketResponse
+
+function errorHandler(
+    listener: (data: any, callback: Function) => Promise<void>
+): (data: any, callback: Function) => Promise<void> {
+    return async function (data: any, callback: Function) {
         try {
-            const { success, data } = lobbyJoinSchema.safeParse(values)
+            const res = await listener(data, callback)
+
+            callback({ success: true, data: res })
+        } catch (err) {
+            callback({
+                success: false,
+                error: err instanceof CustomError ? err.message : 'A server error occurred.',
+            })
+        }
+    }
+}
+
+export default function socketHandler(socket: AuthenticatedSocket) {
+    socket.on(
+        'create lobby',
+        errorHandler(async (body) => {
+            const { success, data } = lobbyJoinSchema.safeParse(body)
 
             if (!success) {
-                throw new CustomError('Invalid lobby config values.')
+                throw new CustomError('Invalid lobby configuration values.')
             }
 
             if (await lobbies.has(data.name)) {
@@ -31,22 +63,13 @@ export default function socketHandler(socket: AuthenticatedSocket) {
                     },
                 ],
             })
+        })
+    )
 
-            socket.roomId = data.name
-            socket.join(data.name)
-
-            callback({ success: true, data: data.name })
-        } catch (err) {
-            callback({
-                success: false,
-                data: err instanceof CustomError ? err.message : 'A server error occurred.',
-            })
-        }
-    })
-
-    socket.on('join lobby', async (values, callback) => {
-        try {
-            const { success, data } = await lobbyJoinSchema.safeParseAsync(values)
+    socket.on(
+        'join lobby',
+        errorHandler(async (body) => {
+            const { success, data } = await lobbyJoinSchema.safeParseAsync(body)
 
             if (!success) {
                 throw new CustomError('Invalid lobby credentials.')
@@ -77,15 +100,8 @@ export default function socketHandler(socket: AuthenticatedSocket) {
             socket.roomId = data.name
             socket.to(data.name).emit('player joined', socket.userId)
             socket.join(data.name)
-
-            callback({ success: true })
-        } catch (err) {
-            callback({
-                success: false,
-                data: err instanceof CustomError ? err.message : 'A server error occurred.',
-            })
-        }
-    })
+        })
+    )
 
     socket.on('ready', async () => {
         if (!socket.roomId) {
@@ -149,12 +165,14 @@ export default function socketHandler(socket: AuthenticatedSocket) {
         }
     })
 
-    socket.on('send message', async (values, callback) => {
-        try {
-            const { success, data } = await messageSchema.safeParseAsync(values)
+    socket.on(
+        'send message',
+        errorHandler(async (body) => {
+            console.log(body)
+            const { success, data } = await messageSchema.safeParseAsync(body)
 
             if (!success) {
-                throw new CustomError('Invalid lobby credentials.')
+                throw new CustomError('That message is invalid.')
             }
 
             if (!socket.roomId) {
@@ -163,18 +181,15 @@ export default function socketHandler(socket: AuthenticatedSocket) {
 
             const lobby = await lobbies.get<Lobby>(socket.roomId)
 
-            if (!lobby) {
-                throw new CustomError("That lobby doesn't exist.")
-            }
+            // if (!lobby) {
+            //     throw new CustomError("That lobby doesn't exist.")
+            // }
 
-            socket.to(socket.roomId).emit('message received', data)
-        } catch (err) {
-            callback({
-                success: false,
-                data: err instanceof CustomError ? err.message : 'A server error occurred.',
-            })
-        }
-    })
+            console.log(data, lobby)
+
+            // socket.to(socket.roomId).emit('message received', data)
+        })
+    )
 
     socket.on('disconnect', async () => {
         // delete lobby
@@ -188,6 +203,6 @@ export default function socketHandler(socket: AuthenticatedSocket) {
     // // Math.random() < 0.5
 }
 
-// goal: website where users can play chess
+// Flow: User goes to /games and creates a lobby. There will be a widget that shows their name, whether they're ready or not, and how much time they have on the clock. Once the second user joins, the blank opponent widget will be filled in. Once both users have clicked ready, the game begins. Once the game ends, the overlay is changed and the players are asked if they want a rematch.
 
-// flow: a user creates a game on /games. they can invite someone off their friends list to the lobby. once a friend joins and they both click "ready" then a room instance is created.
+// Notes: Have a semi transparent gray overlay on the board and a slightly red background to the user widgets until the game begins. Once it begins, have it flash green then go to a neutral color. Display the state of the game with an overlay. Make the overlay red/green depending on who won, and add a rematch button or something. Maybe add a button to show and hide the overlay once the game is over so you can walk through the game.
