@@ -114,6 +114,32 @@ export default function socketHandler(socket: AuthenticatedSocket) {
         })
     )
 
+    socket.on(
+        SendMessage.Name,
+        errorHandler(async (body) => {
+            console.log(body)
+            const { success, data } = await messageSchema.safeParseAsync(body)
+
+            if (!success) {
+                throw new CustomError('That message is invalid.')
+            }
+
+            if (!socket.roomId) {
+                throw new CustomError('Join a lobby first.')
+            }
+
+            const lobby = await lobbies.get<Lobby>(socket.roomId)
+
+            // if (!lobby) {
+            //     throw new CustomError("That lobby doesn't exist.")
+            // }
+
+            console.log(data, lobby)
+
+            // socket.to(socket.roomId).emit('message-received', data)
+        })
+    )
+
     socket.on('ready', async () => {
         if (!socket.roomId) {
             throw new CustomError('Join a lobby first.')
@@ -164,43 +190,21 @@ export default function socketHandler(socket: AuthenticatedSocket) {
         // create the game room
     })
 
-    socket.on('move', async () => {
+    socket.on('make-move', async () => {
         if (!socket.roomId) {
             throw new CustomError("You're not in a room.")
         }
-
-        const room = rooms.get(socket.roomId)
 
         if (!room) {
             throw new CustomError('Could not find your room.')
         }
     })
 
-    socket.on(
-        'send message',
-        errorHandler(async (body) => {
-            console.log(body)
-            const { success, data } = await messageSchema.safeParseAsync(body)
+    socket.on('draw', async () => {})
 
-            if (!success) {
-                throw new CustomError('That message is invalid.')
-            }
+    socket.on('resign', async () => {})
 
-            if (!socket.roomId) {
-                throw new CustomError('Join a lobby first.')
-            }
-
-            const lobby = await lobbies.get<Lobby>(socket.roomId)
-
-            // if (!lobby) {
-            //     throw new CustomError("That lobby doesn't exist.")
-            // }
-
-            console.log(data, lobby)
-
-            // socket.to(socket.roomId).emit('message received', data)
-        })
-    )
+    socket.on('offer-rematch', async () => {})
 
     socket.on('disconnect', async () => {
         // delete lobby
@@ -214,6 +218,29 @@ export default function socketHandler(socket: AuthenticatedSocket) {
     // // Math.random() < 0.5
 }
 
-// Flow: User goes to /games and creates a lobby. There will be a widget that shows their name, whether they're ready or not, and how much time they have on the clock. Once the second user joins, the blank opponent widget will be filled in. Once both users have clicked ready, the game begins. Once the game ends, the overlay is changed and the players are asked if they want a rematch.
+enum RoomState {
+    Setup,
+    Active,
+    Done,
+}
+
+type Player = {
+    id: string
+    name: string
+    ready: boolean
+}
+
+interface Room {
+    id: string
+    state: RoomState
+    game: Game | null
+    players: Player[]
+}
+
+// User Flow: User goes to /games and creates a lobby. There will be a widget that shows their name, whether they're ready or not, and how much time they have on the clock. Once the second user joins, the blank opponent widget will be filled in. Once both users have clicked ready, the game begins. Once the game ends, the overlay is changed and the players are asked if they want a rematch.
+
+// Back-End Structure: Redis cache to keep track of state. once both players are ready, a start-game event is emitted and the game state in redis is updated to Active. Players make moves until the game is over, at which point a game-end event is emitted. once the game is over, flush the game data to database and set game in redis to null.
+
+// problems: rejoining, leaving, new person joining lobby after someone leaves.
 
 // Notes: Have a semi transparent gray overlay on the board and a slightly red background to the user widgets until the game begins. Once it begins, have it flash green then go to a neutral color. Display the state of the game with an overlay. Make the overlay red/green depending on who won, and add a rematch button or something. Maybe add a button to show and hide the overlay once the game is over so you can walk through the game.
