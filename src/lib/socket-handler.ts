@@ -1,8 +1,8 @@
-import { lobbies, Lobby, Room, rooms } from './caches'
 import { lobbyJoinSchema, messageSchema } from './zod'
+import CustomError from './custom-error'
 import { Clock, Game } from './chess'
 import { Socket } from 'socket.io'
-import CustomError from './custom-error'
+import { lobbies, Lobby } from './caches'
 
 type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
 
@@ -16,9 +16,20 @@ type SocketResponse<data = void> =
           error: string
       }
 
-export type CreateLobbyResponse = SocketResponse
-export type JoinLobbyResponse = SocketResponse<{ opponentName: string }>
-export type SendMessageResponse = SocketResponse
+export namespace CreateLobby {
+    export type Response = SocketResponse
+    export const Name = 'create-lobby'
+}
+
+export namespace JoinLobby {
+    export type Response = SocketResponse<{ opponentName: string }>
+    export const Name = 'join-lobby'
+}
+
+export namespace SendMessage {
+    export type Response = SocketResponse
+    export const Name = 'send-message'
+}
 
 function errorHandler(
     listener: (data: any, callback: Function) => Promise<void>
@@ -39,7 +50,7 @@ function errorHandler(
 
 export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on(
-        'create lobby',
+        CreateLobby.Name,
         errorHandler(async (body) => {
             const { success, data } = lobbyJoinSchema.safeParse(body)
 
@@ -67,7 +78,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
     )
 
     socket.on(
-        'join lobby',
+        JoinLobby.Name,
         errorHandler(async (body) => {
             const { success, data } = await lobbyJoinSchema.safeParseAsync(body)
 
@@ -98,7 +109,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
             await lobbies.set(data.name, lobby)
 
             socket.roomId = data.name
-            socket.to(data.name).emit('player joined', socket.userId)
+            socket.to(data.name).emit('player-joined', socket.userId)
             socket.join(data.name)
         })
     )

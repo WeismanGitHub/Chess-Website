@@ -1,8 +1,8 @@
 'use client'
 
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import { SendMessageResponse } from '../../../lib/socket-handler'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
+import { SendMessage } from '../../../lib/socket-handler'
 import { Button, TextInput } from 'flowbite-react'
 import toaster from '../../components/toasts'
 import { Socket } from 'socket.io-client'
@@ -52,7 +52,7 @@ export default function Chat({
                     onSubmit={(e) => {
                         e.preventDefault()
 
-                        socket.emit('send message', message, (res: SendMessageResponse) => {
+                        socket.emit(SendMessage.Name, message, (res: SendMessage.Response) => {
                             if (res.success) {
                                 return setMessage('')
                             }

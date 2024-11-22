@@ -7,7 +7,7 @@ import { Button, Label, TextInput } from 'flowbite-react'
 import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
 
-import { CreateLobbyResponse } from '../../../lib/socket-handler'
+import { CreateLobby, JoinLobby } from '../../../lib/socket-handler'
 import toaster from '../../components/toasts'
 import Board from '../../components/board'
 import Sidebar from './sidebar'
@@ -91,7 +91,7 @@ function LobbyTabs({
                         const socket = io()
 
                         socket.on('connect', () => {
-                            socket.emit('create lobby', values, (res: CreateLobbyResponse) => {
+                            socket.emit(CreateLobby.Name, values, (res: CreateLobby.Response) => {
                                 if (res.success) {
                                     return setSocket(socket)
                                 }
@@ -319,17 +319,13 @@ function LobbyTabs({
                         const socket = io()
 
                         socket.on('connect', () => {
-                            socket.emit(
-                                'join lobby',
-                                values,
-                                ({ success, data }: { success: boolean; data: any }) => {
-                                    if (success) {
-                                        return setSocket(socket)
-                                    }
-
-                                    toaster.error(data)
+                            socket.emit(JoinLobby.Name, values, (res: JoinLobby.Response) => {
+                                if (res.success) {
+                                    return setSocket(socket)
                                 }
-                            )
+
+                                toaster.error(res.error)
+                            })
                         })
                     }}
                     validateOnChange={true}
@@ -456,22 +452,6 @@ function Game({ socket }: { socket: Socket<DefaultEventsMap, DefaultEventsMap> }
 
 export default function () {
     const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | null>(null)
-
-    // if (socket) {
-    //     socket.on('connect', () => {
-    //         socket.emit(
-    //             'create lobby',
-    //             { name: 's', password: 's', minutes: 30 },
-    //             ({ success, data }: { success: boolean; data: any }) => {
-    //                 if (success) {
-    //                     return setSocket(socket)
-    //                 }
-
-    //                 toaster.error(data)
-    //             }
-    //         )
-    //     })
-    // }
 
     return (
         <div className="mx-auto flex h-full w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
