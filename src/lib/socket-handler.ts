@@ -1,8 +1,8 @@
 import { lobbyJoinSchema, messageSchema } from './zod'
+import { lobbies, Lobby } from './caches'
 import CustomError from './custom-error'
 import { Clock, Game } from './chess'
 import { Socket } from 'socket.io'
-import { lobbies, Lobby } from './caches'
 
 type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
 
@@ -175,29 +175,28 @@ export default function socketHandler(socket: AuthenticatedSocket) {
 
         lobbies.delete(socket.roomId)
 
-        const coinflip = Math.random() < 0.5
+        // const coinflip = Math.random() < 0.5
 
-        const room: Room = {
-            white: lobby.players[coinflip ? 1 : 0].id,
-            black: lobby.players[coinflip ? 0 : 1].id,
+        // const room: Room = {
+        //     white: lobby.players[coinflip ? 1 : 0].id,
+        //     black: lobby.players[coinflip ? 0 : 1].id,
 
-            clock: new Clock(lobby.minutes, () => {}),
-            game: new Game(),
-        }
+        //     clock: new Clock(lobby.minutes, () => {}),
+        //     game: new Game(),
+        // }
 
-        rooms.set(socket.roomId, room)
+        // rooms.set(socket.roomId, room)
 
         // create the game room
     })
 
     socket.on('make-move', async () => {
-        if (!socket.roomId) {
-            throw new CustomError("You're not in a room.")
-        }
-
-        if (!room) {
-            throw new CustomError('Could not find your room.')
-        }
+        // if (!socket.roomId) {
+        //     throw new CustomError("You're not in a room.")
+        // }
+        // if (!room) {
+        //     throw new CustomError('Could not find your room.')
+        // }
     })
 
     socket.on('draw', async () => {})
@@ -239,8 +238,10 @@ interface Room {
 
 // User Flow: User goes to /games and creates a lobby. There will be a widget that shows their name, whether they're ready or not, and how much time they have on the clock. Once the second user joins, the blank opponent widget will be filled in. Once both users have clicked ready, the game begins. Once the game ends, the overlay is changed and the players are asked if they want a rematch.
 
-// Back-End Structure: Redis cache to keep track of state. once both players are ready, a start-game event is emitted and the game state in redis is updated to Active. Players make moves until the game is over, at which point a game-end event is emitted. once the game is over, flush the game data to database and set game in redis to null.
+// Back-End Structure: Redis cache to keep track of state. once both players are ready, a start-game event is emitted and the game state in redis is updated to Active. Players make moves until the game is over, at which point a game-end event is emitted. once the game is over, flush the game data to database, set game in redis to null, and set the state to Done.
 
 // problems: rejoining, leaving, new person joining lobby after someone leaves.
+
+// solution: each room will have an id. when a user tries to rejoin, check if theyre in that room already. if they leave during a game then they forfeit. you can only join a room when theres 1 person in persons.
 
 // Notes: Have a semi transparent gray overlay on the board and a slightly red background to the user widgets until the game begins. Once it begins, have it flash green then go to a neutral color. Display the state of the game with an overlay. Make the overlay red/green depending on who won, and add a rematch button or something. Maybe add a button to show and hide the overlay once the game is over so you can walk through the game.
