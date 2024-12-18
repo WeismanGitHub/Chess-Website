@@ -31,6 +31,18 @@ export abstract class Piece {
     getCharacter() {
         return this.character
     }
+
+    squaresAreDiagonal(start: Square, end: Square): boolean {
+        return start.col - end.col === start.row - end.row
+    }
+
+    squaresAreVertical(start: Square, end: Square): boolean {
+        return start.col === end.col
+    }
+
+    squaresAreHorizontal(start: Square, end: Square): boolean {
+        return start.row === end.row
+    }
 }
 
 export class King extends Piece {
@@ -47,8 +59,12 @@ export class Queen extends Piece {
     public character = 'w'
 
     @universalCheck
-    canMove(_board: Board, _start: Square, _end: Square): boolean {
-        throw new Error('Method not implemented.')
+    canMove(_board: Board, start: Square, end: Square): boolean {
+        return (
+            this.squaresAreDiagonal(start, end) ||
+            this.squaresAreHorizontal(start, end) ||
+            this.squaresAreVertical(start, end)
+        )
     }
 }
 
@@ -56,8 +72,8 @@ export class Bishop extends Piece {
     public character = 'v'
 
     @universalCheck
-    canMove(_board: Board, _start: Square, _end: Square): boolean {
-        throw new Error('Method not implemented.')
+    canMove(_board: Board, start: Square, end: Square): boolean {
+        return this.squaresAreDiagonal(start, end)
     }
 }
 
@@ -74,8 +90,8 @@ export class Rook extends Piece {
     public character = 't'
 
     @universalCheck
-    canMove(_board: Board, _start: Square, _end: Square): boolean {
-        throw new Error('Method not implemented.')
+    canMove(_board: Board, start: Square, end: Square): boolean {
+        return this.squaresAreHorizontal(start, end)
     }
 }
 
@@ -83,7 +99,11 @@ export class Pawn extends Piece {
     public character = 'o'
 
     @universalCheck
-    canMove(_board: Board, _start: Square, _end: Square): boolean {
-        throw new Error('Method not implemented.')
+    canMove(_board: Board, start: Square, end: Square): boolean {
+        if (!end.piece) {
+            return this.squaresAreVertical(start, end)
+        }
+
+        return this.squaresAreVertical(start, end) || end.col === start.col + 1 || end.col === start.col - 1
     }
 }
