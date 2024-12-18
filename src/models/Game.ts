@@ -1,9 +1,9 @@
 import { Model, Schema, model, models, Types } from 'mongoose'
-import { GameStatus } from '../types'
+import { GameState } from '../types'
 import { Game } from '../lib/chess/'
 
 interface IGame {
-    status: GameStatus
+    status: GameState
     moves: Move[]
     white: typeof Types.ObjectId
     black: typeof Types.ObjectId
@@ -21,9 +21,9 @@ const gameschema = new Schema<IGame, GameModel, IGameMethods>(
     {
         status: {
             type: Number,
-            enum: GameStatus,
+            enum: GameState,
             required: [true, 'Please provide a status.'],
-            default: GameStatus.Active,
+            default: GameState.Active,
         },
         moves: {
             type: [],
