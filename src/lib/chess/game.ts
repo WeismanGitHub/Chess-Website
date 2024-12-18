@@ -1,14 +1,11 @@
 import { Bishop, King, Knight, Pawn, Piece, Queen, Rook } from './pieces'
-import { Color, Coordinate, GameStatus } from '../../types'
+import { Color, Coordinate, GameState } from '../../types'
 import Square from './square'
 import Board from './board'
-import Move from './move'
 
 export default class Game {
-    public status: GameStatus = GameStatus.Active
+    public state: GameState = GameState.Active
     public board: Board
-    public deadPieces: Piece[] = []
-    public moves: Move[] = []
     private turn: Color = 'white'
 
     constructor() {
@@ -53,8 +50,8 @@ export default class Game {
         this.board = new Board(rows)
     }
 
-    movePiece(startCoordinate: Coordinate, endCoordinate: Coordinate, promotion: Piece | null = null) {
-        if (this.status !== GameStatus.Active) {
+    move(startCoordinate: Coordinate, endCoordinate: Coordinate, promotion: Piece | null = null) {
+        if (this.state !== GameState.Active) {
             throw new Error('Game is not active.')
         }
 
@@ -72,28 +69,30 @@ export default class Game {
         }
 
         if (piece.color !== this.turn) {
-            throw new Error('Cannot move pieces of another color.')
+            throw new Error('Cannot move the pieces of another color.')
         }
 
         if (!piece.canMove(this.board, start, end)) {
             throw new Error('Invalid Move')
         }
 
-        let killedPiece: Piece | null = null
-
-        if (end.piece) {
-            killedPiece = end.piece
-            this.deadPieces.push(end.piece)
-        }
-
         switch (true) {
-            case piece instanceof Pawn:
+            case piece instanceof Pawn: {
+                start.piece = null
+
                 if (end.row === this.board.rows) {
                     end.piece = promotion
-                    start.piece = null
+                } else {
+                    end.piece = piece
                 }
 
                 break
+            }
+
+            case piece instanceof King: {
+                throw new Error('Not Implemented')
+                // castling stuff
+            }
 
             default:
                 end.piece = piece
@@ -101,15 +100,16 @@ export default class Game {
                 break
         }
 
-        this.moves.push(new Move(piece, killedPiece, this.turn, start, end))
+        // check if game ending move, if true then change state
+
         this.turn = this.turn === 'white' ? 'black' : 'white'
     }
 
-    end(status: GameStatus) {
-        if (status === GameStatus.Active) {
+    end(status: GameState) {
+        if (status === GameState.Active) {
             throw new Error('Active is an invalid status.')
         }
 
-        this.status = status
+        this.state = status
     }
 }
