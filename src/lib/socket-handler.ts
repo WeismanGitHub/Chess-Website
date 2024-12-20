@@ -18,12 +18,12 @@ type SocketResponse<data = void> =
           error: string
       }
 
-export namespace CreateLobby {
+export namespace CreateRoom {
     export type Response = SocketResponse
     export const Name = 'create-lobby'
 }
 
-export namespace JoinLobby {
+export namespace JoinRoom {
     export type Response = SocketResponse<{ opponentName: string }>
     export const Name = 'join-lobby'
 }
@@ -68,7 +68,7 @@ async function generateRoomId() {
 
 export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on(
-        CreateLobby.Name,
+        CreateRoom.Name,
         errorHandler(async (body) => {
             const { success, data } = lobbyJoinSchema.safeParse(body)
 
@@ -96,7 +96,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
     )
 
     socket.on(
-        JoinLobby.Name,
+        JoinRoom.Name,
         errorHandler(async (body) => {
             const { success, data } = await lobbyJoinSchema.safeParseAsync(body)
 
