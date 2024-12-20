@@ -18,24 +18,9 @@ export const credentialsSchema = object({
 })
 
 export const lobbyCreateSchema = object({
-    name: string({ required_error: 'Name is required' })
-        .min(1, `Name must be more than 1 character`)
-        .max(50, `Name cannot be more than be more than 50 characters`),
-    password: string({ required_error: 'Password is required' })
-        .min(1, `Password must be more than 1 character`)
-        .max(50, `Password cannot be more than be more than 50 characters`),
     minutes: number({ required_error: 'Minutes are required' })
         .min(1, `Minutes must be more than 1`)
         .max(240, `Minutes cannot be more than 240`),
-})
-
-export const lobbyJoinSchema = object({
-    name: string({ required_error: 'Name is required' })
-        .min(1, `Name must be more than 1 character`)
-        .max(50, `Name cannot be more than be more than 50 characters`),
-    password: string({ required_error: 'Password is required' })
-        .min(1, `Password must be more than 1 character`)
-        .max(50, `Password cannot be more than be more than 50 characters`),
 })
 
 export const messageSchema = string({ required_error: 'Message is required' })
