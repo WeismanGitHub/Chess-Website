@@ -1,4 +1,4 @@
-import { lobbyCreateSchema, messageSchema } from './zod'
+import { minutesSchema, idSchema, messageSchema } from './zod'
 import { lobbies, Lobby, rooms } from './caches'
 import CustomError from './custom-error'
 import { customAlphabet } from 'nanoid'
