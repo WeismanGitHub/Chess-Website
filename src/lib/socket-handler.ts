@@ -1,8 +1,10 @@
-import { lobbyJoinSchema, messageSchema } from './zod'
-import { lobbies, Lobby } from './caches'
+import { lobbyCreateSchema, messageSchema } from './zod'
+import { lobbies, Lobby, rooms } from './caches'
 import CustomError from './custom-error'
-import { Clock, Game } from './chess'
+import { customAlphabet } from 'nanoid'
 import { Socket } from 'socket.io'
+
+const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 3)
 
 type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
 
@@ -46,6 +48,22 @@ function errorHandler(
             })
         }
     }
+}
+
+async function generateRoomId() {
+    let id = nanoid()
+    let retries = 5
+
+    while (await rooms.has(id)) {
+        if (retries === 0) {
+            throw new Error('Cannot generate room id.')
+        }
+
+        id = nanoid()
+        retries--
+    }
+
+    return id
 }
 
 export default function socketHandler(socket: AuthenticatedSocket) {
