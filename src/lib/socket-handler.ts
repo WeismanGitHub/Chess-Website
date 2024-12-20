@@ -6,7 +6,7 @@ import { Socket } from 'socket.io'
 
 const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 3)
 
-type AuthenticatedSocket = Socket & { userId: string; roomId: string | null }
+type AuthenticatedSocket = Socket & { userId: string }
 
 type SocketResponse<data = void> =
     | {
@@ -70,20 +70,16 @@ export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on(
         CreateRoom.Name,
         errorHandler(async (body) => {
-            const { success, data } = lobbyJoinSchema.safeParse(body)
+            const { success, data } = await minutesSchema.safeParseAsync(body)
 
             if (!success) {
-                throw new CustomError('Invalid lobby configuration values.')
+                throw new CustomError('Invalid Body')
             }
 
-            if (await lobbies.has(data.name)) {
-                throw new CustomError('Please use a unique lobby name.')
-            }
+            const id = await generateRoomId()
 
-            await lobbies.set(data.name, {
-                name: data.name,
-                password: data.password,
-                minutes: data.password,
+            await lobbies.set(id, {
+                minutes: data,
                 started: false,
                 players: [
                     {
@@ -98,37 +94,31 @@ export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on(
         JoinRoom.Name,
         errorHandler(async (body) => {
-            const { success, data } = await lobbyJoinSchema.safeParseAsync(body)
+            const { success, data } = await idSchema.safeParseAsync(body)
 
-            if (!success) {
-                throw new CustomError('Invalid lobby credentials.')
+            if (!success || data == undefined) {
+                throw new CustomError('Invalid lobby id.')
             }
 
-            const lobby = await lobbies.get<Lobby>(data.name)
+            const lobby = await lobbies.get<Lobby>(data)
 
             if (!lobby) {
                 throw new CustomError("That lobby doesn't exist.")
-            }
-
-            if (lobby.password !== data.password) {
-                throw new CustomError('That password is invalid.')
             }
 
             if (lobby.players.length === 2) {
                 throw new CustomError('Lobby is full.')
             }
 
-            if (socket.rooms.has(data.name)) {
+            if (socket.rooms.has(data)) {
                 throw new CustomError('You are already in this lobby.')
             }
 
             lobby.players.push({ id: socket.userId, ready: false })
+            // check that pushing actually updates in cache
 
-            await lobbies.set(data.name, lobby)
-
-            socket.roomId = data.name
-            socket.to(data.name).emit('player-joined', socket.userId)
-            socket.join(data.name)
+            socket.to(data).emit('player-joined', socket.userId)
+            socket.join(data)
         })
     )
 
@@ -142,70 +132,56 @@ export default function socketHandler(socket: AuthenticatedSocket) {
                 throw new CustomError('That message is invalid.')
             }
 
-            if (!socket.roomId) {
-                throw new CustomError('Join a lobby first.')
-            }
+            // if (!socket.roomId) {
+            //     throw new CustomError('Join a lobby first.')
+            // }
 
-            const lobby = await lobbies.get<Lobby>(socket.roomId)
+            // const lobby = await lobbies.get<Lobby>(socket.roomId)
 
             // if (!lobby) {
             //     throw new CustomError("That lobby doesn't exist.")
             // }
 
-            console.log(data, lobby)
+            console.log(data)
 
             // socket.to(socket.roomId).emit('message-received', data)
         })
     )
 
     socket.on('ready', async () => {
-        if (!socket.roomId) {
-            throw new CustomError('Join a lobby first.')
-        }
-
-        const lobby = await lobbies.get<Lobby>(socket.roomId)
-
-        if (!lobby) {
-            throw new CustomError("That lobby doesn't exist.")
-        }
-
-        if (lobby.players.length < 2) {
-            throw new CustomError('You need 2 players to start.')
-        }
-
-        if (!lobby.players.some((player) => player.id == socket.userId)) {
-            throw new CustomError('You are not in this lobby.')
-        }
-
-        lobby.players = lobby.players.map((player) => {
-            if (player.id === socket.userId) {
-                player.ready = true
-            }
-
-            return player
-        })
-
-        // If both players are NOT ready
-        if (!(lobby.players[0].ready && lobby.players[1].ready)) {
-            lobbies.set(socket.roomId, lobby)
-            return
-        }
-
-        lobbies.delete(socket.roomId)
-
+        // if (!socket.roomId) {
+        //     throw new CustomError('Join a lobby first.')
+        // }
+        // const lobby = await lobbies.get<Lobby>(socket.roomId)
+        // if (!lobby) {
+        //     throw new CustomError("That lobby doesn't exist.")
+        // }
+        // if (lobby.players.length < 2) {
+        //     throw new CustomError('You need 2 players to start.')
+        // }
+        // if (!lobby.players.some((player) => player.id == socket.userId)) {
+        //     throw new CustomError('You are not in this lobby.')
+        // }
+        // lobby.players = lobby.players.map((player) => {
+        //     if (player.id === socket.userId) {
+        //         player.ready = true
+        //     }
+        //     return player
+        // })
+        // // If both players are NOT ready
+        // if (!(lobby.players[0].ready && lobby.players[1].ready)) {
+        //     lobbies.set(socket.roomId, lobby)
+        //     return
+        // }
+        // lobbies.delete(socket.roomId)
         // const coinflip = Math.random() < 0.5
-
         // const room: Room = {
         //     white: lobby.players[coinflip ? 1 : 0].id,
         //     black: lobby.players[coinflip ? 0 : 1].id,
-
         //     clock: new Clock(lobby.minutes, () => {}),
         //     game: new Game(),
         // }
-
         // rooms.set(socket.roomId, room)
-
-        // create the game room
     })
 
     socket.on('make-move', async () => {
@@ -217,6 +193,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
         // }
     })
 
+    // maybe roll these 3 into 1 "make-move" event?
     socket.on('draw', async () => {})
 
     socket.on('resign', async () => {})
@@ -226,37 +203,30 @@ export default function socketHandler(socket: AuthenticatedSocket) {
     socket.on('disconnect', async () => {
         // delete lobby
     })
-
-    // const game = new GameCacheEntry(new Game(), new Clock(CLOCK_TIME, () => {}), coinflip ? userId : null, !coinflip ? userId : null)
-
-    // await games.set(id.toString(), game)
-
-    // // construct the game. randomly assign the users to black/white
-    // // Math.random() < 0.5
 }
 
-enum RoomState {
-    Setup,
-    Active,
-    Done,
-}
+// enum RoomState {
+//     Setup,
+//     Active,
+//     Done,
+// }
 
-type Player = {
-    id: string
-    name: string
-    ready: boolean
-}
+// type Player = {
+//     id: string
+//     name: string
+//     ready: boolean
+// }
 
-interface Room {
-    id: string
-    state: RoomState
-    game: Game | null
-    players: Player[]
-}
+// interface Room {
+//     id: string
+//     state: RoomState
+//     game: Game | null
+//     players: Player[]
+// }
 
 // User Flow: User goes to /games and creates a lobby. There will be a widget that shows their name, whether they're ready or not, and how much time they have on the clock. Once the second user joins, the blank opponent widget will be filled in. Once both users have clicked ready, the game begins. Once the game ends, the overlay is changed and the players are asked if they want a rematch.
 
-// Back-End Structure: Redis cache to keep track of state. once both players are ready, a start-game event is emitted and the game state in redis is updated to Active. Players make moves until the game is over, at which point a game-end event is emitted. once the game is over, flush the game data to database, set game in redis to null, and set the state to Done.
+// Back-End Structure: Redis cache to keep track of state. once both players are ready, a start-game event is emitted and the game state in redis is updated to Active. Players make moves until the game is over, at which point a game-end event is emitted. once the game is over, flush the game data to database, set game in redis to null, and set the state to Done. if an instance of the server doesnt have a locally stored Game object, then create one.
 
 // problems: rejoining, leaving, new person joining lobby after someone leaves.
 
