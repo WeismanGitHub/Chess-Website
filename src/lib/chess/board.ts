@@ -17,14 +17,14 @@ export default class Board {
         return square
     }
 
-    getKingSquare(color: Color): Square {
+    getKingSquare(color: Color) {
         for (let i = 0; i < this.squares.length; i++) {
             for (let j = 0; j < this.squares[i].length; j++) {
                 const square = this.squares[i][j]
                 const piece = square.piece
 
                 if (piece && piece instanceof King && piece.color === color) {
-                    return square
+                    return square as Square & { piece: King }
                 }
             }
         }
