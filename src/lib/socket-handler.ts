@@ -3,8 +3,9 @@ import { lobbies, Lobby, rooms } from './caches'
 import CustomError from './custom-error'
 import { customAlphabet } from 'nanoid'
 import { Socket } from 'socket.io'
+import { LobbyConstants } from './constants'
 
-const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 3)
+const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', LobbyConstants.idLength)
 
 type AuthenticatedSocket = Socket & { userId: string }
 
