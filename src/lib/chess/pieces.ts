@@ -6,11 +6,15 @@ function universalCheck(_target: Object, _propertyKey: string, descriptor: Typed
     const originalMethod = descriptor.value
 
     descriptor.value = function (board: Board, start: Square, end: Square) {
-        if (!start.piece) return false
-
-        if (start.piece.color === end.piece?.color) return false
+        if (!start.piece || start.piece.color === end.piece?.color) return false
 
         const result = originalMethod.apply(this, board, start, end)
+
+        const king = board.getKingSquare(start.piece.color).piece
+
+        if (king.isInCheck(board)) {
+            return false
+        }
 
         return result
     }
