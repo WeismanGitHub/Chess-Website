@@ -17,11 +17,9 @@ export const credentialsSchema = object({
     ),
 })
 
-export const createLobbySchema = object({
-    minutes: number({ required_error: 'Minutes are required' })
-        .min(1, `Minutes must be more than 1`)
-        .max(240, `Minutes cannot be more than 240`),
-})
+export const createLobbySchema = number({ required_error: 'Minutes are required' })
+    .min(LobbyConstants.minMinutesLength, `Minutes must be more than ${LobbyConstants.minMinutesLength}`)
+    .max(LobbyConstants.maxMinutesLength, `Minutes cannot be more than ${LobbyConstants.maxMinutesLength}`)
 
 export const joinLobbySchema = object({
     id: z.literal(LobbyConstants.idLength),
