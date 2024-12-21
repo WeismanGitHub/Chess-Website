@@ -1,7 +1,7 @@
 'use client'
 
 import { Button, Label, TextInput } from 'flowbite-react'
-import { credentialsSchema } from '../../../../lib/zod'
+import { Credentials } from '../../../../lib/zod'
 import toaster from '../../../components/toasts'
 import { login } from '../../../actions/auth'
 import { useRouter } from 'next/navigation'
@@ -34,7 +34,7 @@ export default function () {
                                     password?: string
                                 } = {}
 
-                                const res = credentialsSchema.safeParse(values)
+                                const res = Credentials.safeParse(values)
 
                                 if (!res.success) {
                                     const fieldErrors = res.error.flatten().fieldErrors
