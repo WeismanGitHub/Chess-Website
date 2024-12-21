@@ -6,7 +6,7 @@ export class UserConstants {
 }
 
 export class LobbyConstants {
-    public static readonly idLength = 3
+    public static readonly idLength = 4
 
     public static readonly minMinutesLength = 1
     public static readonly maxMinutesLength = 240
