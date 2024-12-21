@@ -1,13 +1,13 @@
 'use client'
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { lobbyJoinSchema, lobbyCreateSchema } from '../../../lib/zod'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
+import { idSchema, minutesSchema } from '../../../lib/zod'
 import { Button, Label, TextInput } from 'flowbite-react'
 import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
 
-import { CreateLobby, JoinLobby } from '../../../lib/socket-handler'
+import { CreateRoom, JoinRoom } from '../../../lib/socket-handler'
 import toaster from '../../components/toasts'
 import Board from '../../components/board'
 import Sidebar from './sidebar'
@@ -25,7 +25,7 @@ function StopwatchIcon() {
     )
 }
 
-function LobbyTabs({
+function RoomTabs({
     setSocket,
 }: {
     setSocket: Dispatch<SetStateAction<Socket<DefaultEventsMap, DefaultEventsMap> | null>>
@@ -61,28 +61,21 @@ function LobbyTabs({
             </ul>
             <div hidden={tab !== 'create'} className="space-y-4 p-6 sm:p-8 md:space-y-6">
                 <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                    Create a lobby
+                    Create a room
                 </h1>
                 <Formik
                     initialValues={{
-                        name: '',
-                        password: '',
                         minutes: 30,
                     }}
                     validate={(values) => {
                         const errors: {
-                            name?: string
-                            password?: string
                             minutes?: string
                         } = {}
 
-                        const res = lobbyCreateSchema.safeParse(values)
+                        const res = minutesSchema.safeParse(values.minutes)
 
                         if (!res.success) {
-                            const fieldErrors = res.error.flatten().fieldErrors
-                            errors.name = fieldErrors.name?.[0]
-                            errors.password = fieldErrors.password?.[0]
-                            errors.minutes = fieldErrors.minutes?.[0]
+                            errors.minutes = res.error.flatten().formErrors?.[0]
                         }
 
                         return errors
@@ -91,7 +84,7 @@ function LobbyTabs({
                         const socket = io()
 
                         socket.on('connect', () => {
-                            socket.emit(CreateLobby.Name, values, (res: CreateLobby.Response) => {
+                            socket.emit(CreateRoom.Name, values.minutes, (res: CreateRoom.Response) => {
                                 if (res.success) {
                                     return setSocket(socket)
                                 }
@@ -103,80 +96,9 @@ function LobbyTabs({
                     validateOnChange={true}
                     validateOnBlur={true}
                 >
-                    {({
-                        handleSubmit,
-                        handleChange,
-                        handleBlur,
-                        values,
-                        errors,
-                        touched,
-                        setTouched,
-                        setFieldValue,
-                    }) => {
+                    {({ handleSubmit, values, errors, touched, setTouched, setFieldValue }) => {
                         return (
                             <Form className="mb-4 space-y-4 md:space-y-6" noValidate onSubmit={handleSubmit}>
-                                <div>
-                                    <Label
-                                        htmlFor="name"
-                                        className="mb-2 block text-sm font-medium text-gray-900"
-                                    >
-                                        Name
-                                    </Label>
-                                    <TextInput
-                                        type="text"
-                                        name="name"
-                                        id="name"
-                                        value={values.name}
-                                        placeholder="lobby name"
-                                        required={true}
-                                        onBlur={handleBlur}
-                                        onChange={(target) => {
-                                            setTouched({
-                                                name: true,
-                                                ...touched,
-                                            })
-
-                                            handleChange(target)
-                                        }}
-                                        helperText={
-                                            touched.name && errors.name ? (
-                                                <span>{errors.name}</span>
-                                            ) : undefined
-                                        }
-                                        color={touched.name && errors.name ? 'failure' : undefined}
-                                    />
-                                </div>
-                                <div>
-                                    <Label
-                                        htmlFor="password"
-                                        className="mb-2 block text-sm font-medium text-gray-900"
-                                    >
-                                        Password
-                                    </Label>
-                                    <TextInput
-                                        value={values.password}
-                                        onChange={(target) => {
-                                            setTouched({
-                                                password: true,
-                                                ...touched,
-                                            })
-                                            handleChange(target)
-                                        }}
-                                        autoComplete="on"
-                                        type="text"
-                                        onBlur={handleBlur}
-                                        name="password"
-                                        id="password"
-                                        placeholder="••••••••••"
-                                        required={true}
-                                        helperText={
-                                            touched.password && errors.password ? (
-                                                <span>{errors.password}</span>
-                                            ) : undefined
-                                        }
-                                        color={touched.password && errors.password ? 'failure' : undefined}
-                                    />
-                                </div>
                                 <div className="m-0 flex w-full flex-col items-center justify-center">
                                     <div className="relative mx-auto flex max-w-[11rem] items-center">
                                         <button
@@ -283,7 +205,7 @@ function LobbyTabs({
                                     type="submit"
                                     className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
                                 >
-                                    Create lobby
+                                    Create room
                                 </Button>
                             </Form>
                         )
@@ -292,25 +214,21 @@ function LobbyTabs({
             </div>
             <div hidden={tab !== 'join'} className="space-y-4 p-6 sm:p-8 md:space-y-6">
                 <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                    Join a lobby
+                    Join a room
                 </h1>
                 <Formik
                     initialValues={{
-                        name: '',
-                        password: '',
+                        id: '',
                     }}
                     validate={(values) => {
                         const errors: {
-                            name?: string
-                            password?: string
+                            id?: string
                         } = {}
 
-                        const res = lobbyJoinSchema.safeParse(values)
+                        const res = idSchema.safeParse(values.id)
 
                         if (!res.success) {
-                            const fieldErrors = res.error.flatten().fieldErrors
-                            errors.name = fieldErrors.name?.[0]
-                            errors.password = fieldErrors.password?.[0]
+                            errors.id = res.error.flatten().formErrors?.[0]
                         }
 
                         return errors
@@ -319,7 +237,7 @@ function LobbyTabs({
                         const socket = io()
 
                         socket.on('connect', () => {
-                            socket.emit(JoinLobby.Name, values, (res: JoinLobby.Response) => {
+                            socket.emit(JoinRoom.Name, values.id, (res: JoinRoom.Response) => {
                                 if (res.success) {
                                     return setSocket(socket)
                                 }
@@ -339,68 +257,34 @@ function LobbyTabs({
                                         htmlFor="name"
                                         className="mb-2 block text-sm font-medium text-gray-900"
                                     >
-                                        Name
+                                        Id
                                     </Label>
                                     <TextInput
                                         type="text"
-                                        name="name"
-                                        id="name"
-                                        value={values.name}
-                                        placeholder="lobby name"
+                                        name="id"
+                                        value={values.id}
+                                        placeholder="2qz6"
                                         required={true}
                                         onBlur={handleBlur}
                                         onChange={(target) => {
                                             setTouched({
-                                                name: true,
+                                                id: true,
                                                 ...touched,
                                             })
 
                                             handleChange(target)
                                         }}
                                         helperText={
-                                            touched.name && errors.name ? (
-                                                <span>{errors.name}</span>
-                                            ) : undefined
+                                            touched.id && errors.id ? <span>{errors.id}</span> : undefined
                                         }
-                                        color={touched.name && errors.name ? 'failure' : undefined}
-                                    />
-                                </div>
-                                <div>
-                                    <Label
-                                        htmlFor="password"
-                                        className="mb-2 block text-sm font-medium text-gray-900"
-                                    >
-                                        Password
-                                    </Label>
-                                    <TextInput
-                                        value={values.password}
-                                        onChange={(target) => {
-                                            setTouched({
-                                                password: true,
-                                                ...touched,
-                                            })
-                                            handleChange(target)
-                                        }}
-                                        autoComplete="on"
-                                        type="text"
-                                        onBlur={handleBlur}
-                                        name="password"
-                                        id="password"
-                                        placeholder="••••••••••"
-                                        required={true}
-                                        helperText={
-                                            touched.password && errors.password ? (
-                                                <span>{errors.password}</span>
-                                            ) : undefined
-                                        }
-                                        color={touched.password && errors.password ? 'failure' : undefined}
+                                        color={touched.id && errors.id ? 'failure' : undefined}
                                     />
                                 </div>
                                 <Button
                                     type="submit"
                                     className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
                                 >
-                                    Create lobby
+                                    Create room
                                 </Button>
                             </Form>
                         )
@@ -410,6 +294,40 @@ function LobbyTabs({
         </div>
     )
 }
+
+// function UserWidget({ time, name, ready }: { time: number; name: string | null; ready: boolean }) {
+//     return (
+//         <div className="w-full">
+//             <div className="left-0">
+//                 {name}
+//                 {ready ? (
+//                     <svg
+//                         xmlns="http://www.w3.org/2000/svg"
+//                         width="16"
+//                         height="16"
+//                         fill="currentColor"
+//                         className="bi bi-check-square-fill"
+//                         viewBox="0 0 16 16"
+//                     >
+//                         <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z" />
+//                     </svg>
+//                 ) : (
+//                     <svg
+//                         xmlns="http://www.w3.org/2000/svg"
+//                         width="16"
+//                         height="16"
+//                         fill="currentColor"
+//                         className="bi bi-x-square-fill"
+//                         viewBox="0 0 16 16"
+//                     >
+//                         <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708" />
+//                     </svg>
+//                 )}
+//             </div>
+//             <span className="right-0">{time}</span>
+//         </div>
+//     )
+// }
 
 function Game({ socket }: { socket: Socket<DefaultEventsMap, DefaultEventsMap> }) {
     const [size, setSize] = useState(0)
@@ -444,7 +362,9 @@ function Game({ socket }: { socket: Socket<DefaultEventsMap, DefaultEventsMap> }
 
     return (
         <div className="flex h-full w-full flex-row flex-wrap justify-center gap-2">
+            <div className=""></div>
             <Board size={size} />
+            <div></div>
             <Sidebar socket={socket} size={size} />
         </div>
     )
@@ -455,7 +375,7 @@ export default function () {
 
     return (
         <div className="mx-auto flex h-full w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
-            {socket ? <Game socket={socket} /> : <LobbyTabs setSocket={setSocket} />}
+            {socket ? <Game socket={socket} /> : <RoomTabs setSocket={setSocket} />}
         </div>
     )
 }
