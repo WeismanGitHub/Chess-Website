@@ -1,5 +1,5 @@
 import { minutesSchema, idSchema, messageSchema } from './zod'
-import { CreateRoom, JoinRoom, SendMessage } from './events'
+import { CreateRoom, JoinRoom, SendMessage } from '../types'
 import { lobbies, Room, rooms } from './caches'
 import { RoomConstants } from './constants'
 import CustomError from './custom-error'
