@@ -7,7 +7,7 @@ import { Button, Label, TextInput } from 'flowbite-react'
 import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
 
-import { CreateRoom, JoinRoom } from '../../../lib/socket-handler'
+import { CreateRoom, JoinRoom } from '../../../lib/events'
 import toaster from '../../components/toasts'
 import Board from '../../components/board'
 import Sidebar from './sidebar'

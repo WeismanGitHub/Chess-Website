@@ -2,8 +2,8 @@
 
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import { SendMessage } from '../../../lib/socket-handler'
 import { Button, TextInput } from 'flowbite-react'
+import { SendMessage } from '../../../lib/events'
 import toaster from '../../components/toasts'
 import { Socket } from 'socket.io-client'
 

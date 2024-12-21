@@ -1,5 +1,7 @@
 import { minutesSchema, idSchema, messageSchema } from './zod'
-import { lobbies, Lobby, rooms } from './caches'
+import { CreateRoom, JoinRoom, SendMessage } from './events'
+import { lobbies, Room, rooms } from './caches'
+import { RoomConstants } from './constants'
 import CustomError from './custom-error'
 import { customAlphabet } from 'nanoid'
 import { Socket } from 'socket.io'
@@ -8,31 +10,6 @@ import { LobbyConstants } from './constants'
 const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', LobbyConstants.idLength)
 
 type AuthenticatedSocket = Socket & { userId: string }
-
-type SocketResponse<data = void> =
-    | {
-          success: true
-          data: data
-      }
-    | {
-          success: false
-          error: string
-      }
-
-export namespace CreateRoom {
-    export type Response = SocketResponse
-    export const Name = 'create-lobby'
-}
-
-export namespace JoinRoom {
-    export type Response = SocketResponse<{ opponentName: string }>
-    export const Name = 'join-lobby'
-}
-
-export namespace SendMessage {
-    export type Response = SocketResponse
-    export const Name = 'send-message'
-}
 
 function errorHandler(
     listener: (data: any, callback: Function) => Promise<void>
