@@ -5,7 +5,7 @@ export class UserConstants {
     public static readonly minPasswordLength = 10
 }
 
-export class LobbyConstants {
+export class RoomConstants {
     public static readonly idLength = 4
 
     public static readonly minMinutesLength = 1
