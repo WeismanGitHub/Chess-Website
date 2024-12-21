@@ -1,4 +1,4 @@
-import { LobbyConstants, UserConstants } from './constants'
+import { RoomConstants, UserConstants } from './constants'
 import { number, object, string } from 'zod'
 
 export const Credentials = object({
@@ -18,12 +18,12 @@ export const Credentials = object({
 })
 
 export const minutesSchema = number({ required_error: 'Minutes are required' })
-    .min(LobbyConstants.minMinutesLength, `Minutes must be more than ${LobbyConstants.minMinutesLength}`)
-    .max(LobbyConstants.maxMinutesLength, `Minutes cannot be more than ${LobbyConstants.maxMinutesLength}`)
+    .min(RoomConstants.minMinutesLength, `Minutes must be more than ${RoomConstants.minMinutesLength}`)
+    .max(RoomConstants.maxMinutesLength, `Minutes cannot be more than ${RoomConstants.maxMinutesLength}`)
 
 export const idSchema = string({ required_error: 'Id is required' }).length(
-    LobbyConstants.idLength,
-    `Id must be ${LobbyConstants.idLength} characters long`
+    RoomConstants.idLength,
+    `Id must be ${RoomConstants.idLength} characters long`
 )
 
 export const messageSchema = string({ required_error: 'Message is required' })
