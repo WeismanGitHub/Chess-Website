@@ -1,21 +1,23 @@
-import { Clock, Game } from './chess'
+import { Game } from './chess'
 import Keyv from 'keyv'
 
-export const lobbies = new Keyv({ namespace: 'lobbies' })
+enum RoomState {
+    Setup,
+    Active,
+    Done,
+}
 
-export type Lobby = {
-    started: boolean
+type Player = {
+    id: string
     name: string
-    password: string
-    minutes: number
-    players: { id: string; ready: boolean }[]
+    ready: boolean
+}
+
+export interface Room {
+    id: string
+    state: RoomState
+    game: Game | null
+    players: Player[]
 }
 
 export const rooms = new Keyv({ namespace: 'rooms' })
-
-export type Room = {
-    white: string
-    black: string
-    game: Game
-    clock: Clock
-}
