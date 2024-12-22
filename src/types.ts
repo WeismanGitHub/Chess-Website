@@ -22,12 +22,12 @@ type SocketResponse<data = void> =
       }
 
 export namespace CreateRoom {
-    export type Response = SocketResponse
+    export type Response = SocketResponse<string>
     export const Name = 'create-room'
 }
 
 export namespace JoinRoom {
-    export type Response = SocketResponse<{ opponentName: string }>
+    export type Response = SocketResponse<{ name: string; id: string }>
     export const Name = 'join-room'
 }
 
