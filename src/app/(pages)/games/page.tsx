@@ -1,9 +1,9 @@
 'use client'
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { idSchema, minutesSchema } from '../../../lib/zod'
 import { Button, Label, TextInput } from 'flowbite-react'
+import React, { useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
 
@@ -26,9 +26,11 @@ function StopwatchIcon() {
 }
 
 function RoomTabs({
-    setSocket,
+    onJoin,
+    onCreate,
 }: {
-    setSocket: Dispatch<SetStateAction<Socket<DefaultEventsMap, DefaultEventsMap> | null>>
+    onJoin: ({ id }: { id: string }) => Promise<void>
+    onCreate: ({ minutes }: { minutes: number }) => Promise<void>
 }) {
     const [tab, setTab] = useState<'create' | 'join'>('create')
 
@@ -60,9 +62,6 @@ function RoomTabs({
                 </li>
             </ul>
             <div hidden={tab !== 'create'} className="space-y-4 p-6 sm:p-8 md:space-y-6">
-                <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                    Create a room
-                </h1>
                 <Formik
                     initialValues={{
                         minutes: 30,
@@ -80,19 +79,7 @@ function RoomTabs({
 
                         return errors
                     }}
-                    onSubmit={async (values) => {
-                        const socket = io()
-
-                        socket.on('connect', () => {
-                            socket.emit(CreateRoom.Name, values.minutes, (res: CreateRoom.Response) => {
-                                if (res.success) {
-                                    return setSocket(socket)
-                                }
-
-                                toaster.error(res.error)
-                            })
-                        })
-                    }}
+                    onSubmit={onCreate}
                     validateOnChange={true}
                     validateOnBlur={true}
                 >
@@ -213,9 +200,6 @@ function RoomTabs({
                 </Formik>
             </div>
             <div hidden={tab !== 'join'} className="space-y-4 p-6 sm:p-8 md:space-y-6">
-                <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                    Join a room
-                </h1>
                 <Formik
                     initialValues={{
                         id: '',
@@ -233,19 +217,7 @@ function RoomTabs({
 
                         return errors
                     }}
-                    onSubmit={async (values) => {
-                        const socket = io()
-
-                        socket.on('connect', () => {
-                            socket.emit(JoinRoom.Name, values.id, (res: JoinRoom.Response) => {
-                                if (res.success) {
-                                    return setSocket(socket)
-                                }
-
-                                toaster.error(res.error)
-                            })
-                        })
-                    }}
+                    onSubmit={onJoin}
                     validateOnChange={true}
                     validateOnBlur={true}
                 >
@@ -372,10 +344,44 @@ function Game({ socket }: { socket: Socket<DefaultEventsMap, DefaultEventsMap> }
 
 export default function () {
     const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | null>(null)
+    let id: string
 
     return (
         <div className="mx-auto flex h-full w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
-            {socket ? <Game socket={socket} /> : <RoomTabs setSocket={setSocket} />}
+            {socket ? (
+                <Game socket={socket} />
+            ) : (
+                <RoomTabs
+                    onJoin={async (values) => {
+                        const socket = io()
+
+                        socket.on('connect', () => {
+                            socket.emit(JoinRoom.Name, values.id, (res: JoinRoom.Response) => {
+                                if (res.success) {
+                                    console.log(res.data)
+                                    return setSocket(socket)
+                                }
+
+                                toaster.error(res.error)
+                            })
+                        })
+                    }}
+                    onCreate={async (values) => {
+                        const socket = io()
+
+                        socket.on('connect', () => {
+                            socket.emit(CreateRoom.Name, values.minutes, (res: CreateRoom.Response) => {
+                                if (res.success) {
+                                    id = res.data
+                                    return setSocket(socket)
+                                }
+
+                                toaster.error(res.error)
+                            })
+                        })
+                    }}
+                />
+            )}
         </div>
     )
 }
