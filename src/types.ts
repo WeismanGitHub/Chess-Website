@@ -35,3 +35,13 @@ export namespace SendMessage {
     export type Response = SocketResponse
     export const Name = 'send-message'
 }
+
+export namespace ReceiveMessage {
+    export type Response = string
+    export const Name = 'receive-message'
+}
+
+export namespace PlayerJoined {
+    export type Response = { id: string; ready: boolean; name: string }
+    export const Name = 'player-joined'
+}
