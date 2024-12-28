@@ -2,9 +2,9 @@
 
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
+import { ReceiveMessage, SendMessage } from '../../../types'
 import { Button, TextInput } from 'flowbite-react'
 import toaster from '../../components/toasts'
-import { SendMessage } from '../../../types'
 import { Socket } from 'socket.io-client'
 
 export default function Chat({
@@ -23,7 +23,7 @@ export default function Chat({
         messageEnd.current?.scrollIntoView({ behavior: 'instant' })
     }, [messages])
 
-    socket.on('receive message', (message: string) => {
+    socket.on(ReceiveMessage.Name, (message: ReceiveMessage.Response) => {
         console.log(message)
         setMessages((prevMessages) => [
             ...prevMessages,
