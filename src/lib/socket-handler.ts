@@ -1,9 +1,10 @@
+import { CreateRoom, JoinRoom, PlayerJoined, ReceiveMessage, SendMessage } from '../types'
 import { minutesSchema, idSchema, messageSchema } from './zod'
-import { CreateRoom, JoinRoom, SendMessage } from '../types'
 import { RoomConstants } from './constants'
 import CustomError from './custom-error'
 import { customAlphabet } from 'nanoid'
 import { Room, rooms } from './caches'
+import { decodeAuthJwt } from './jwt'
 import { Socket } from 'socket.io'
 import { User } from '../models'
 
@@ -51,7 +52,7 @@ export default function socketHandler(socket: Socket) {
     }
 
     const userId = decodeAuthJwt(authJwt)
-    console.log(userId)
+    let roomId: string | undefined
 
     socket.on(
         CreateRoom.Name,
@@ -74,6 +75,9 @@ export default function socketHandler(socket: Socket) {
                     },
                 ],
             })
+
+            await socket.join(id)
+            roomId = id
 
             return id
         })
@@ -98,9 +102,9 @@ export default function socketHandler(socket: Socket) {
                 throw new CustomError('Room is full.')
             }
 
-            // if (socket.rooms.has(data)) {
-            //     throw new CustomError('You are already in this room.')
-            // }
+            if (socket.rooms.has(data)) {
+                throw new CustomError('You are already in this room.')
+            }
 
             const user = await User.findById(userId)
 
@@ -112,9 +116,9 @@ export default function socketHandler(socket: Socket) {
 
             room.players.push(player)
             // check that pushing actually updates in cache
-            console.log(await rooms.get<Room>(data), data)
+            // console.log(await rooms.get<Room>(data), data)
 
-            socket.to(data).emit('player-joined', player)
+            socket.to(data).emit(PlayerJoined.Name, player)
             socket.join(data)
 
             return room.players[0]
@@ -124,26 +128,18 @@ export default function socketHandler(socket: Socket) {
     socket.on(
         SendMessage.Name,
         errorHandler(async (body) => {
-            console.log(body)
             const { success, data } = await messageSchema.safeParseAsync(body)
 
             if (!success) {
                 throw new CustomError('That message is invalid.')
             }
 
-            // if (!socket.roomId) {
-            //     throw new CustomError('Join a room first.')
-            // }
+            if (!roomId) {
+                throw new CustomError('Please join a room.')
+            }
 
-            // const room = await lobbies.get<room>(socket.roomId)
-
-            // if (!room) {
-            //     throw new CustomError("That room doesn't exist.")
-            // }
-
-            console.log(data)
-
-            // socket.to(socket.roomId).emit('message-received', data)
+            console.log(socket.rooms, roomId)
+            socket.to(roomId).emit(ReceiveMessage.Name, data)
         })
     )
 
