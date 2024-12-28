@@ -10,6 +10,7 @@ import { Form, Formik } from 'formik'
 import { CreateRoom, JoinRoom } from '../../../types'
 import toaster from '../../components/toasts'
 import Board from '../../components/board'
+import authCheck from '../../auth-check'
 import Sidebar from './sidebar'
 
 function StopwatchIcon() {
@@ -32,6 +33,8 @@ function RoomTabs({
     onJoin: ({ id }: { id: string }) => Promise<void>
     onCreate: ({ minutes }: { minutes: number }) => Promise<void>
 }) {
+    authCheck()
+
     const [tab, setTab] = useState<'create' | 'join'>('create')
 
     return (
