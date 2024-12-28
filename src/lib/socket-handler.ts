@@ -9,8 +9,6 @@ import { User } from '../models'
 
 const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', RoomConstants.idLength)
 
-type AuthenticatedSocket = Socket & { userId: string }
-
 function errorHandler<response>(
     listener: (body: any) => Promise<response>
 ): (body: any, callback: Function) => Promise<void> {
@@ -44,7 +42,17 @@ async function generateRoomId() {
     return id
 }
 
-export default function socketHandler(socket: AuthenticatedSocket) {
+export default function socketHandler(socket: Socket) {
+    const cookies = socket.handshake.headers.cookie?.split(';')
+    const authJwt = cookies?.find((cookie) => cookie.startsWith('auth='))?.replace('auth=', '')
+
+    if (!authJwt) {
+        return socket.disconnect()
+    }
+
+    const userId = decodeAuthJwt(authJwt)
+    console.log(userId)
+
     socket.on(
         CreateRoom.Name,
         errorHandler(async (body) => {
@@ -61,7 +69,7 @@ export default function socketHandler(socket: AuthenticatedSocket) {
                 started: false,
                 players: [
                     {
-                        id: socket.userId,
+                        id: userId,
                         ready: false,
                     },
                 ],
@@ -94,13 +102,13 @@ export default function socketHandler(socket: AuthenticatedSocket) {
             //     throw new CustomError('You are already in this room.')
             // }
 
-            const user = await User.findById(socket.userId)
+            const user = await User.findById(userId)
 
             if (!user) {
                 throw new CustomError('Could not find your account.')
             }
 
-            const player = { id: socket.userId, ready: false, name: user.name }
+            const player = { id: userId, ready: false, name: user.name }
 
             room.players.push(player)
             // check that pushing actually updates in cache

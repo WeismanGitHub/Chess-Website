@@ -1,5 +1,4 @@
 import socketHandler from './lib/socket-handler'
-import { decodeAuthJwt } from './lib/jwt'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { parse } from 'url'
@@ -16,22 +15,7 @@ app.prepare().then(() => {
 
     const io = new Server(server)
 
-    io.use((socket, next) => {
-        const cookies = socket.handshake.headers.cookie?.split(';')
-        const authJwt = cookies?.find((cookie) => cookie.startsWith('auth='))?.replace('auth=', '')
-
-        if (!authJwt) {
-            throw new Error('Please sign in.')
-        }
-
-        // @ts-ignore
-        socket.userId = decodeAuthJwt(authJwt)
-
-        next()
-    })
-
     io.on('connection', (socket) => {
-        // @ts-ignore
         socketHandler(socket)
     })
 
