@@ -259,7 +259,7 @@ function RoomTabs({
                                     type="submit"
                                     className="text-md w-full rounded-lg px-5 py-2.5 text-center focus:outline-none focus:ring-4"
                                 >
-                                    Create room
+                                    Join room
                                 </Button>
                             </Form>
                         )
