@@ -22,7 +22,7 @@ function errorHandler<response>(
             if (err instanceof CustomError) {
                 console.error(err)
             }
-            
+
             callback({
                 success: false,
                 error: err instanceof CustomError ? err.message : 'A server error occurred.',
@@ -142,7 +142,6 @@ export default function socketHandler(socket: Socket) {
                 throw new CustomError('Please join a room.')
             }
 
-            console.log(socket.rooms, roomId)
             socket.to(roomId).emit(ReceiveMessage.Name, data)
         })
     )
