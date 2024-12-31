@@ -1,8 +1,7 @@
 'use server'
 
-import { Credentials } from '../../../lib/zod'
 import CustomError from '../../../lib/custom-error'
-import dbConnect from '../../../lib/db-connect'
+import { Credentials } from '../../../lib/zod'
 import { signAuthJwt } from '../../../lib/jwt'
 import errorHandler from '../error-handler'
 import { cookies } from 'next/headers'
@@ -10,8 +9,6 @@ import { User } from '../../../models'
 
 export default errorHandler(async (body) => {
     const { name, password } = await Credentials.parseAsync(body)
-
-    await dbConnect()
 
     const user = await User.findOne({ name })
 

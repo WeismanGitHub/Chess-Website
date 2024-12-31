@@ -1,4 +1,5 @@
 import socketHandler from './lib/socket-handler'
+import dbConnect from './lib/db-connect'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { parse } from 'url'
@@ -8,6 +9,8 @@ const app = next({ dev: process.env.NODE_ENV !== 'production' })
 const handle = app.getRequestHandler()
 
 app.prepare().then(() => {
+    dbConnect()
+    
     const server = createServer((req, res) => {
         const parsedUrl = parse(req.url!, true)
         handle(req, res, parsedUrl)
