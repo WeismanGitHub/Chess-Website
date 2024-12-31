@@ -19,6 +19,10 @@ function errorHandler<response>(
 
             callback({ success: true, data: res })
         } catch (err) {
+            if (err instanceof CustomError) {
+                console.error(err)
+            }
+            
             callback({
                 success: false,
                 error: err instanceof CustomError ? err.message : 'A server error occurred.',
@@ -113,13 +117,13 @@ export default function socketHandler(socket: Socket) {
             }
 
             const player = { id: userId, ready: false, name: user.name }
-
             room.players.push(player)
-            // check that pushing actually updates in cache
-            // console.log(await rooms.get<Room>(data), data)
 
-            socket.to(data).emit(PlayerJoined.Name, player)
-            socket.join(data)
+            await rooms.set(data, room)
+
+            roomId = data
+            socket.join(roomId)
+            socket.to(roomId).emit(PlayerJoined.Name, player)
 
             return room.players[0]
         })
