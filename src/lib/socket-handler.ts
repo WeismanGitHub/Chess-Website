@@ -1,4 +1,4 @@
-import { CreateRoom, JoinRoom, PlayerJoined, ReceiveMessage, SendMessage } from '../types'
+import { CreateRoom, JoinRoom, PlayerJoined, Ready, ReceiveMessage, SendMessage } from '../types'
 import { minutesSchema, idSchema, messageSchema } from './zod'
 import { Room, rooms, RoomState } from './caches'
 import { RoomConstants } from './constants'
@@ -146,7 +146,7 @@ export default function socketHandler(socket: Socket) {
         })
     )
 
-    socket.on('ready', async () => {
+    socket.on(Ready.Name, async () => {
         if (!roomId) {
             throw new CustomError('Join a room first.')
         }
@@ -182,9 +182,11 @@ export default function socketHandler(socket: Socket) {
             throw new CustomError("You're not in a room.")
         }
 
-        // if (!room) {
-        //     throw new CustomError('Could not find your room.')
-        // }
+        const room = await rooms.get<Room>(roomId)
+
+        if (!room) {
+            throw new CustomError("That room doesn't exist.")
+        }
     })
 
     // maybe roll these 3 into 1 "make-move" event?

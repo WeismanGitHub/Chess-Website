@@ -42,6 +42,10 @@ export namespace ReceiveMessage {
 }
 
 export namespace PlayerJoined {
-    export type Response = { id: string; ready: boolean; name: string }
+    export type Response = SocketResponse<{ id: string; ready: boolean; name: string }>
     export const Name = 'player-joined'
+}
+
+export namespace Ready {
+    export const Name = 'ready'
 }
