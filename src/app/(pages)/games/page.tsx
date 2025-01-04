@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
 
-import { CreateRoom, JoinRoom } from '../../../types'
+import { CreateRoom, JoinRoom } from '../../../events'
 import toaster from '../../components/toasts'
 import Board from '../../components/board'
 import authCheck from '../../auth-check'
@@ -361,7 +361,6 @@ export default function () {
                         socket.on('connect', () => {
                             socket.emit(JoinRoom.Name, values.id, (res: JoinRoom.Response) => {
                                 if (res.success) {
-                                    console.log(res.data)
                                     return setSocket(socket)
                                 }
 
@@ -376,6 +375,7 @@ export default function () {
                             socket.emit(CreateRoom.Name, values.minutes, (res: CreateRoom.Response) => {
                                 if (res.success) {
                                     id = res.data
+                                    console.log(id)
                                     return setSocket(socket)
                                 }
 

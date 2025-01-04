@@ -1,4 +1,4 @@
-import { CreateRoom, JoinRoom, PlayerJoined, Ready, ReceiveMessage, SendMessage } from '../types'
+import { CreateRoom, JoinRoom, PlayerJoined, Ready, ReceiveMessage, SendMessage } from '../events'
 import { minutesSchema, idSchema, messageSchema } from './zod'
 import { Room, rooms, RoomState } from './caches'
 import { RoomConstants } from './constants'
