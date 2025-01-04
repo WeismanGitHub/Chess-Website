@@ -1,4 +1,5 @@
 {
     "watch": ["./src"],
-    "ext": "js ts"
+    "ext": "js ts",
+    "ignore": ["./src/app"]
 }
