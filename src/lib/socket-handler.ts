@@ -1,9 +1,9 @@
 import { CreateRoom, JoinRoom, PlayerJoined, ReceiveMessage, SendMessage } from '../types'
 import { minutesSchema, idSchema, messageSchema } from './zod'
+import { Room, rooms, RoomState } from './caches'
 import { RoomConstants } from './constants'
 import CustomError from './custom-error'
 import { customAlphabet } from 'nanoid'
-import { Room, rooms } from './caches'
 import { decodeAuthJwt } from './jwt'
 import { Socket } from 'socket.io'
 import { User } from '../models'
@@ -169,11 +169,12 @@ export default function socketHandler(socket: Socket) {
             return player
         })
 
-        await rooms.set(roomId, room)
-
         if (room.players.every((player) => player.ready)) {
+            room.state = RoomState.Active
             socket.emit('start')
         }
+
+        await rooms.set(roomId, room)
     })
 
     socket.on('make-move', async () => {
