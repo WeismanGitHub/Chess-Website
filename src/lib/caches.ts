@@ -1,7 +1,7 @@
 import { Game } from './chess'
 import Keyv from 'keyv'
 
-enum RoomState {
+export enum RoomState {
     Setup,
     Active,
     Done,
