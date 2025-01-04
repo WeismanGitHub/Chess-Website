@@ -147,45 +147,40 @@ export default function socketHandler(socket: Socket) {
     )
 
     socket.on('ready', async () => {
-        // if (!socket.roomId) {
-        //     throw new CustomError('Join a room first.')
-        // }
-        // const room = await lobbies.get<room>(socket.roomId)
-        // if (!room) {
-        //     throw new CustomError("That room doesn't exist.")
-        // }
-        // if (room.players.length < 2) {
-        //     throw new CustomError('You need 2 players to start.')
-        // }
-        // if (!room.players.some((player) => player.id == socket.userId)) {
-        //     throw new CustomError('You are not in this room.')
-        // }
-        // room.players = room.players.map((player) => {
-        //     if (player.id === socket.userId) {
-        //         player.ready = true
-        //     }
-        //     return player
-        // })
-        // // If both players are NOT ready
-        // if (!(room.players[0].ready && room.players[1].ready)) {
-        //     lobbies.set(socket.roomId, room)
-        //     return
-        // }
-        // lobbies.delete(socket.roomId)
-        // const coinflip = Math.random() < 0.5
-        // const room: Room = {
-        //     white: room.players[coinflip ? 1 : 0].id,
-        //     black: room.players[coinflip ? 0 : 1].id,
-        //     clock: new Clock(room.minutes, () => {}),
-        //     game: new Game(),
-        // }
-        // rooms.set(socket.roomId, room)
+        if (!roomId) {
+            throw new CustomError('Join a room first.')
+        }
+
+        const room = await rooms.get<Room>(roomId)
+
+        if (!room) {
+            throw new CustomError("That room doesn't exist.")
+        }
+
+        if (room.players.length < 2) {
+            throw new CustomError('You need 2 players to start.')
+        }
+
+        room.players = room.players.map((player) => {
+            if (player.id === userId) {
+                player.ready = true
+            }
+
+            return player
+        })
+
+        await rooms.set(roomId, room)
+
+        if (room.players.every((player) => player.ready)) {
+            socket.emit('start')
+        }
     })
 
     socket.on('make-move', async () => {
-        // if (!socket.roomId) {
-        //     throw new CustomError("You're not in a room.")
-        // }
+        if (!roomId) {
+            throw new CustomError("You're not in a room.")
+        }
+
         // if (!room) {
         //     throw new CustomError('Could not find your room.')
         // }
