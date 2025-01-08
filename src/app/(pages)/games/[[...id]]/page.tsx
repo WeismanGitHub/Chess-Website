@@ -1,16 +1,17 @@
 'use client'
 
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import { idSchema, minutesSchema } from '../../../lib/zod'
+import { idSchema, minutesSchema } from '../../../../lib/zod'
 import { Button, Label, TextInput } from 'flowbite-react'
 import React, { useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
 
-import { CreateRoom, JoinRoom } from '../../../events'
-import toaster from '../../components/toasts'
-import Board from '../../components/board'
-import authCheck from '../../auth-check'
+import { CreateRoom, JoinRoom } from '../../../../events'
+import { useRouter, useParams } from 'next/navigation'
+import toaster from '../../../components/toasts'
+import Board from '../../../components/board'
+import authCheck from '../../../auth-check'
 import Sidebar from './sidebar'
 
 function StopwatchIcon() {
