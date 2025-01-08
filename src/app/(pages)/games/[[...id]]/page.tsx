@@ -8,7 +8,6 @@ import { io, Socket } from 'socket.io-client'
 import { Form, Formik } from 'formik'
 
 import { CreateRoom, JoinRoom } from '../../../../events'
-import { useRouter, useParams } from 'next/navigation'
 import toaster from '../../../components/toasts'
 import Board from '../../../components/board'
 import authCheck from '../../../auth-check'
@@ -315,22 +314,23 @@ function Game({ socket }: { socket: Socket<DefaultEventsMap, DefaultEventsMap> }
 export default function () {
     const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap> | null>(null)
 
-    const params = useParams<{ id: string }>()
-    const router = useRouter()
+    useEffect(() => {
+        const id = location.pathname.split('/')[2]
 
-    if (params.id) {
-        const socket = io()
+        if (id) {
+            const socket = io()
 
-        socket.on('connect', () => {
-            socket.emit(JoinRoom.Name, params.id, (res: JoinRoom.Response) => {
-                if (res.success) {
-                    return setSocket(socket)
-                }
+            socket.on('connect', () => {
+                socket.emit(JoinRoom.Name, id, (res: JoinRoom.Response) => {
+                    if (res.success) {
+                        return setSocket(socket)
+                    }
 
-                toaster.error(res.error)
+                    toaster.error(res.error)
+                })
             })
-        })
-    }
+        }
+    }, [])
 
     return (
         <div className="mx-auto flex h-full w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
@@ -344,7 +344,7 @@ export default function () {
                         socket.on('connect', () => {
                             socket.emit(JoinRoom.Name, values.id, (res: JoinRoom.Response) => {
                                 if (res.success) {
-                                    router.push(`/games/${res.data}`)
+                                    window.history.pushState(null, 'Chess', `/games/${res.data}`)
                                     return setSocket(socket)
                                 }
 
@@ -358,7 +358,7 @@ export default function () {
                         socket.on('connect', () => {
                             socket.emit(CreateRoom.Name, values.minutes, (res: CreateRoom.Response) => {
                                 if (res.success) {
-                                    router.push(`/games/${res.data}`)
+                                    window.history.pushState(null, 'Chess', `/games/${res.data}`)
                                     return setSocket(socket)
                                 }
 
