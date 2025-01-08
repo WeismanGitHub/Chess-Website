@@ -14,7 +14,7 @@ export namespace CreateRoom {
 }
 
 export namespace JoinRoom {
-    export type Response = SocketResponse<{ name: string; id: string }>
+    export type Response = SocketResponse
     export const Name = 'join-room'
 }
 
