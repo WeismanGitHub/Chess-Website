@@ -102,30 +102,31 @@ export default function socketHandler(socket: Socket) {
                 throw new CustomError("That room doesn't exist.")
             }
 
-            if (room.players.length === 2) {
-                throw new CustomError('Room is full.')
+            // if user is not already in room
+            if (!room.players.some((player) => player.id === userId)) {
+                if (room.players.length === 2) {
+                    throw new CustomError('Room is full.')
+                }
+
+                if (socket.rooms.has(data)) {
+                    throw new CustomError('You are already in this room.')
+                }
+
+                const user = await User.findById(userId)
+
+                if (!user) {
+                    throw new CustomError('Could not find your account.')
+                }
+
+                const player = { id: userId, ready: false, name: user.name }
+                room.players.push(player)
+
+                await rooms.set(data, room)
+                socket.to(data).emit(PlayerJoined.Name, player)
             }
-
-            if (socket.rooms.has(data)) {
-                throw new CustomError('You are already in this room.')
-            }
-
-            const user = await User.findById(userId)
-
-            if (!user) {
-                throw new CustomError('Could not find your account.')
-            }
-
-            const player = { id: userId, ready: false, name: user.name }
-            room.players.push(player)
-
-            await rooms.set(data, room)
 
             roomId = data
             socket.join(roomId)
-            socket.to(roomId).emit(PlayerJoined.Name, player)
-
-            return room.players[0]
         })
     )
 
