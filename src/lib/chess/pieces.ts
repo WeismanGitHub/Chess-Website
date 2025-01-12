@@ -1,20 +1,22 @@
 import { Color } from '../../types'
 import Square from './square'
-import Board from './board'
+import Game from './game'
 
 function universalCheck(_target: Object, _propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
     const originalMethod = descriptor.value
 
-    descriptor.value = function (board: Board, start: Square, end: Square) {
-        if (!start.piece || start.piece.color === end.piece?.color) return false
-
-        const king = board.getKingSquare(start.piece.color).piece
-
-        if (king.isInCheck(board)) {
+    descriptor.value = function (game: Game, start: Square, end: Square) {
+        if (!start.piece || start.piece.color === end.piece?.color) {
             return false
         }
 
-        return originalMethod.apply(this, [board, start, end])
+        const king = game.board.getKingSquare(start.piece.color).piece
+
+        if (king.isInCheck(game)) {
+            return false
+        }
+
+        return originalMethod.apply(this, [game, start, end])
     }
 
     return descriptor
