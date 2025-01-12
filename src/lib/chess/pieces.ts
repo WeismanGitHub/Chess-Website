@@ -30,7 +30,39 @@ export abstract class Piece {
         this.color = color
     }
 
-    abstract canMove(board: Board, start: Square, end: Square): boolean
+    abstract canMove(game: Game, start: Square, end: Square): boolean
+
+    makeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
+        const piece = start.piece
+
+        if (!piece) {
+            throw new Error("There's no piece on that square.")
+        }
+
+        // switch (true) {
+        //     case piece instanceof Pawn: {
+        //         start.piece = null
+
+        //         if (end.row === this.board.rows) {
+        //             end.piece = promotion
+        //         } else {
+        //             end.piece = piece
+        //         }
+
+        //         break
+        //     }
+
+        //     case piece instanceof King: {
+        //         throw new Error('Not Implemented')
+        //         // castling stuff
+        //     }
+
+        //     default:
+        //         end.piece = piece
+        //         start.piece = null
+        //         break
+        // }
+    }
 
     getCharacter() {
         return this.character
@@ -58,13 +90,15 @@ export class King extends Piece {
         throw new Error('Method not implemented.')
     }
 
-    isInCheck(_board: Board): boolean {
+    isInCheck(_game: Game): boolean {
         return false
     }
 
-    IsInCheckmate(_board: Boolean): boolean {
+    IsInCheckmate(_game: Game): boolean {
         return false
     }
+
+    override makeMove(game: Game, start: Square, end: Square): void {}
 }
 
 export class Queen extends Piece {
@@ -117,5 +151,9 @@ export class Pawn extends Piece {
         }
 
         return this.squaresAreVertical(start, end) || end.col === start.col + 1 || end.col === start.col - 1
+    }
+
+    override makeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
+        console.log(game, start, end, promotion)
     }
 }
