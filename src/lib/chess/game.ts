@@ -6,7 +6,7 @@ import Board from './board'
 export default class Game {
     public state: GameState = GameState.Active
     public board: Board
-    private turn: Color = 'white'
+    public turn: Color = 'white'
 
     constructor() {
         const rows = []
@@ -50,7 +50,7 @@ export default class Game {
         this.board = new Board(rows)
     }
 
-    move(startCoordinate: Coordinate, endCoordinate: Coordinate, promotion: Piece | null = null) {
+    makeMove(startCoordinate: Coordinate, endCoordinate: Coordinate, promotion?: Piece) {
         if (this.state !== GameState.Active) {
             throw new Error('Game is not active.')
         }
@@ -72,35 +72,20 @@ export default class Game {
             throw new Error('Cannot move the pieces of another color.')
         }
 
-        if (!piece.canMove(this.board, start, end)) {
+        if (!piece.canMove(this, start, end)) {
             throw new Error('Invalid Move')
         }
 
-        switch (true) {
-            case piece instanceof Pawn: {
-                start.piece = null
+        piece.makeMove(this, start, end, promotion)
 
-                if (end.row === this.board.rows) {
-                    end.piece = promotion
-                } else {
-                    end.piece = piece
-                }
+        const blackKing = this.board.getKingSquare('black').piece
+        const whiteKing = this.board.getKingSquare('white').piece
 
-                break
-            }
-
-            case piece instanceof King: {
-                throw new Error('Not Implemented')
-                // castling stuff
-            }
-
-            default:
-                end.piece = piece
-                start.piece = null
-                break
+        if (blackKing.IsInCheckmate(this)) {
+            this.state = GameState.WhiteWin
+        } else if (whiteKing.IsInCheckmate(this)) {
+            this.state = GameState.BlackWin
         }
-
-        // check if game ending move, if true then change state
 
         this.turn = this.turn === 'white' ? 'black' : 'white'
     }
