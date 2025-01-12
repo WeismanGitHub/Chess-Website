@@ -109,7 +109,7 @@ export class Pawn extends Piece {
     public character = 'o'
 
     @universalCheck
-    canMove(board: Board, start: Square, end: Square): boolean {
+    canMove(_board: Board, start: Square, end: Square): boolean {
         if (!end.piece) {
             return this.squaresAreVertical(start, end)
         }
