@@ -8,15 +8,13 @@ function universalCheck(_target: Object, _propertyKey: string, descriptor: Typed
     descriptor.value = function (board: Board, start: Square, end: Square) {
         if (!start.piece || start.piece.color === end.piece?.color) return false
 
-        const result = originalMethod.apply(this, board, start, end)
-
         const king = board.getKingSquare(start.piece.color).piece
 
         if (king.isInCheck(board)) {
             return false
         }
 
-        return result
+        return originalMethod.apply(this, [board, start, end])
     }
 
     return descriptor
@@ -56,6 +54,14 @@ export class King extends Piece {
     @universalCheck
     canMove(_board: Board, _start: Square, _end: Square): boolean {
         throw new Error('Method not implemented.')
+    }
+
+    isInCheck(_board: Board): boolean {
+        return false
+    }
+
+    IsInCheckmate(_board: Boolean): boolean {
+        return false
     }
 }
 
@@ -103,7 +109,7 @@ export class Pawn extends Piece {
     public character = 'o'
 
     @universalCheck
-    canMove(_board: Board, start: Square, end: Square): boolean {
+    canMove(board: Board, start: Square, end: Square): boolean {
         if (!end.piece) {
             return this.squaresAreVertical(start, end)
         }
