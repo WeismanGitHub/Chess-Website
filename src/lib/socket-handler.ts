@@ -211,3 +211,5 @@ export default function socketHandler(socket: Socket) {
 // solution: each room will have an id. when a user tries to rejoin, check if theyre in that room already. if they leave during a game then they forfeit. you can only join a room when theres 1 person in persons.
 
 // Notes: Have a semi transparent gray overlay on the board and a slightly red background to the user widgets until the game begins. Once it begins, have it flash green then go to a neutral color. Display the state of the game with an overlay. Make the overlay red/green depending on who won, and add a rematch button or something. Maybe add a button to show and hide the overlay once the game is over so you can walk through the game.
+
+// maybe a mutex is necessary for race conditions with making moves? figure it out
