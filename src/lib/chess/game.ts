@@ -62,6 +62,12 @@ export default class Game {
             throw new Error('Invalid Coordinate(s)')
         }
 
+        const king = this.board.getKingSquare(this.turn).piece
+
+        if (king.isInCheck(this)) {
+            throw new Error('Your king is in check.')
+        }
+
         const piece = start.piece
 
         if (!piece) {
