@@ -120,7 +120,19 @@ export class Pawn extends Piece {
 
     @universalCheck
     isValidMove(_game: Game, start: Square, end: Square): boolean {
-        if (!this.squaresAreVertical(start, end)) {
+        const horizontallyAdjacent = start.col + 1 === end.col || start.col - 1 === end.col
+
+        if (this.color === 'white') {
+            if (horizontallyAdjacent && start.col + 1 === end.col && end.piece) {
+                return true
+            }
+        } else {
+            if (horizontallyAdjacent && start.col - 1 === end.col && end.piece) {
+                return true
+            }
+        }
+
+        if (!this.squaresAreVertical(start, end) || end.piece) {
             return false
         }
 
