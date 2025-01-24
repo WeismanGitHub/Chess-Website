@@ -139,29 +139,16 @@ export class Pawn extends Piece {
     }
 
     override makeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
-        console.log(game, start, end, promotion)
-        // switch (true) {
-        //     case piece instanceof Pawn: {
-        //         start.piece = null
+        if (end.row === game.board.rows) {
+            if (!promotion) {
+                throw new Error('Promotion piece is required.')
+            }
 
-        //         if (end.row === this.board.rows) {
-        //             end.piece = promotion
-        //         } else {
-        //             end.piece = piece
-        //         }
+            end.piece = promotion
+        } else {
+            end.piece = start.piece
+        }
 
-        //         break
-        //     }
-
-        //     case piece instanceof King: {
-        //         throw new Error('Not Implemented')
-        //         // castling stuff
-        //     }
-
-        //     default:
-        //         end.piece = piece
-        //         start.piece = null
-        //         break
-        // }
+        start.piece = null
     }
 }
