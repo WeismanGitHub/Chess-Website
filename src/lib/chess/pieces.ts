@@ -24,17 +24,17 @@ export abstract class Piece {
         this.color = color
     }
 
-    abstract canMove(game: Game, start: Square, end: Square): boolean
+    abstract isValidMove(game: Game, start: Square, end: Square): boolean
 
-    makeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
+    executeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
         const piece = start.piece
 
         if (!piece) {
             throw new Error("There's no piece on that square.")
         }
 
-        if (piece.canMove(game, start, end)) {
-            piece.makeMove(game, start, end, promotion)
+        if (piece.isValidMove(game, start, end)) {
+            piece.executeMove(game, start, end, promotion)
         }
     }
 
@@ -60,7 +60,7 @@ export class King extends Piece {
     public canCastle = true
 
     @universalCheck
-    canMove(_game: Game, _start: Square, _end: Square): boolean {
+    isValidMove(_game: Game, _start: Square, _end: Square): boolean {
         throw new Error('Method not implemented.')
     }
 
@@ -79,7 +79,7 @@ export class Queen extends Piece {
     public character = 'w'
 
     @universalCheck
-    canMove(_game: Game, start: Square, end: Square): boolean {
+    isValidMove(_game: Game, start: Square, end: Square): boolean {
         return (
             this.squaresAreDiagonal(start, end) ||
             this.squaresAreHorizontal(start, end) ||
@@ -92,7 +92,7 @@ export class Bishop extends Piece {
     public character = 'v'
 
     @universalCheck
-    canMove(_game: Game, start: Square, end: Square): boolean {
+    isValidMove(_game: Game, start: Square, end: Square): boolean {
         return this.squaresAreDiagonal(start, end)
     }
 }
@@ -101,7 +101,7 @@ export class Knight extends Piece {
     public character = 'm'
 
     @universalCheck
-    canMove(_game: Game, _start: Square, _end: Square): boolean {
+    isValidMove(_game: Game, _start: Square, _end: Square): boolean {
         throw new Error('Method not implemented.')
     }
 }
@@ -110,7 +110,7 @@ export class Rook extends Piece {
     public character = 't'
 
     @universalCheck
-    canMove(_game: Game, start: Square, end: Square): boolean {
+    isValidMove(_game: Game, start: Square, end: Square): boolean {
         return this.squaresAreHorizontal(start, end)
     }
 }
