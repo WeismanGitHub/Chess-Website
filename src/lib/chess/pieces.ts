@@ -126,11 +126,16 @@ export class Pawn extends Piece {
 
     @universalCheck
     canMove(_game: Game, start: Square, end: Square): boolean {
-        if (!end.piece) {
-            return this.squaresAreVertical(start, end)
+        if (!this.squaresAreVertical(start, end)) {
+            return false
         }
 
-        return this.squaresAreVertical(start, end) || end.col === start.col + 1 || end.col === start.col - 1
+        // If pawn has moved
+        if (start.row > 1) {
+            return start.row + 1 === end.row
+        }
+
+        return start.row + 1 === end.row || start.row + 2 === end.row
     }
 
     override makeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
