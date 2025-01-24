@@ -119,21 +119,30 @@ export class Pawn extends Piece {
     public character = 'o'
 
     @universalCheck
-    canMove(_game: Game, start: Square, end: Square): boolean {
+    isValidMove(_game: Game, start: Square, end: Square): boolean {
         if (!this.squaresAreVertical(start, end)) {
             return false
         }
 
-        // If pawn has moved
-        if (start.row > 1) {
+        if (this.color === 'white') {
+            // If pawn hasn't moved
+            if (start.row === 1) {
+                return start.row + 1 === end.row || start.row + 2 === end.row
+            }
+
             return start.row + 1 === end.row
         }
 
-        return start.row + 1 === end.row || start.row + 2 === end.row
+        // If pawn hasn't moved
+        if (start.row === 6) {
+            return start.row - 1 === end.row || start.row - 2 === end.row
+        }
+
+        return start.row - 1 === end.row
     }
 
-    override makeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
-        if (end.row === game.board.rows) {
+    override executeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
+        if (this.color === 'white' ? end.row === game.board.rows : end.row === 0) {
             if (!promotion) {
                 throw new Error('Promotion piece is required.')
             }
