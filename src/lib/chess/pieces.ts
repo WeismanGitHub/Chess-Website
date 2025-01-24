@@ -10,12 +10,6 @@ function universalCheck(_target: Object, _propertyKey: string, descriptor: Typed
             return false
         }
 
-        const king = game.board.getKingSquare(start.piece.color).piece
-
-        if (king.isInCheck(game)) {
-            return false
-        }
-
         return originalMethod.apply(this, [game, start, end])
     }
 
