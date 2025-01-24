@@ -1,5 +1,5 @@
 import { Bishop, King, Knight, Pawn, Piece, Queen, Rook } from './pieces'
-import { Color, Coordinate, GameState } from '../../types'
+import { Color, GameState } from '../../types'
 import Square from './square'
 import Board from './board'
 
@@ -50,13 +50,10 @@ export default class Game {
         this.board = new Board(rows)
     }
 
-    makeMove(startCoordinate: Coordinate, endCoordinate: Coordinate, promotion?: Piece) {
+    makeMove(start: Square, end: Square, promotion?: Piece) {
         if (this.state !== GameState.Active) {
             throw new Error('Game is not active.')
         }
-
-        const start = this.board.getSquare(startCoordinate[0], startCoordinate[1])
-        const end = this.board.getSquare(endCoordinate[0], endCoordinate[1])
 
         if (!start || !end) {
             throw new Error('Invalid Coordinate(s)')
@@ -93,7 +90,7 @@ export default class Game {
             this.state = GameState.BlackWin
         }
 
-        this.turn = this.turn === 'white' ? 'black' : 'white'
+        this.turn = this.turn == 'white' ? 'black' : 'white'
     }
 
     end(status: GameState) {
