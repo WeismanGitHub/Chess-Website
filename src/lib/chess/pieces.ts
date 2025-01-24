@@ -39,29 +39,9 @@ export abstract class Piece {
             throw new Error("There's no piece on that square.")
         }
 
-        // switch (true) {
-        //     case piece instanceof Pawn: {
-        //         start.piece = null
-
-        //         if (end.row === this.board.rows) {
-        //             end.piece = promotion
-        //         } else {
-        //             end.piece = piece
-        //         }
-
-        //         break
-        //     }
-
-        //     case piece instanceof King: {
-        //         throw new Error('Not Implemented')
-        //         // castling stuff
-        //     }
-
-        //     default:
-        //         end.piece = piece
-        //         start.piece = null
-        //         break
-        // }
+        if (piece.canMove(game, start, end)) {
+            piece.makeMove(game, start, end, promotion)
+        }
     }
 
     getCharacter() {
@@ -98,7 +78,7 @@ export class King extends Piece {
         return false
     }
 
-    override makeMove(game: Game, start: Square, end: Square): void {}
+    // override makeMove(game: Game, start: Square, end: Square): void {}
 }
 
 export class Queen extends Piece {
@@ -155,5 +135,28 @@ export class Pawn extends Piece {
 
     override makeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
         console.log(game, start, end, promotion)
+        // switch (true) {
+        //     case piece instanceof Pawn: {
+        //         start.piece = null
+
+        //         if (end.row === this.board.rows) {
+        //             end.piece = promotion
+        //         } else {
+        //             end.piece = piece
+        //         }
+
+        //         break
+        //     }
+
+        //     case piece instanceof King: {
+        //         throw new Error('Not Implemented')
+        //         // castling stuff
+        //     }
+
+        //     default:
+        //         end.piece = piece
+        //         start.piece = null
+        //         break
+        // }
     }
 }
