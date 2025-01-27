@@ -1,12 +1,10 @@
 import { useDroppable } from '@dnd-kit/core'
 import React, { useEffect } from 'react'
-import { Game } from '../../lib/chess'
 
 interface Props {
     col: number
     row: number
     children: any
-    game: Game
     showFiles: boolean
     showRows: boolean
 }
@@ -16,7 +14,7 @@ export const Colors = {
     highlight: 'rgb(240 82 82 / 0.85)',
 }
 
-export default function ({ col, row, children, game, showFiles: showFile, showRows: showRow }: Props) {
+export default function ({ col, row, children, showFiles: showFile, showRows: showRow }: Props) {
     const { isOver, setNodeRef } = useDroppable({
         id: `${col} ${row}`,
     })

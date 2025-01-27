@@ -179,7 +179,6 @@ export default function ({ size }: { size: number }) {
                             <DroppableSquare
                                 showFiles={showFiles}
                                 showRows={showRows}
-                                game={game}
                                 key={`${col}${row}`}
                                 col={col}
                                 row={row}
