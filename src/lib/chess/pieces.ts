@@ -112,7 +112,7 @@ export class Rook extends Piece {
 
     @universalCheck
     isValidMove(_game: Game, start: Square, end: Square): boolean {
-        return this.squaresAreHorizontal(start, end)
+        return this.squaresAreHorizontal(start, end) || this.squaresAreVertical(start, end)
     }
 }
 
