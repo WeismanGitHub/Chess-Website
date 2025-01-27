@@ -153,8 +153,8 @@ export class Pawn extends Piece {
         return start.row - 1 === end.row
     }
 
-    override executeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
-        if (this.color === 'white' ? end.row === game.board.rows : end.row === 0) {
+    override executeMove(_game: Game, start: Square, end: Square, promotion?: Piece): void {
+        if (this.color === 'white' ? end.row === 7 : end.row === 0) {
             if (!promotion) {
                 throw new Error('Promotion piece is required.')
             }
