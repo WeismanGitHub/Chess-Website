@@ -26,7 +26,7 @@ export abstract class Piece {
 
     abstract isValidMove(game: Game, start: Square, end: Square): boolean
 
-    executeMove(game: Game, start: Square, end: Square, promotion?: Piece): void {
+    executeMove(game: Game, start: Square, end: Square, _promotion?: Piece): void {
         const piece = start.piece
 
         if (!piece) {
@@ -34,7 +34,8 @@ export abstract class Piece {
         }
 
         if (piece.isValidMove(game, start, end)) {
-            piece.executeMove(game, start, end, promotion)
+            end.piece = start.piece
+            start.piece = null
         }
     }
 
