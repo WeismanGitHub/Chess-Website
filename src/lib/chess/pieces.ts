@@ -124,11 +124,11 @@ export class Pawn extends Piece {
         const horizontallyAdjacent = start.col + 1 === end.col || start.col - 1 === end.col
 
         if (this.color === 'white') {
-            if (horizontallyAdjacent && start.col + 1 === end.col && end.piece) {
+            if (horizontallyAdjacent && start.row + 1 === end.row && end.piece) {
                 return true
             }
         } else {
-            if (horizontallyAdjacent && start.col - 1 === end.col && end.piece) {
+            if (horizontallyAdjacent && start.row - 1 === end.row && end.piece) {
                 return true
             }
         }
