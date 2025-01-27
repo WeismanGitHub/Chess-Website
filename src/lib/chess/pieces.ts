@@ -44,7 +44,7 @@ export abstract class Piece {
     }
 
     squaresAreDiagonal(start: Square, end: Square): boolean {
-        return start.col - end.col === start.row - end.row
+        return Math.abs(start.col - end.col) === Math.abs(start.row - end.row)
     }
 
     squaresAreVertical(start: Square, end: Square): boolean {
