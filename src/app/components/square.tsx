@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const Colors = {
-    over: 'rgb(4 108 78 / 0.70)',
+    over: 'rgb(209 213 219 / 0.70)',
     highlight: 'rgb(240 82 82 / 0.85)',
 }
 
@@ -28,8 +28,7 @@ export default function ({ col, row, children, showFiles: showFile, showRows: sh
         const overlay = document.getElementById(`overlay-${col}${row}`)!
 
         if (isOver) {
-            // && game.isValidMove()) {
-            overlay.style.backgroundColor = Colors.over
+            overlay.style.border = `${Colors.over} 3px solid`
         } else {
             overlay.style.backgroundColor = 'transparent'
         }
