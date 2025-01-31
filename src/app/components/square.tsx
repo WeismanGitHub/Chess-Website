@@ -14,7 +14,7 @@ export const Colors = {
     highlight: 'rgb(240 82 82 / 0.85)',
 }
 
-export default function ({ col, row, children, showFiles: showFile, showRows: showRow }: Props) {
+export default function ({ col, row, children, showFile, showRow }: Props) {
     const { isOver, setNodeRef } = useDroppable({
         id: `${col} ${row}`,
     })
@@ -30,7 +30,7 @@ export default function ({ col, row, children, showFiles: showFile, showRows: sh
         if (isOver) {
             overlay.style.border = `${Colors.over} 3px solid`
         } else {
-            overlay.style.backgroundColor = 'transparent'
+            overlay.style.border = 'transparent'
         }
     }, [isOver])
 
