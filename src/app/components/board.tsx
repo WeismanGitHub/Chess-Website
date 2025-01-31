@@ -56,8 +56,6 @@ function createReadablePosition(col: number, row: number): string {
 }
 
 export default function ({ size }: { size: number }) {
-    const game = new Game()
-
     // @ts-ignore
     const [squares, setSquares] = useState(game.board.squares.flat().toReversed())
     const [showNotation, setShowNotation] = useState(true)
@@ -177,8 +175,8 @@ export default function ({ size }: { size: number }) {
 
                         return (
                             <DroppableSquare
-                                showFiles={showFiles}
-                                showRows={showRows}
+                                showFile={showFiles}
+                                showRow={showRows}
                                 key={`${col}${row}`}
                                 col={col}
                                 row={row}

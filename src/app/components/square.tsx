@@ -5,8 +5,8 @@ interface Props {
     col: number
     row: number
     children: any
-    showFiles: boolean
-    showRows: boolean
+    showFile: boolean
+    showRow: boolean
 }
 
 export const Colors = {
