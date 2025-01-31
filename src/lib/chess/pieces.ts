@@ -102,8 +102,49 @@ export class Knight extends Piece {
     public character = 'm'
 
     @universalCheck
-    isValidMove(_game: Game, _start: Square, _end: Square): boolean {
-        throw new Error('Method not implemented.')
+    isValidMove(_game: Game, start: Square, end: Square): boolean {
+        const validPositions = [
+            {
+                col: 2,
+                row: 1,
+            },
+            {
+                col: 2,
+                row: -1,
+            },
+            {
+                col: -2,
+                row: 1,
+            },
+            {
+                col: -2,
+                row: -1,
+            },
+            {
+                col: 1,
+                row: 2,
+            },
+            {
+                col: -1,
+                row: 2,
+            },
+            {
+                col: 1,
+                row: -2,
+            },
+            {
+                col: -1,
+                row: -2,
+            },
+        ]
+
+        for (const position of validPositions) {
+            if (start.col + position.col === end.col && start.row + position.row === end.row) {
+                return true
+            }
+        }
+
+        return false
     }
 }
 
