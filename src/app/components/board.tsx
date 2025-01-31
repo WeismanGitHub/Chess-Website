@@ -55,6 +55,9 @@ function createReadablePosition(col: number, row: number): string {
     return `${letters[col]}${row + 1}`
 }
 
+const game = new Game()
+let boardIsReversed = false
+
 export default function ({ size }: { size: number }) {
     // @ts-ignore
     const [squares, setSquares] = useState(game.board.squares.flat().toReversed())
@@ -74,7 +77,10 @@ export default function ({ size }: { size: number }) {
             <div className="flex flex-row gap-2 md:flex-col">
                 <Button
                     // @ts-ignore
-                    onClick={() => setSquares(squares.toReversed())}
+                    onClick={() => {
+                        boardIsReversed = !boardIsReversed
+                        setSquares(squares.toReversed())
+                    }}
                     className="inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
                 >
                     <svg
@@ -139,24 +145,36 @@ export default function ({ size }: { size: number }) {
                 onDragEnd={({ active, over }) => {
                     if (!over) return
 
-                    const [_, col, row] = parsePieceId(active.id)
+                    const [_, activeCol, activeRow] = parsePieceId(active.id)
+                    const [overCol, overRow] = parseSquareId(over.id)
 
                     let piece =
-                        squares.find((square) => square.col == col && square.row == row)?.piece ?? null
+                        squares.find((square) => square.col == activeCol && square.row == activeRow)?.piece ??
+                        null
 
-                    setSquares(
-                        squares.map((square) => {
-                            if (square.col === col && square.row === row) {
-                                square.piece = null
-                            }
+                    const start = game.board.getSquare(activeRow, activeCol)!
+                    const end = game.board.getSquare(overRow, overCol)!
 
-                            if (over.id == `${square.col} ${square.row}`) {
-                                square.piece = piece
-                            }
+                    try {
+                        game.makeMove(start, end)
+                        // send move to server and then update client
 
-                            return square
-                        })
-                    )
+                        setSquares(
+                            squares.map((square) => {
+                                if (square.col === activeCol && square.row === activeRow) {
+                                    square.piece = null
+                                }
+
+                                if (over.id == `${square.col} ${square.row}`) {
+                                    square.piece = piece
+                                }
+
+                                return square
+                            })
+                        )
+                    } catch (err) {
+                        console.log(err)
+                    }
                 }}
             >
                 <div
@@ -168,8 +186,6 @@ export default function ({ size }: { size: number }) {
                     onClick={resetOverlays}
                 >
                     {squares.map(({ col, row, piece }) => {
-                        const boardIsReversed = squares[0].piece?.color === 'white'
-
                         const showFiles = showNotation && col === (boardIsReversed ? 0 : 7)
                         const showRows = showNotation && row === (boardIsReversed ? 7 : 0)
 
