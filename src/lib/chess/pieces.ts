@@ -103,7 +103,7 @@ export class Knight extends Piece {
 
     @universalCheck
     isValidMove(_game: Game, start: Square, end: Square): boolean {
-        const validPositions = [
+        const validTransformations = [
             {
                 col: 2,
                 row: 1,
@@ -138,8 +138,8 @@ export class Knight extends Piece {
             },
         ]
 
-        for (const position of validPositions) {
-            if (start.col + position.col === end.col && start.row + position.row === end.row) {
+        for (const trans of validTransformations) {
+            if (start.col + trans.col === end.col && start.row + trans.row === end.row) {
                 return true
             }
         }
