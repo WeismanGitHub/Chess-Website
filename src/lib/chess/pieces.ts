@@ -24,19 +24,17 @@ export abstract class Piece {
         this.color = color
     }
 
-    abstract isValidMove(game: Game, start: Square, end: Square): boolean
+    abstract isValidMove(start: Square, end: Square, game: Game): boolean
 
-    executeMove(game: Game, start: Square, end: Square, _promotion?: Piece): void {
+    executeMove(start: Square, end: Square, _game: Game, _promotion?: Piece): void {
         const piece = start.piece
 
         if (!piece) {
             throw new Error("There's no piece on that square.")
         }
 
-        if (piece.isValidMove(game, start, end)) {
-            end.piece = start.piece
-            start.piece = null
-        }
+        end.piece = start.piece
+        start.piece = null
     }
 
     getCharacter() {
@@ -80,7 +78,7 @@ export class Queen extends Piece {
     public character = 'w'
 
     @universalCheck
-    isValidMove(_game: Game, start: Square, end: Square): boolean {
+    isValidMove(start: Square, end: Square): boolean {
         return (
             this.squaresAreDiagonal(start, end) ||
             this.squaresAreHorizontal(start, end) ||
@@ -93,7 +91,7 @@ export class Bishop extends Piece {
     public character = 'v'
 
     @universalCheck
-    isValidMove(_game: Game, start: Square, end: Square): boolean {
+    isValidMove(start: Square, end: Square): boolean {
         return this.squaresAreDiagonal(start, end)
     }
 }
@@ -102,7 +100,7 @@ export class Knight extends Piece {
     public character = 'm'
 
     @universalCheck
-    isValidMove(_game: Game, start: Square, end: Square): boolean {
+    isValidMove(start: Square, end: Square): boolean {
         const validTransformations = [
             {
                 col: 2,
@@ -161,7 +159,7 @@ export class Pawn extends Piece {
     public character = 'o'
 
     @universalCheck
-    isValidMove(_game: Game, start: Square, end: Square): boolean {
+    isValidMove(start: Square, end: Square): boolean {
         const horizontallyAdjacent = start.col + 1 === end.col || start.col - 1 === end.col
 
         if (this.color === 'white') {
@@ -195,7 +193,7 @@ export class Pawn extends Piece {
         return start.row - 1 === end.row
     }
 
-    override executeMove(_game: Game, start: Square, end: Square, promotion?: Piece): void {
+    override executeMove(start: Square, end: Square, _game: Game, promotion?: Piece): void {
         if (this.color === 'white' ? end.row === 7 : end.row === 0) {
             if (!promotion) {
                 throw new Error('Promotion piece is required.')
