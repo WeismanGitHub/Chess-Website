@@ -2,20 +2,6 @@ import { Color } from '../../types'
 import Square from './square'
 import Game from './game'
 
-function universalCheck(_target: Object, _propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
-    const originalMethod = descriptor.value
-
-    descriptor.value = function (game: Game, start: Square, end: Square) {
-        if (!start.piece || start.piece.color === end.piece?.color) {
-            return false
-        }
-
-        return originalMethod.apply(this, [game, start, end])
-    }
-
-    return descriptor
-}
-
 export abstract class Piece {
     public color: Color
     abstract character: string // It will look different with the custom font.
@@ -77,7 +63,6 @@ export class King extends Piece {
 export class Queen extends Piece {
     public character = 'w'
 
-    @universalCheck
     isValidMove(start: Square, end: Square): boolean {
         return (
             this.squaresAreDiagonal(start, end) ||
@@ -90,7 +75,6 @@ export class Queen extends Piece {
 export class Bishop extends Piece {
     public character = 'v'
 
-    @universalCheck
     isValidMove(start: Square, end: Square): boolean {
         return this.squaresAreDiagonal(start, end)
     }
@@ -99,7 +83,6 @@ export class Bishop extends Piece {
 export class Knight extends Piece {
     public character = 'm'
 
-    @universalCheck
     isValidMove(start: Square, end: Square): boolean {
         const validTransformations = [
             {
@@ -149,8 +132,7 @@ export class Knight extends Piece {
 export class Rook extends Piece {
     public character = 't'
 
-    @universalCheck
-    isValidMove(_game: Game, start: Square, end: Square): boolean {
+    isValidMove(start: Square, end: Square): boolean {
         return this.squaresAreHorizontal(start, end) || this.squaresAreVertical(start, end)
     }
 }
@@ -158,7 +140,6 @@ export class Rook extends Piece {
 export class Pawn extends Piece {
     public character = 'o'
 
-    @universalCheck
     isValidMove(start: Square, end: Square): boolean {
         const horizontallyAdjacent = start.col + 1 === end.col || start.col - 1 === end.col
 

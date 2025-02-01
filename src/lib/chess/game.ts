@@ -55,8 +55,18 @@ export default class Game {
             throw new Error('Game is not active.')
         }
 
-        if (!start || !end) {
-            throw new Error('Invalid Coordinate(s)')
+        const piece = start.piece
+
+        if (!piece) {
+            throw new Error("There's no piece on that square.")
+        }
+
+        if (piece.color !== this.turn) {
+            throw new Error(`Cannot move a ${piece.color} piece on ${this.turn}'s turn.`)
+        }
+
+        if (end.piece?.color === this.turn) {
+            throw new Error('Cannot take your own piece.')
         }
 
         const king = this.board.getKingSquare(this.turn).piece
@@ -65,21 +75,13 @@ export default class Game {
             throw new Error('Your king is in check.')
         }
 
-        const piece = start.piece
-
-        if (!piece) {
-            throw new Error("There's no piece on that square.")
-        }
-
-        if (piece.color !== this.turn) {
-            throw new Error('Cannot move the pieces of another color.')
-        }
-
-        if (!piece.canMove(this, start, end)) {
+        if (!piece.isValidMove(start, end, this)) {
             throw new Error('Invalid Move')
         }
 
-        piece.makeMove(this, start, end, promotion)
+        piece.executeMove(start, end, this, promotion)
+
+        // if king is now in check then revert move
 
         const blackKing = this.board.getKingSquare('black').piece
         const whiteKing = this.board.getKingSquare('white').piece
