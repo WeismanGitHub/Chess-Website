@@ -131,9 +131,17 @@ export class Knight extends Piece {
 
 export class Rook extends Piece {
     public character = 't'
+    public hasMoved = false
 
     isValidMove(start: Square, end: Square): boolean {
         return this.squaresAreHorizontal(start, end) || this.squaresAreVertical(start, end)
+    }
+
+    executeMove(start: Square, end: Square): void {
+        end.piece = start.piece
+        start.piece = null
+
+        this.hasMoved = true
     }
 }
 
