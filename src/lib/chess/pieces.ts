@@ -42,11 +42,21 @@ export abstract class Piece {
 
 export class King extends Piece {
     public character = 'l'
-    public canCastle = true
+    private hasMoved = false
 
-    @universalCheck
-    isValidMove(_game: Game, _start: Square, _end: Square): boolean {
-        throw new Error('Method not implemented.')
+    isValidMove(start: Square, end: Square, game: Game): boolean {
+        if (Math.abs(start.col - end.col) <= 1 && Math.abs(start.row - end.row) <= 1) {
+            return true
+        }
+
+        // const isCastlingMove = start.row === end.row && Math.abs(start.col - end.col) === 2
+
+        // if (this.hasMoved && isCastlingMove) {
+        //     return false
+        // }
+        console.log(game, this.hasMoved)
+
+        return false
     }
 
     isInCheck(_game: Game): boolean {
@@ -57,7 +67,9 @@ export class King extends Piece {
         return false
     }
 
-    // override makeMove(game: Game, start: Square, end: Square): void {}
+    // override executeMove(start: Square, end: Square, game: Game): void {
+    //     this.hasMoved = true
+    // }
 }
 
 export class Queen extends Piece {
