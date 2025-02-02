@@ -23,7 +23,6 @@ export abstract class Piece {
         start.piece = null
     }
 
-
     squaresAreDiagonal(start: Square, end: Square): boolean {
         return Math.abs(start.col - end.col) === Math.abs(start.row - end.row)
     }
