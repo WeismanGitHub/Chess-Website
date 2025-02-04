@@ -2,14 +2,9 @@ import { Piece } from '../../lib/chess/pieces'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import React, { useEffect } from 'react'
-import localFont from 'next/font/local'
+import chessFont from './character-font'
 import { resetOverlays } from './board'
 import { Colors } from './square'
-
-const chessFont = localFont({
-    src: './chess-font.ttf',
-    display: 'swap',
-})
 
 export default function ({ piece, id, size }: { piece: Piece; id: string; size: number }) {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
