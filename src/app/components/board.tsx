@@ -3,9 +3,10 @@
 import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers'
 import { DndContext, UniqueIdentifier } from '@dnd-kit/core'
 import { useEffect, useState } from 'react'
-import { Button, ListGroup, Modal } from 'flowbite-react'
+import { Button } from 'flowbite-react'
 
 import { Pawn, Piece } from '../../lib/chess/pieces'
+import PromotionWidget from './promo-widget'
 import Square from '../../lib/chess/square'
 import { Game } from '../../lib/chess/'
 import DroppableSquare from './square'
@@ -61,10 +62,9 @@ const game = new Game()
 let boardIsReversed = false
 
 export default function ({ size }: { size: number }) {
-    // @ts-ignore
     const [squares, setSquares] = useState(game.board.squares.flat().toReversed())
+    const [promoMove, setPromoMove] = useState<[Square, Square] | null>(null)
     const [showNotation, setShowNotation] = useState(true)
-    const [showPromo, setShowPromo] = useState(false)
 
     useEffect(() => {
         if (!localStorage.getItem('showNotation')) {
@@ -103,17 +103,18 @@ export default function ({ size }: { size: number }) {
 
     return (
         <>
-            <Modal show={showPromo} position={'center'} onClose={() => setShowPromo(false)}>
-                <Modal.Body>
-                    <div className="p-6">
-                        <ListGroup>
-                            <ListGroup.Item href="#" active>
-                                Pawn
-                            </ListGroup.Item>
-                        </ListGroup>
-                    </div>
-                </Modal.Body>
-            </Modal>
+            {promoMove && (
+                <PromotionWidget
+                    handleSelect={(piece) => {
+                        handleMove(promoMove[0], promoMove[1], piece)
+                        setPromoMove(null)
+                    }}
+                    handleClose={() => {
+                        setPromoMove(null)
+                    }}
+                    turn={game.turn}
+                />
+            )}
             <div className="flex h-fit w-fit flex-col-reverse items-center gap-2 md:flex-row">
                 <div className="flex flex-row gap-2 md:flex-col">
                     <Button
@@ -200,7 +201,7 @@ export default function ({ size }: { size: number }) {
                             piece instanceof Pawn &&
                             (piece.color === 'white' ? end.row === 7 : end.row === 0)
                         ) {
-                            return setShowPromo(true)
+                            return setPromoMove([start, end])
                         }
 
                         handleMove(start, end)
