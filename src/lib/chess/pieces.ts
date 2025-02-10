@@ -101,7 +101,17 @@ export class King extends Piece {
         start.piece = null
 
         if (this.isCastlingMove(start, end)) {
-            // move rook
+            const isKingSide = start.col < end.col
+
+            const rookStart = game.board.getSquare(start.row, isKingSide ? 7 : 0)
+            const rookEnd = game.board.getSquare(start.row, isKingSide ? start.col + 1 : start.col - 1)
+
+            if (!rookStart || !rookStart.piece || !(rookStart.piece instanceof Rook) || !rookEnd) {
+                throw new Error('Could not castle due to error involving rook.')
+            }
+
+            rookEnd.piece = rookStart.piece
+            rookStart.piece = null
         }
 
         this.hasMoved = true
