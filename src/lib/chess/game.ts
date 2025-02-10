@@ -81,15 +81,12 @@ export default class Game {
 
         piece.executeMove(start, end, this, promotion)
 
-        // if king is now in check then revert move
+        // if `king` is now in check then revert move
 
-        const blackKing = this.board.getKingSquare('black').piece
-        const whiteKing = this.board.getKingSquare('white').piece
+        const opposingKing = this.board.getKingSquare(this.turn === 'black' ? 'white' : 'black')?.piece
 
-        if (blackKing.IsInCheckmate(this)) {
-            this.state = GameState.WhiteWin
-        } else if (whiteKing.IsInCheckmate(this)) {
-            this.state = GameState.BlackWin
+        if (opposingKing.IsInCheckmate(this)) {
+            this.state = this.turn === 'black' ? GameState.BlackWin : GameState.WhiteWin
         }
 
         this.turn = this.turn == 'white' ? 'black' : 'white'
