@@ -40,19 +40,8 @@ export class King extends Piece {
     public character = 'l'
     private hasMoved = false
 
-    isValidMove(start: Square, end: Square, game: Game): boolean {
-        if (Math.abs(start.col - end.col) <= 1 && Math.abs(start.row - end.row) <= 1) {
-            return true
-        }
-
-        // const isCastlingMove = start.row === end.row && Math.abs(start.col - end.col) === 2
-
-        // if (this.hasMoved && isCastlingMove) {
-        //     return false
-        // }
-        console.log(game, this.hasMoved)
-
-        return false
+    isCastlingMove(start: Square, end: Square): boolean {
+        return start.row === end.row && Math.abs(start.col - end.col) === 2
     }
 
     isInCheck(_game: Game): boolean {
@@ -63,9 +52,60 @@ export class King extends Piece {
         return false
     }
 
-    // override executeMove(start: Square, end: Square, game: Game): void {
-    //     this.hasMoved = true
-    // }
+    isValidMove(start: Square, end: Square, game: Game): boolean {
+        if (Math.abs(start.col - end.col) <= 1 && Math.abs(start.row - end.row) <= 1) {
+            return true
+        }
+
+        if (!this.isCastlingMove(start, end)) {
+            return false
+        }
+
+        if (this.hasMoved) {
+            return false
+        }
+
+        const isKingSide = start.col < end.col
+
+        const rook = game.board.getSquare(start.row, isKingSide ? 7 : 0)?.piece
+
+        if (!rook || !(rook instanceof Rook) || rook.hasMoved) {
+            return false
+        }
+
+        const middleCols = isKingSide ? [start.col + 1, start.col + 2] : [start.col - 1, start.col - 2]
+
+        for (const col of middleCols) {
+            const middleSquare = game.board.getSquare(start.row, col)
+
+            if (!middleSquare || middleSquare.piece) {
+                return false
+            }
+
+            middleSquare.piece = start.piece
+            start.piece = null
+
+            if (this.isInCheck(game)) {
+                start.piece = middleSquare.piece
+                middleSquare.piece = null
+
+                return false
+            }
+        }
+
+        return true
+    }
+
+    override executeMove(start: Square, end: Square, game: Game): void {
+        end.piece = start.piece
+        start.piece = null
+
+        if (this.isCastlingMove(start, end)) {
+            // move rook
+        }
+
+        this.hasMoved = true
+    }
 }
 
 export class Queen extends Piece {
