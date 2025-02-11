@@ -75,30 +75,26 @@ export default function ({ size }: { size: number }) {
         }
     }, [])
 
-    function handleMove(start: Square, end: Square, promotion?: Piece) {
-        try {
-            const piece = start.piece
+    async function handleMove(start: Square, end: Square, promotion?: Piece) {
+        const piece = start.piece
 
-            game.makeMove(start, end, promotion)
+        game.makeMove(start, end, promotion)
 
-            // send move to server and then update client
+        // send move to server and then update client
 
-            setSquares(
-                squares.map((square) => {
-                    if (square.col === start.col && square.row === start.row) {
-                        square.piece = null
-                    }
+        setSquares(
+            squares.map((square) => {
+                if (square.col === start.col && square.row === start.row) {
+                    square.piece = null
+                }
 
-                    if (square.col === end.col && square.row === end.row) {
-                        square.piece = piece
-                    }
+                if (square.col === end.col && square.row === end.row) {
+                    square.piece = piece
+                }
 
-                    return square
-                })
-            )
-        } catch (err) {
-            console.log(err)
-        }
+                return square
+            })
+        )
     }
 
     return (
@@ -106,10 +102,11 @@ export default function ({ size }: { size: number }) {
             {promoMove && (
                 <PromotionWidget
                     handleSelect={(piece) => {
-                        handleMove(promoMove[0], promoMove[1], piece)
-                        promoMove[1].piece = piece
+                        handleMove(promoMove[0], promoMove[1], piece).then(() => {
+                            promoMove[1].piece = piece
 
-                        setPromoMove(null)
+                            setPromoMove(null)
+                        })
                     }}
                     handleClose={() => {
                         setPromoMove(null)
