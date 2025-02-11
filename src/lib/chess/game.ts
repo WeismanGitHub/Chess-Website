@@ -79,9 +79,13 @@ export default class Game {
             throw new Error('Invalid Move')
         }
 
+        const squares = this.board.squares.map((row) => row.slice())
+
         piece.executeMove(start, end, this, promotion)
 
-        // if `king` is now in check then revert move
+        if (this.board.getKingSquare(this.turn).piece.isInCheck(this)) {
+            this.board.squares = squares
+        }
 
         const opposingKing = this.board.getKingSquare(this.turn === 'black' ? 'white' : 'black')?.piece
 
