@@ -2,6 +2,7 @@ import { Bishop, Knight, Piece, Queen, Rook } from '../../lib/chess/pieces'
 import { ListGroup, Modal } from 'flowbite-react'
 import characterFont from './character-font'
 import { Color } from '../../types'
+import { Game } from '../../lib/chess'
 
 function PieceIcon({ turn, piece }: { turn: Color; piece: Piece }) {
     return (
@@ -9,7 +10,7 @@ function PieceIcon({ turn, piece }: { turn: Color; piece: Piece }) {
             className="unselectable piece h-fit w-fit"
             style={{
                 WebkitTextFillColor: turn === 'white' ? '#aab1b3' : '#011217',
-                fontSize: 12,
+                fontSize: 30,
                 ...characterFont.style,
             }}
         >
@@ -20,28 +21,29 @@ function PieceIcon({ turn, piece }: { turn: Color; piece: Piece }) {
 
 export default function PromotionWidget({
     handleSelect,
-    turn,
+    game,
     handleClose,
 }: {
     handleSelect: (piece: Piece) => void
-    turn: Color
+    game: Game
     handleClose: () => void
 }) {
+    const turn = game.turn
+    const classes = [Queen, Bishop, Knight, Rook]
+
     return (
-        <Modal show={true} position={'center'} onClose={handleClose} dismissible autoFocus>
-            <Modal.Header />
-            <Modal.Body>
-                <div className="p-6">
-                    <ListGroup>
-                        <ListGroup.Item href="#" active>
-                            <PieceIcon piece={new Queen()} turn={turn} />
-                            <PieceIcon piece={new Bishop()} turn={turn} />
-                            <PieceIcon piece={new Knight()} turn={turn} />
-                            <PieceIcon piece={new Rook()} turn={turn} />
+        <Modal show={true} onClose={handleClose} dismissible autoFocus>
+            <ListGroup>
+                {classes.map((c) => {
+                    const piece = new c(game.turn)
+
+                    return (
+                        <ListGroup.Item onClick={() => handleSelect(piece)} active>
+                            <PieceIcon piece={piece} turn={turn} />
                         </ListGroup.Item>
-                    </ListGroup>
-                </div>
-            </Modal.Body>
+                    )
+                })}
+            </ListGroup>
         </Modal>
     )
 }

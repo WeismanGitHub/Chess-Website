@@ -107,12 +107,14 @@ export default function ({ size }: { size: number }) {
                 <PromotionWidget
                     handleSelect={(piece) => {
                         handleMove(promoMove[0], promoMove[1], piece)
+                        promoMove[1].piece = piece
+
                         setPromoMove(null)
                     }}
                     handleClose={() => {
                         setPromoMove(null)
                     }}
-                    turn={game.turn}
+                    game={game}
                 />
             )}
             <div className="flex h-fit w-fit flex-col-reverse items-center gap-2 md:flex-row">
