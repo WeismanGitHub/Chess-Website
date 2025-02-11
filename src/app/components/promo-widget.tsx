@@ -1,8 +1,8 @@
 import { Bishop, Knight, Piece, Queen, Rook } from '../../lib/chess/pieces'
-import { ListGroup, Modal } from 'flowbite-react'
+import { Button, Modal } from 'flowbite-react'
 import characterFont from './character-font'
-import { Color } from '../../types'
 import { Game } from '../../lib/chess'
+import { Color } from '../../types'
 
 function PieceIcon({ turn, piece }: { turn: Color; piece: Piece }) {
     return (
@@ -28,22 +28,25 @@ export default function PromotionWidget({
     game: Game
     handleClose: () => void
 }) {
-    const turn = game.turn
     const classes = [Queen, Bishop, Knight, Rook]
 
     return (
         <Modal show={true} onClose={handleClose} dismissible autoFocus>
-            <ListGroup>
-                {classes.map((c) => {
-                    const piece = new c(game.turn)
+            <Modal.Body>
+                <div className="flex justify-center bg-transparent">
+                    <Button.Group className="flex">
+                        {classes.map((c) => {
+                            const piece = new c(game.turn)
 
-                    return (
-                        <ListGroup.Item onClick={() => handleSelect(piece)} active>
-                            <PieceIcon piece={piece} turn={turn} />
-                        </ListGroup.Item>
-                    )
-                })}
-            </ListGroup>
+                            return (
+                                <Button onClick={() => handleSelect(piece)}>
+                                    <PieceIcon piece={piece} turn={game.turn} />
+                                </Button>
+                            )
+                        })}
+                    </Button.Group>
+                </div>
+            </Modal.Body>
         </Modal>
     )
 }
