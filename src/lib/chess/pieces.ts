@@ -44,7 +44,21 @@ export class King extends Piece {
         return start.row === end.row && Math.abs(start.col - end.col) === 2
     }
 
-    isInCheck(_game: Game): boolean {
+    isInCheck(game: Game): boolean {
+        const opponentSquares = game.board.squares
+            .flat()
+            .filter((square) => square.piece && square.piece.color !== game.turn) as (Square & {
+            piece: Piece
+        })[]
+
+        const kingSquare = game.board.getKingSquare(game.turn)
+
+        for (const square of opponentSquares) {
+            if (square.piece.isValidMove(square, kingSquare, game)) {
+                return true
+            }
+        }
+
         return false
     }
 
