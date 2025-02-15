@@ -125,9 +125,9 @@ export class Queen extends Piece {
 
     isValidMove(start: Square, end: Square): boolean {
         return (
-            Game.squaresAreDiagonal(start, end) ||
-            Game.squaresAreHorizontal(start, end) ||
-            Game.squaresAreVertical(start, end)
+            Game.pathIsDiagonal(start, end) ||
+            Game.pathIsHorizontal(start, end) ||
+            Game.pathIsVertical(start, end)
         )
     }
 }
@@ -136,7 +136,7 @@ export class Bishop extends Piece {
     public character = 'v'
 
     isValidMove(start: Square, end: Square): boolean {
-        return Game.squaresAreDiagonal(start, end)
+        return Game.pathIsDiagonal(start, end)
     }
 }
 
@@ -198,7 +198,7 @@ export class Rook extends Piece {
     public hasMoved = false
 
     isValidMove(start: Square, end: Square): boolean {
-        return Game.squaresAreHorizontal(start, end) || Game.squaresAreVertical(start, end)
+        return Game.pathIsHorizontal(start, end) || Game.pathIsVertical(start, end)
     }
 
     executeMove(start: Square, end: Square): void {
@@ -225,7 +225,7 @@ export class Pawn extends Piece {
             }
         }
 
-        if (!Game.squaresAreVertical(start, end) || end.piece) {
+        if (!Game.pathIsVertical(start, end) || end.piece) {
             return false
         }
 
