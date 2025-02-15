@@ -103,4 +103,16 @@ export default class Game {
 
         this.state = status
     }
+
+    static squaresAreDiagonal(start: Square, end: Square): boolean {
+        return Math.abs(start.col - end.col) === Math.abs(start.row - end.row)
+    }
+
+    static squaresAreVertical(start: Square, end: Square): boolean {
+        return start.col === end.col
+    }
+
+    static squaresAreHorizontal(start: Square, end: Square): boolean {
+        return start.row === end.row
+    }
 }

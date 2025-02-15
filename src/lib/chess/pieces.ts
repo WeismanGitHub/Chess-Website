@@ -22,18 +22,6 @@ export abstract class Piece {
         end.piece = start.piece
         start.piece = null
     }
-
-    squaresAreDiagonal(start: Square, end: Square): boolean {
-        return Math.abs(start.col - end.col) === Math.abs(start.row - end.row)
-    }
-
-    squaresAreVertical(start: Square, end: Square): boolean {
-        return start.col === end.col
-    }
-
-    squaresAreHorizontal(start: Square, end: Square): boolean {
-        return start.row === end.row
-    }
 }
 
 export class King extends Piece {
@@ -137,9 +125,9 @@ export class Queen extends Piece {
 
     isValidMove(start: Square, end: Square): boolean {
         return (
-            this.squaresAreDiagonal(start, end) ||
-            this.squaresAreHorizontal(start, end) ||
-            this.squaresAreVertical(start, end)
+            Game.squaresAreDiagonal(start, end) ||
+            Game.squaresAreHorizontal(start, end) ||
+            Game.squaresAreVertical(start, end)
         )
     }
 }
@@ -148,7 +136,7 @@ export class Bishop extends Piece {
     public character = 'v'
 
     isValidMove(start: Square, end: Square): boolean {
-        return this.squaresAreDiagonal(start, end)
+        return Game.squaresAreDiagonal(start, end)
     }
 }
 
@@ -199,6 +187,10 @@ export class Knight extends Piece {
 
         return false
     }
+
+    pathIsClear(): boolean {
+        return true
+    }
 }
 
 export class Rook extends Piece {
@@ -206,7 +198,7 @@ export class Rook extends Piece {
     public hasMoved = false
 
     isValidMove(start: Square, end: Square): boolean {
-        return this.squaresAreHorizontal(start, end) || this.squaresAreVertical(start, end)
+        return Game.squaresAreHorizontal(start, end) || Game.squaresAreVertical(start, end)
     }
 
     executeMove(start: Square, end: Square): void {
@@ -233,7 +225,7 @@ export class Pawn extends Piece {
             }
         }
 
-        if (!this.squaresAreVertical(start, end) || end.piece) {
+        if (!Game.squaresAreVertical(start, end) || end.piece) {
             return false
         }
 
