@@ -50,6 +50,18 @@ export default class Game {
         this.board = new Board(rows)
     }
 
+    static pathIsDiagonal(start: Square, end: Square): boolean {
+        return Math.abs(start.col - end.col) === Math.abs(start.row - end.row)
+    }
+
+    static pathIsVertical(start: Square, end: Square): boolean {
+        return start.col === end.col
+    }
+
+    static pathIsHorizontal(start: Square, end: Square): boolean {
+        return start.row === end.row
+    }
+
     makeMove(start: Square, end: Square, promotion?: Piece) {
         if (this.state !== GameState.Active) {
             throw new Error('Game is not active.')
