@@ -22,6 +22,8 @@
     "formik": "^2.4.6",
     "jsonwebtoken": "^9.0.2",
     "keyv": "^5.0.1",
+    "mobx": "^6.13.6",
+    "mobx-react-lite": "^4.1.0",
     "mongodb": "^6.8.0",
     "mongoose": "^8.5.2",
     "mongoose-unique-validator": "^5.0.1",
