@@ -61,7 +61,7 @@ function createReadablePosition(col: number, row: number): string {
 }
 
 const games: Game[] = []
-const game = makeAutoObservable(new Game())
+let game = makeAutoObservable(new Game())
 
 export default function ({ size }: { size: number }) {
     const [promoMove, setPromoMove] = useState<[Square, Square] | null>(null)
@@ -265,8 +265,14 @@ export default function ({ size }: { size: number }) {
                     </Button>
                     <Button
                         onClick={() => {
-                            // game = makeAutoObservable(games[games.length - 1] ?? new Game())
+                            game = makeAutoObservable(games[games.length - 1] ?? new Game())
                             games.pop()
+
+                            // To make it re-render
+                            setShowNotation(!showNotation)
+                            setTimeout(() => {
+                                setShowNotation(showNotation)
+                            }, 0)
                         }}
                     >
                         {'<'}
