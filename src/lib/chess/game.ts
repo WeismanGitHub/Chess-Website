@@ -91,6 +91,7 @@ export default class Game {
             throw new Error('Invalid Move')
         }
 
+        // Reversing the move if King is in check can be more efficient.
         const squares = this.board.squares.map((row) => row.slice())
 
         piece.executeMove(start, end, this, promotion)
