@@ -39,7 +39,7 @@ export class King extends Piece {
     public character = 'l'
     private hasMoved = false
 
-    isCastlingMove(start: Square, end: Square): boolean {
+    private static isCastlingMove(start: Square, end: Square): boolean {
         return start.row === end.row && Math.abs(start.col - end.col) === 2
     }
 
