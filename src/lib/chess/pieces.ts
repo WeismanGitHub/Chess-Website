@@ -43,35 +43,12 @@ export class King extends Piece {
         return start.row === end.row && Math.abs(start.col - end.col) === 2
     }
 
-    isInCheck(game: Game): boolean {
-        const opponentSquares = game.board.squares
-            .flat()
-            .filter((square) => square.piece && square.piece.color !== game.turn) as (Square & {
-            piece: Piece
-        })[]
-
-        const kingSquare = game.board.getKingSquare(game.turn)
-
-        for (const square of opponentSquares) {
-            if (square.piece.isValidMove(square, kingSquare, game)) {
-                return true
-            }
-        }
-
-        return false
-    }
-
-    IsInCheckmate(_game: Game): boolean {
-        return false
-    }
-
-    @clearPathCheck
     isValidMove(start: Square, end: Square, game: Game): boolean {
         if (Math.abs(start.col - end.col) <= 1 && Math.abs(start.row - end.row) <= 1) {
             return true
         }
 
-        if (!this.isCastlingMove(start, end)) {
+        if (!King.isCastlingMove(start, end)) {
             return false
         }
 
@@ -99,7 +76,7 @@ export class King extends Piece {
             middleSquare.piece = start.piece
             start.piece = null
 
-            if (this.isInCheck(game)) {
+            if (game.kingInCheck(this.color)) {
                 start.piece = middleSquare.piece
                 middleSquare.piece = null
 
@@ -114,7 +91,7 @@ export class King extends Piece {
         end.piece = start.piece
         start.piece = null
 
-        if (this.isCastlingMove(start, end)) {
+        if (King.isCastlingMove(start, end)) {
             const isKingSide = start.col < end.col
 
             const rookStart = game.board.getSquare(start.row, isKingSide ? 7 : 0)

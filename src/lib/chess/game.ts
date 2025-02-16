@@ -62,6 +62,28 @@ export default class Game {
         return start.row === end.row
     }
 
+    kingInCheck(color: Color): boolean {
+        const opponentSquares = this.board.squares
+            .flat()
+            .filter((square) => square.piece && square.piece.color !== color) as (Square & {
+            piece: Piece
+        })[]
+
+        const kingSquare = this.board.getKingSquare(color)
+
+        for (const square of opponentSquares) {
+            if (square.piece.isValidMove(square, kingSquare, this)) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    kingInCheckmate(): boolean {
+        return false
+    }
+
     makeMove(start: Square, end: Square, promotion?: Piece) {
         if (this.state !== GameState.Active) {
             throw new Error('Game is not active.')
