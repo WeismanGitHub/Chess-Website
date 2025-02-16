@@ -103,28 +103,31 @@ export default class Game {
             throw new Error('Cannot take your own piece.')
         }
 
-        const king = this.board.getKingSquare(this.turn).piece
-
-        if (king.isInCheck(this)) {
-            throw new Error('Your king is in check.')
-        }
-
         if (!piece.isValidMove(start, end, this)) {
             throw new Error('Invalid Move')
         }
 
         // Reversing the move if King is in check can be more efficient.
-        const squares = this.board.squares.map((row) => row.slice())
+        const squares: Square[][] = []
+
+        for (let i = 0; i < 8; i++) {
+            squares[i] = []
+            for (let j = 0; j < 8; j++) {
+                const piece = this.board.squares[i][j].piece
+
+                squares[i][j] = new Square(i, j, piece && Object.create(piece))
+            }
+        }
 
         piece.executeMove(start, end, this, promotion)
 
-        if (this.board.getKingSquare(this.turn).piece.isInCheck(this)) {
+        if (this.kingInCheck(this.turn)) {
             this.board.squares = squares
+
+            throw new Error('Your King is in check.')
         }
 
-        const opposingKing = this.board.getKingSquare(this.turn === 'black' ? 'white' : 'black')?.piece
-
-        if (opposingKing.IsInCheckmate(this)) {
+        if (this.kingInCheckmate()) {
             this.state = this.turn === 'black' ? GameState.BlackWin : GameState.WhiteWin
         }
 
