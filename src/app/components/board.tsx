@@ -112,7 +112,7 @@ export default function ({ size }: { size: number }) {
 
     const BoardView = observer(({ game }: { game: Game }) => (
         <div>
-            {game.turn}
+            <div hidden>{game.turn}</div>
             <DndContext
                 modifiers={[restrictToWindowEdges, snapCenterToCursor]}
                 accessibility={{
