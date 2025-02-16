@@ -3,6 +3,8 @@
 import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers'
 import { DndContext, UniqueIdentifier } from '@dnd-kit/core'
 import { useEffect, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { makeAutoObservable } from 'mobx'
 import { Button } from 'flowbite-react'
 
 import { Pawn, Piece } from '../../lib/chess/pieces'
@@ -58,14 +60,14 @@ function createReadablePosition(col: number, row: number): string {
     return `${letters[col]}${row + 1}`
 }
 
-let game = new Game()
 const games: Game[] = []
-let boardIsReversed = false
+const game = makeAutoObservable(new Game())
 
 export default function ({ size }: { size: number }) {
-    const [squares, setSquares] = useState(game.board.squares.flat().toReversed())
     const [promoMove, setPromoMove] = useState<[Square, Square] | null>(null)
+
     const [showNotation, setShowNotation] = useState(true)
+    const [reversed, setReversed] = useState(false)
 
     useEffect(() => {
         if (!localStorage.getItem('showNotation')) {
@@ -76,51 +78,136 @@ export default function ({ size }: { size: number }) {
         }
     }, [])
 
-    async function handleMove(start: Square, end: Square, promotion?: Piece) {
-        const piece = start.piece
-
+    function handleMove(start: Square, end: Square, promotion?: Piece, callback?: Function) {
         let gameCopy = new Game()
-        gameCopy.turn = game.turn
 
         const copiedSquares: Square[][] = []
 
         for (let i = 0; i < 8; i++) {
             copiedSquares[i] = []
+
             for (let j = 0; j < 8; j++) {
-                copiedSquares[i][j] = new Square(i, j, game.board.squares[i][j].piece)
+                const piece = game.board.squares[i][j].piece
+
+                copiedSquares[i][j] = new Square(i, j, piece && Object.create(piece))
             }
         }
 
         gameCopy.board.squares = copiedSquares
+        gameCopy.turn = game.turn
         game.state = game.state
 
-        game.makeMove(start, end, promotion)
+        try {
+            game.makeMove(start, end, promotion)
 
-        // send move to server and then update client
+            // send move to server and then update client
 
-        games.push(gameCopy)
+            callback?.()
 
-        setSquares(
-            squares.map((square) => {
-                if (square.col === start.col && square.row === start.row) {
-                    square.piece = null
-                }
-
-                if (square.col === end.col && square.row === end.row) {
-                    square.piece = piece
-                }
-
-                return square
-            })
-        )
+            games.push(gameCopy)
+        } catch (err) {
+            console.log(err)
+        }
     }
+
+    const BoardView = observer(({ game }: { game: Game }) => (
+        <div>
+            {game.turn}
+            <DndContext
+                modifiers={[restrictToWindowEdges, snapCenterToCursor]}
+                accessibility={{
+                    screenReaderInstructions: {
+                        draggable:
+                            'To pick up a piece, press space or enter. While dragging, use the arrow keys to move the piece in any given direction. Press space or enter again to drop the piece in its new square, or press escape to cancel.',
+                    },
+                    announcements: {
+                        onDragStart({ active }) {
+                            return `Picked up ${createReadablePiece(active.id)}.`
+                        },
+                        onDragOver({ active, over }) {
+                            if (over) {
+                                return `${createReadablePiece(active.id)} was moved over ${createReadableSquare(over.id)}.`
+                            }
+
+                            return `${createReadablePiece(active.id)} is no longer over a square.`
+                        },
+                        onDragEnd({ active, over }) {
+                            if (over) {
+                                return `${createReadablePiece(active.id)} was dropped over ${createReadableSquare(over.id)}`
+                            }
+
+                            return `${createReadablePiece(active.id)} was dropped.`
+                        },
+                        onDragCancel({ active }) {
+                            return `Dragging was cancelled. ${createReadablePiece(active.id)} was dropped.`
+                        },
+                    },
+                }}
+                onDragEnd={({ active, over }) => {
+                    if (!over) return
+
+                    const [_, activeCol, activeRow] = parsePieceId(active.id)
+                    const [overCol, overRow] = parseSquareId(over.id)
+
+                    let piece = game.board.squares
+                        .flat()
+                        .find((square) => square.col == activeCol && square.row == activeRow)?.piece!
+
+                    const start = game.board.getSquare(activeRow, activeCol)! as Square & { piece: Piece }
+                    const end = game.board.getSquare(overRow, overCol)!
+
+                    if (piece instanceof Pawn && (piece.color === 'white' ? end.row === 7 : end.row === 0)) {
+                        return setPromoMove([start, end])
+                    }
+
+                    handleMove(start, end)
+                }}
+            >
+                <div
+                    style={{
+                        height: size,
+                        width: size,
+                    }}
+                    className="board flex flex-wrap rounded shadow-lg"
+                    onClick={resetOverlays}
+                >
+                    {game.board.squares
+                        .flat()
+                        .toReversed()
+                        .map(({ col, row, piece }) => {
+                            const showFiles = showNotation && col === (reversed ? 0 : 7)
+                            const showRows = showNotation && row === (reversed ? 7 : 0)
+
+                            return (
+                                <DroppableSquare
+                                    showFile={showFiles}
+                                    showRow={showRows}
+                                    key={`${col}${row}`}
+                                    col={col}
+                                    row={row}
+                                >
+                                    {piece && (
+                                        <DraggablePiece
+                                            size={size}
+                                            key={`${col}${row}`}
+                                            piece={piece}
+                                            id={`${piece.constructor.name} ${col} ${row}`}
+                                        />
+                                    )}
+                                </DroppableSquare>
+                            )
+                        })}
+                </div>
+            </DndContext>
+        </div>
+    ))
 
     return (
         <>
             {promoMove && (
                 <PromotionWidget
                     handleSelect={(piece) => {
-                        handleMove(promoMove[0], promoMove[1], piece).then(() => {
+                        handleMove(promoMove[0], promoMove[1], piece, () => {
                             promoMove[1].piece = piece
 
                             setPromoMove(null)
@@ -137,8 +224,7 @@ export default function ({ size }: { size: number }) {
                     <Button
                         // @ts-ignore
                         onClick={() => {
-                            boardIsReversed = !boardIsReversed
-                            setSquares(squares.toReversed())
+                            setReversed(!reversed)
                         }}
                         className="inline-flex items-center rounded-lg text-center text-sm font-medium text-white"
                     >
@@ -171,102 +257,15 @@ export default function ({ size }: { size: number }) {
                     </Button>
                     <Button
                         onClick={() => {
-                            console.log(games)
-                            game = games[games.length - 1] ?? new Game()
-                            games.splice(games.length - 1, 1)
-                            setSquares(game.board.squares.flat().toReversed())
+                            // game = makeAutoObservable(games[games.length - 1] ?? new Game())
+                            games.pop()
                         }}
                     >
                         {'<'}
                     </Button>
                 </div>
 
-                <DndContext
-                    modifiers={[restrictToWindowEdges, snapCenterToCursor]}
-                    accessibility={{
-                        screenReaderInstructions: {
-                            draggable:
-                                'To pick up a piece, press space or enter. While dragging, use the arrow keys to move the piece in any given direction. Press space or enter again to drop the piece in its new square, or press escape to cancel.',
-                        },
-                        announcements: {
-                            onDragStart({ active }) {
-                                return `Picked up ${createReadablePiece(active.id)}.`
-                            },
-                            onDragOver({ active, over }) {
-                                if (over) {
-                                    return `${createReadablePiece(active.id)} was moved over ${createReadableSquare(over.id)}.`
-                                }
-
-                                return `${createReadablePiece(active.id)} is no longer over a square.`
-                            },
-                            onDragEnd({ active, over }) {
-                                if (over) {
-                                    return `${createReadablePiece(active.id)} was dropped over ${createReadableSquare(over.id)}`
-                                }
-
-                                return `${createReadablePiece(active.id)} was dropped.`
-                            },
-                            onDragCancel({ active }) {
-                                return `Dragging was cancelled. ${createReadablePiece(active.id)} was dropped.`
-                            },
-                        },
-                    }}
-                    onDragEnd={({ active, over }) => {
-                        if (!over) return
-
-                        const [_, activeCol, activeRow] = parsePieceId(active.id)
-                        const [overCol, overRow] = parseSquareId(over.id)
-
-                        let piece = squares.find(
-                            (square) => square.col == activeCol && square.row == activeRow
-                        )?.piece!
-
-                        const start = game.board.getSquare(activeRow, activeCol)! as Square & { piece: Piece }
-                        const end = game.board.getSquare(overRow, overCol)!
-
-                        if (
-                            piece instanceof Pawn &&
-                            (piece.color === 'white' ? end.row === 7 : end.row === 0)
-                        ) {
-                            return setPromoMove([start, end])
-                        }
-
-                        handleMove(start, end)
-                    }}
-                >
-                    <div
-                        style={{
-                            height: size,
-                            width: size,
-                        }}
-                        className="board flex flex-wrap rounded shadow-lg"
-                        onClick={resetOverlays}
-                    >
-                        {squares.map(({ col, row, piece }) => {
-                            const showFiles = showNotation && col === (boardIsReversed ? 0 : 7)
-                            const showRows = showNotation && row === (boardIsReversed ? 7 : 0)
-
-                            return (
-                                <DroppableSquare
-                                    showFile={showFiles}
-                                    showRow={showRows}
-                                    key={`${col}${row}`}
-                                    col={col}
-                                    row={row}
-                                >
-                                    {piece && (
-                                        <DraggablePiece
-                                            size={size}
-                                            key={`${col}${row}`}
-                                            piece={piece}
-                                            id={`${piece.constructor.name} ${col} ${row}`}
-                                        />
-                                    )}
-                                </DroppableSquare>
-                            )
-                        })}
-                    </div>
-                </DndContext>
+                <BoardView game={game} />
             </div>
         </>
     )
