@@ -181,12 +181,8 @@ export default class Game {
             const distance = Math.abs(start.col - end.col) - 1
 
             return helper(distance, (i) => {
-                const col = start.col < end.col ? start.col + i : start.col - i
-                const row = start.row < end.row ? start.row + i : start.row - i
-
-                if (Boolean(this.board.getSquare(row, col)?.piece)) {
-                    console.log(this.board.getSquare(row, col))
-                }
+                const col = start.col < end.col ? start.col + i + 1 : start.col - i - 1
+                const row = start.row < end.row ? start.row + i + 1 : start.row - i - 1
 
                 return [row, col]
             })
