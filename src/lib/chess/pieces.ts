@@ -2,6 +2,17 @@ import { Color } from '../../types'
 import Square from './square'
 import Game from './game'
 
+function clearPathCheck(_target: Object, _propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
+    const originalMethod = descriptor.value
+
+    descriptor.value = function (start: Square, end: Square, game: Game): boolean {
+        // game.pathIsClear is last because I need isValidMove to catch if a move isn't horizontal, diagonal, or vertical beforehand.
+        return originalMethod.apply(this, [start, end, game]) && game.pathIsClear(start, end)
+    }
+
+    return descriptor
+}
+
 export abstract class Piece {
     public color: Color
     abstract character: string // It will look different with the custom font.
@@ -54,6 +65,7 @@ export class King extends Piece {
         return false
     }
 
+    @clearPathCheck
     isValidMove(start: Square, end: Square, game: Game): boolean {
         if (Math.abs(start.col - end.col) <= 1 && Math.abs(start.row - end.row) <= 1) {
             return true
@@ -123,6 +135,7 @@ export class King extends Piece {
 export class Queen extends Piece {
     public character = 'w'
 
+    @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
         return (
             Game.pathIsDiagonal(start, end) ||
@@ -135,6 +148,7 @@ export class Queen extends Piece {
 export class Bishop extends Piece {
     public character = 'v'
 
+    @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
         return Game.pathIsDiagonal(start, end)
     }
@@ -197,6 +211,7 @@ export class Rook extends Piece {
     public character = 't'
     public hasMoved = false
 
+    @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
         return Game.pathIsHorizontal(start, end) || Game.pathIsVertical(start, end)
     }
@@ -212,6 +227,7 @@ export class Rook extends Piece {
 export class Pawn extends Piece {
     public character = 'o'
 
+    @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
         const horizontallyAdjacent = start.col + 1 === end.col || start.col - 1 === end.col
 
