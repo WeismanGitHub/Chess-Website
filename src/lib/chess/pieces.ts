@@ -71,7 +71,7 @@ export class King extends Piece {
 
         const rook = game.board.getSquare(start.row, isKingSide ? 7 : 0)?.piece
 
-        if (!rook || !(rook instanceof Rook) || rook.hasMoved) {
+        if (!rook || !(rook instanceof Rook) || rook.color !== this.color || rook.hasMoved) {
             return false
         }
 
