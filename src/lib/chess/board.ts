@@ -10,7 +10,7 @@ export default class Board {
     }
 
     getSquare(row: number, col: number): Square | null {
-        const square: Square | null = this.squares[row][col]
+        const square: Square | null = this.squares[row]?.[col] ?? null
 
         return square
     }
