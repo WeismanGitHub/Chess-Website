@@ -117,15 +117,47 @@ export default class Game {
         this.state = status
     }
 
-    static pathIsDiagonal(start: Square, end: Square): boolean {
-        return Math.abs(start.col - end.col) === Math.abs(start.row - end.row)
-    }
+    pathIsClear(start: Square, end: Square): boolean {
+        // similar steps in each branch. you can prob simplify
 
-    static pathIsVertical(start: Square, end: Square): boolean {
-        return start.col === end.col
-    }
+        if (Game.pathIsVertical(start, end)) {
+            const distance = Math.abs(start.row - end.row) - 1
 
-    static squaresAreHorizontal(start: Square, end: Square): boolean {
-        return start.row === end.row
+            for (let i = 0; i < distance; i++) {
+                const row = start.row < end.row ? start.row + i + 1 : end.row - i + 1
+
+                const square = this.board.getSquare(row, start.col)
+
+                if (!square) {
+                    throw new Error(`No square at row ${row}, col ${start.col}`)
+                }
+
+                if (square.piece) {
+                    return false
+                }
+            }
+        } else if (Game.pathIsHorizontal(start, end)) {
+            const distance = Math.abs(start.col - end.col) - 1
+
+            for (let i = 0; i < distance; i++) {
+                const col = start.col < end.col ? start.col + i + 1 : end.col - i + 1
+
+                const square = this.board.getSquare(start.row, col)
+
+                if (!square) {
+                    throw new Error(`No square at row ${start.row}, col ${col}`)
+                }
+
+                if (square.piece) {
+                    return false
+                }
+            }
+        } else if (Game.pathIsDiagonal(start, end)) {
+            return true
+        } else {
+            throw new Error("Method cannot process paths that aren't diagonal, horizontal, or vertical.")
+        }
+
+        return true
     }
 }
