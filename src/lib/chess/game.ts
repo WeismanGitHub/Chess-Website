@@ -143,46 +143,55 @@ export default class Game {
     }
 
     pathIsClear(start: Square, end: Square): boolean {
-        // similar steps in each branch. you can prob simplify
+        const helper = (
+            distance: number,
+            coordCalculator: (i: number) => [number, number],
+            game = this
+        ): boolean => {
+            for (let i = 0; i < distance; i++) {
+                const [row, col] = coordCalculator(i)
+
+                const square = game.board.getSquare(row, col)
+
+                if (!square) {
+                    throw new Error(`No square at row ${row}, col ${col}`)
+                }
+
+                if (square.piece) {
+                    return false
+                }
+            }
+
+            return true
+        }
 
         if (Game.pathIsVertical(start, end)) {
-            const distance = Math.abs(start.row - end.row) - 1
-
-            for (let i = 0; i < distance; i++) {
+            return helper(Math.abs(start.row - end.row) - 1, (i) => {
                 const row = start.row < end.row ? start.row + i + 1 : end.row - i + 1
 
-                const square = this.board.getSquare(row, start.col)
-
-                if (!square) {
-                    throw new Error(`No square at row ${row}, col ${start.col}`)
-                }
-
-                if (square.piece) {
-                    return false
-                }
-            }
+                return [row, start.col]
+            })
         } else if (Game.pathIsHorizontal(start, end)) {
-            const distance = Math.abs(start.col - end.col) - 1
-
-            for (let i = 0; i < distance; i++) {
+            return helper(Math.abs(start.col - end.col) - 1, (i) => {
                 const col = start.col < end.col ? start.col + i + 1 : end.col - i + 1
 
-                const square = this.board.getSquare(start.row, col)
-
-                if (!square) {
-                    throw new Error(`No square at row ${start.row}, col ${col}`)
-                }
-
-                if (square.piece) {
-                    return false
-                }
-            }
+                return [start.row, col]
+            })
         } else if (Game.pathIsDiagonal(start, end)) {
-            return true
+            const distance = Math.abs(start.col - end.col) - 1
+
+            return helper(distance, (i) => {
+                const col = start.col < end.col ? start.col + i : start.col - i
+                const row = start.row < end.row ? start.row + i : start.row - i
+
+                if (Boolean(this.board.getSquare(row, col)?.piece)) {
+                    console.log(this.board.getSquare(row, col))
+                }
+
+                return [row, col]
+            })
         } else {
             throw new Error("Method cannot process paths that aren't diagonal, horizontal, or vertical.")
         }
-
-        return true
     }
 }
