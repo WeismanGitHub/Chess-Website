@@ -1,6 +1,6 @@
 import { CreateRoom, JoinRoom, PlayerJoined, Ready, ReceiveMessage, SendMessage } from '../events'
 import { minutesSchema, idSchema, messageSchema } from './zod'
-import { Room, rooms, RoomState } from './caches'
+import { Room, rooms, RoomState } from './rooms-cache'
 import { RoomConstants } from './constants'
 import CustomError from './custom-error'
 import { customAlphabet } from 'nanoid'
