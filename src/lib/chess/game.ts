@@ -8,6 +8,8 @@ export default class Game {
     public board: Board
     public turn: Color = 'white'
 
+    private snapshots: Map<string, number> = new Map()
+
     constructor(board: Board = Board.generate()) {
         this.board = board
     }
@@ -90,8 +92,17 @@ export default class Game {
         }
 
         if (this.kingInCheckmate()) {
-            this.state = this.turn === 'black' ? GameState.BlackWin : GameState.WhiteWin
+            // this.end(this.turn === 'black' ? GameState.BlackWin : GameState.WhiteWin)
         }
+
+        const snapshot = this.board.createSnapshot()
+        const count = this.snapshots.get(snapshot) ?? 0
+
+        if (count >= 2) {
+            this.state = GameState.ThreefoldRepetition
+        }
+
+        this.snapshots.set(snapshot, count + 1)
 
         this.turn = this.turn == 'white' ? 'black' : 'white'
     }
