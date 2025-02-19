@@ -2,37 +2,31 @@ import { Color } from '../../types'
 import { Piece } from './pieces'
 import Square from './square'
 
-export default class Move {
-    public color: Color
-    public pieceMoved: Piece
-    public pieceKilled: Piece | null
-
+export default class HalfMove {
     public start: Square
     public end: Square
 
-    public castlingMove: boolean
-    public check: boolean
-    public checkmate: boolean
+    public piece: Piece
+    public captured: Piece | null
+    public promotion: Piece | null
+
+    public color: Color
 
     constructor(
-        piece: Piece,
-        pieceKilled: Piece | null,
         color: Color,
         start: Square,
         end: Square,
-        check: boolean = false,
-        castlingMove: boolean = false,
-        checkmate: boolean = false
+        piece: Piece,
+        captured: Piece | null = null,
+        promotion: Piece | null = null
     ) {
-        this.color = color
-        this.pieceMoved = piece
-        this.pieceKilled = pieceKilled
-
         this.start = start
         this.end = end
 
-        this.castlingMove = castlingMove
-        this.check = check
-        this.checkmate = checkmate
+        this.piece = piece
+        this.captured = captured
+        this.promotion = promotion
+
+        this.color = color
     }
 }
