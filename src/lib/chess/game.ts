@@ -1,6 +1,7 @@
 import { Color, GameState } from '../../types'
 import { Piece } from './pieces'
 import Square from './square'
+import HalfMove from './move'
 import Board from './board'
 
 export default class Game {
@@ -9,6 +10,7 @@ export default class Game {
     public turn: Color = 'white'
 
     private snapshots: Map<string, number> = new Map()
+    public halfMoves: HalfMove[] = []
 
     constructor(board: Board = Board.generate()) {
         this.board = board
@@ -44,7 +46,8 @@ export default class Game {
         return false
     }
 
-    kingInCheckmate(): boolean {
+    kingInCheckmate(color: Color): boolean {
+        console.log(color)
         return false
     }
 
@@ -133,18 +136,26 @@ export default class Game {
         piece.executeMove(start, end, this, promotion)
 
         if (this.kingInCheck(this.turn)) {
-            // revert the move
+            this.undoHalfmove()
 
             throw new Error('Your King is in check.')
         }
 
-        if (this.kingInCheckmate()) {
-            // this.end(this.turn === 'black' ? GameState.BlackWin : GameState.WhiteWin)
+        if (this.kingInCheckmate(this.turn === 'white' ? 'black' : 'white')) {
+            this.state = this.turn === 'white' ? GameState.WhiteWin : GameState.BlackWin
         }
 
         const snapshot = this.board.createSnapshot()
         const count = this.snapshots.get(snapshot) ?? 0
         this.snapshots.set(snapshot, count + 1)
+
+        if (this.isStalemate()) {
+            this.state = GameState.Stalemate
+        } else if (this.isFiftyMove()) {
+            this.state = GameState.FiftyMove
+        } else if (count >= 2) {
+            this.state = GameState.ThreefoldRepetition
+        }
 
         this.turn = this.turn == 'white' ? 'black' : 'white'
     }
