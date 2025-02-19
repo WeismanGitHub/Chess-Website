@@ -107,14 +107,6 @@ export default class Game {
         this.turn = this.turn == 'white' ? 'black' : 'white'
     }
 
-    end(status: GameState) {
-        if (status === GameState.Active) {
-            throw new Error('Active is an invalid status.')
-        }
-
-        this.state = status
-    }
-
     pathIsClear(start: Square, end: Square): boolean {
         const helper = (
             distance: number,
