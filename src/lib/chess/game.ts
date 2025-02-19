@@ -48,65 +48,6 @@ export default class Game {
         return false
     }
 
-    makeMove(start: Square, end: Square, promotion?: Piece) {
-        if (this.state !== GameState.Active) {
-            throw new Error('Game is not active.')
-        }
-
-        const piece = start.piece
-
-        if (!piece) {
-            throw new Error("There's no piece on that square.")
-        }
-
-        if (piece.color !== this.turn) {
-            throw new Error(`Cannot move a ${piece.color} piece on ${this.turn}'s turn.`)
-        }
-
-        if (end.piece?.color === this.turn) {
-            throw new Error('Cannot take your own piece.')
-        }
-
-        if (!piece.isValidMove(start, end, this)) {
-            throw new Error('Invalid Move')
-        }
-
-        // Reversing the move if King is in check can be more efficient.
-        const squares: Square[][] = []
-
-        for (let i = 0; i < 8; i++) {
-            squares[i] = []
-            for (let j = 0; j < 8; j++) {
-                const piece = this.board.squares[i][j].piece
-
-                squares[i][j] = new Square(i, j, piece && Object.create(piece))
-            }
-        }
-
-        piece.executeMove(start, end, this, promotion)
-
-        if (this.kingInCheck(this.turn)) {
-            this.board.squares = squares
-
-            throw new Error('Your King is in check.')
-        }
-
-        if (this.kingInCheckmate()) {
-            // this.end(this.turn === 'black' ? GameState.BlackWin : GameState.WhiteWin)
-        }
-
-        const snapshot = this.board.createSnapshot()
-        const count = this.snapshots.get(snapshot) ?? 0
-
-        if (count >= 2) {
-            this.state = GameState.ThreefoldRepetition
-        }
-
-        this.snapshots.set(snapshot, count + 1)
-
-        this.turn = this.turn == 'white' ? 'black' : 'white'
-    }
-
     pathIsClear(start: Square, end: Square): boolean {
         const helper = (
             distance: number,
@@ -154,5 +95,47 @@ export default class Game {
         } else {
             throw new Error("Method cannot process paths that aren't diagonal, horizontal, or vertical.")
         }
+    }
+
+    makeMove(start: Square, end: Square, promotion?: Piece) {
+        if (this.state !== GameState.Active) {
+            throw new Error('Game is not active.')
+        }
+
+        const piece = start.piece
+
+        if (!piece) {
+            throw new Error("There's no piece on that square.")
+        }
+
+        if (piece.color !== this.turn) {
+            throw new Error(`Cannot move a ${piece.color} piece on ${this.turn}'s turn.`)
+        }
+
+        if (end.piece?.color === this.turn) {
+            throw new Error('Cannot take your own piece.')
+        }
+
+        if (!piece.isValidMove(start, end, this)) {
+            throw new Error('Invalid Move')
+        }
+
+        piece.executeMove(start, end, this, promotion)
+
+        if (this.kingInCheck(this.turn)) {
+            // revert the move
+
+            throw new Error('Your King is in check.')
+        }
+
+        if (this.kingInCheckmate()) {
+            // this.end(this.turn === 'black' ? GameState.BlackWin : GameState.WhiteWin)
+        }
+
+        const snapshot = this.board.createSnapshot()
+        const count = this.snapshots.get(snapshot) ?? 0
+        this.snapshots.set(snapshot, count + 1)
+
+        this.turn = this.turn == 'white' ? 'black' : 'white'
     }
 }
