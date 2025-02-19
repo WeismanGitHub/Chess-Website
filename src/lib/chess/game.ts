@@ -1,8 +1,6 @@
 import { Color, GameState } from '../../types'
+import { Square, HalfMove, Board } from './'
 import { Piece } from './pieces'
-import Square from './square'
-import HalfMove from './move'
-import Board from './board'
 
 export default class Game {
     public state: GameState = GameState.Active
