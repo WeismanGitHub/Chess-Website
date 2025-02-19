@@ -97,6 +97,16 @@ export default class Game {
         }
     }
 
+    isStalemate(): boolean {
+        return false
+    }
+
+    isFiftyMove(): boolean {
+        return false
+    }
+
+    undoHalfmove(): void {}
+
     makeMove(start: Square, end: Square, promotion?: Piece) {
         if (this.state !== GameState.Active) {
             throw new Error('Game is not active.')
