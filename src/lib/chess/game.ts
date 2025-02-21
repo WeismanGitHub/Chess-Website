@@ -9,6 +9,7 @@ export default class Game {
 
     private snapshots: Map<string, number> = new Map()
     public halfMoves: HalfMove[] = []
+    private fiftyMoveDrawCounter = 0
 
     constructor(board: Board = Board.generate()) {
         this.board = board
@@ -103,7 +104,7 @@ export default class Game {
     }
 
     isFiftyMove(): boolean {
-        return false
+        return this.fiftyMoveDrawCounter >= 100
     }
 
     createSnapshot(): string {
@@ -184,12 +185,18 @@ export default class Game {
         const count = this.snapshots.get(snapshot) ?? 0
         this.snapshots.set(snapshot, count + 1)
 
-        if (this.isStalemate()) {
-            this.state = GameState.Stalemate
+        if (piece instanceof Pawn || captured) {
+            this.fiftyMoveDrawCounter = 0
+        } else {
+            this.fiftyMoveDrawCounter++
+        }
+
+        if (count >= 2) {
+            this.state = GameState.ThreefoldRepetition
         } else if (this.isFiftyMove()) {
             this.state = GameState.FiftyMove
-        } else if (count >= 2) {
-            this.state = GameState.ThreefoldRepetition
+        } else if (this.isStalemate()) {
+            this.state = GameState.Stalemate
         }
 
         this.turn = this.turn == 'white' ? 'black' : 'white'
