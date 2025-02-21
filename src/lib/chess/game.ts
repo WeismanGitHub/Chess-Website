@@ -1,6 +1,6 @@
 import { Color, GameState } from '../../types'
 import { Square, HalfMove, Board } from './'
-import { Piece } from './pieces'
+import { King, Pawn, Piece, Rook } from './pieces'
 
 export default class Game {
     public state: GameState = GameState.Active
@@ -106,7 +106,44 @@ export default class Game {
         return false
     }
 
-    undoHalfmove(): void {}
+    createSnapshot(): string {
+        const board = this.board
+
+        return board.squares.flat().reduce((snapshot, square) => {
+            let character = square.piece?.character || '.'
+
+            if (square.piece) {
+                if (square.piece.character === 'white') {
+                    character = character.toUpperCase()
+                }
+
+                if (square.piece instanceof King) {
+                    const kingSideRookSquare = board.getSquare(square.row, 0)
+                    const queenSideRookSquare = board.getSquare(square.row, 7)
+
+                    if (
+                        kingSideRookSquare &&
+                        kingSideRookSquare.piece instanceof Rook &&
+                        !kingSideRookSquare.piece.hasMoved
+                    ) {
+                        character += '-'
+                    }
+
+                    if (
+                        queenSideRookSquare &&
+                        queenSideRookSquare.piece instanceof Rook &&
+                        !queenSideRookSquare.piece.hasMoved
+                    ) {
+                        character += '_'
+                    }
+                } else if (square.piece instanceof Pawn) {
+                    // record en passant
+                }
+            }
+
+            return snapshot + character
+        }, '')
+    }
 
     makeMove(start: Square, end: Square, promotion?: Piece) {
         if (this.state !== GameState.Active) {

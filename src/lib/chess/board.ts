@@ -30,41 +30,6 @@ export default class Board {
         throw new Error(`Board does not have a ${color} king.`)
     }
 
-    createSnapshot(): string {
-        return this.squares.flat().reduce((snapshot, square) => {
-            let character = square.piece?.character || '.'
-
-            if (square.piece) {
-                if (square.piece.character === 'white') {
-                    character = character.toUpperCase()
-                }
-
-                if (square.piece instanceof King) {
-                    const kingSideRookSquare = this.getSquare(square.row, 0)
-                    const queenSideRookSquare = this.getSquare(square.row, 7)
-
-                    if (
-                        kingSideRookSquare &&
-                        kingSideRookSquare.piece instanceof Rook &&
-                        !kingSideRookSquare.piece.hasMoved
-                    ) {
-                        character += '-'
-                    }
-
-                    if (
-                        queenSideRookSquare &&
-                        queenSideRookSquare.piece instanceof Rook &&
-                        !queenSideRookSquare.piece.hasMoved
-                    ) {
-                        character += '_'
-                    }
-                }
-            }
-
-            return snapshot + character
-        }, '')
-    }
-
     static generate(): Board {
         const rows = []
 
