@@ -4,13 +4,10 @@ import { Button, Label, TextInput } from 'flowbite-react'
 import { Credentials } from '../../../../lib/zod'
 import toaster from '../../../components/toasts'
 import { login } from '../../../actions/auth'
-import { useRouter } from 'next/navigation'
 import { Formik, Form } from 'formik'
 import React from 'react'
 
 export default function () {
-    const router = useRouter()
-
     return (
         <>
             <div className="mx-auto flex w-full flex-col items-center justify-center px-6 py-8 lg:py-0">
@@ -51,7 +48,7 @@ export default function () {
                                 if (res.success) {
                                     localStorage.setItem('authenticated', 'true')
 
-                                    return router.push('/')
+                                    return (document.location.href = '/')
                                 }
 
                                 toaster.error(res.message)
