@@ -22,5 +22,5 @@ export default errorHandler(async (body) => {
         throw new CustomError('That password is invalid.')
     }
 
-    cookies().set('auth', signAuthJwt(user.id), { httpOnly: true, sameSite: true, secure: true })
+    cookies().set('auth', signAuthJwt(user.id), { httpOnly: true, sameSite: 'strict', secure: true })
 })
