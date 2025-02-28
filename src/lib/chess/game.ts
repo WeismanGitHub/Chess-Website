@@ -172,6 +172,21 @@ export default class Game {
         }, '')
     }
 
+    undoHalfMove(): void {
+        console.log(this.board, this.previousBoards)
+        const length = this.previousBoards.length
+
+        if (length <= 1) {
+            return
+        }
+
+        const color = length % 2 === 0 ? 'white' : 'black'
+        this.turn = color
+
+        this.board = Board.deepCopy(this.previousBoards[length - 2])
+        this.previousBoards.pop()
+    }
+
     makeMove(start: Square, end: Square, promotion?: Piece) {
         if (this.state !== GameState.Active) {
             throw new Error('Game is not active.')
