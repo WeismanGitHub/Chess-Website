@@ -6,9 +6,19 @@ import chessFont from './character-font'
 import { resetOverlays } from './board'
 import { Colors } from './square'
 
-export default function ({ piece, id, size }: { piece: Piece; id: string; size: number }) {
+export default function ({
+    piece,
+    size,
+    col,
+    row,
+}: {
+    piece: Piece
+    size: number
+    col: number
+    row: number
+}) {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-        id,
+        id: `${piece.constructor.name} ${col} ${row}`,
     })
 
     useEffect(() => {

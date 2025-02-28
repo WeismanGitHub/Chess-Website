@@ -198,7 +198,8 @@ export default function ({ size }: { size: number }) {
                                             size={size}
                                             key={`${col}${row}`}
                                             piece={piece}
-                                            id={`${piece.constructor.name} ${col} ${row}`}
+                                            col={col}
+                                            row={row}
                                         />
                                     )}
                                 </DroppableSquare>
