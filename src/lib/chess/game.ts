@@ -114,9 +114,7 @@ export default class Game {
                 return [start.row, col]
             })
         } else if (Game.pathIsDiagonal(start, end)) {
-            const distance = Math.abs(start.col - end.col) - 1
-
-            return helper(distance, (i) => {
+            return helper(Math.abs(start.col - end.col) - 1, (i) => {
                 const col = start.col < end.col ? start.col + i + 1 : start.col - i - 1
                 const row = start.row < end.row ? start.row + i + 1 : start.row - i - 1
 
