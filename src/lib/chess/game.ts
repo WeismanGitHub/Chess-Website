@@ -46,7 +46,33 @@ export default class Game {
     }
 
     kingInCheckmate(color: Color): boolean {
-        console.log(color)
+        if (!this.kingInCheck(color)) {
+            return false
+        }
+
+        const kingSquare = this.board.getKingSquare(color)
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (j === 1 && i === 1) {
+                    continue
+                }
+
+                const square = this.board.getSquare(kingSquare.row - i + 1, kingSquare.col - j + 1)
+
+                if (!square) {
+                    continue
+                }
+
+                try {
+                    this.makeMove(kingSquare, square)
+                    this.undoHalfMove()
+
+                    return false
+                } catch (err) {}
+            }
+        }
+
         return false
     }
 
