@@ -1,6 +1,6 @@
-import { Color, GameState } from '../../types'
-import { Square, HalfMove, Board } from './'
 import { King, Pawn, Piece, Rook } from './pieces'
+import { Color, GameState } from '../../types'
+import { Square, Board } from './'
 
 export default class Game {
     public state: GameState = GameState.Active
@@ -8,11 +8,13 @@ export default class Game {
     public turn: Color = 'white'
 
     private snapshots: Map<string, number> = new Map()
-    public halfMoves: HalfMove[] = []
+    public previousBoards: Board[] = []
+    public previousPiece: Piece | null = null
     private fiftyMoveDrawCounter = 0
 
     constructor(board: Board = Board.generate()) {
         this.board = board
+        this.previousBoards.push(Board.deepCopy(board))
     }
 
     static pathIsDiagonal(start: Square, end: Square): boolean {
@@ -192,7 +194,11 @@ export default class Game {
             throw new Error('Game is not active.')
         }
 
+        const opponentColor = this.turn === 'white' ? 'black' : 'white'
+
+        const isEnPassant = Pawn.isEnPassant(start, end, this)
         const piece = start.piece
+        const captured = isEnPassant ? new Pawn(opponentColor) : end.piece
 
         if (!piece) {
             throw new Error("There's no piece on that square.")
@@ -213,16 +219,16 @@ export default class Game {
         piece.executeMove(start, end, this, promotion)
 
         if (this.kingInCheck(this.turn)) {
-            this.undoHalfmove()
+            this.board = Board.deepCopy(this.previousBoards[this.previousBoards.length - 1])
 
             throw new Error('Your King is in check.')
         }
 
-        if (this.kingInCheckmate(this.turn === 'white' ? 'black' : 'white')) {
+        if (this.kingInCheckmate(opponentColor)) {
             this.state = this.turn === 'white' ? GameState.WhiteWin : GameState.BlackWin
         }
 
-        const snapshot = this.board.createSnapshot()
+        const snapshot = this.createSnapshot()
         const count = this.snapshots.get(snapshot) ?? 0
         this.snapshots.set(snapshot, count + 1)
 
@@ -232,6 +238,9 @@ export default class Game {
             this.fiftyMoveDrawCounter++
         }
 
+        this.previousPiece = piece
+        this.previousBoards.push(Board.deepCopy(this.board))
+
         if (count >= 2) {
             this.state = GameState.ThreefoldRepetition
         } else if (this.isFiftyMove()) {
@@ -240,6 +249,6 @@ export default class Game {
             this.state = GameState.Stalemate
         }
 
-        this.turn = this.turn == 'white' ? 'black' : 'white'
+        this.turn = opponentColor
     }
 }
