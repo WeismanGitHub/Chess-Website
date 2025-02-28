@@ -175,7 +175,6 @@ export default class Game {
     }
 
     undoHalfMove(): void {
-        console.log(this.board, this.previousBoards)
         const length = this.previousBoards.length
 
         if (length <= 1) {
