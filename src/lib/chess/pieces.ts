@@ -178,10 +178,6 @@ export class Knight extends Piece {
 
         return false
     }
-
-    pathIsClear(): boolean {
-        return true
-    }
 }
 
 export class Rook extends Piece {
@@ -201,11 +197,12 @@ export class Rook extends Piece {
     }
 }
 
+// en passant
 export class Pawn extends Piece {
     public character = 'o'
 
     @clearPathCheck
-    isValidMove(start: Square, end: Square): boolean {
+    isValidMove(start: Square, end: Square, game: Game): boolean {
         const horizontallyAdjacent = start.col + 1 === end.col || start.col - 1 === end.col
 
         if (this.color === 'white') {
@@ -215,6 +212,12 @@ export class Pawn extends Piece {
         } else {
             if (horizontallyAdjacent && start.row - 1 === end.row && end.piece) {
                 return true
+            }
+        }
+
+        if (game.previousPiece && game.previousPiece instanceof Pawn) {
+            if (this.color === 'white') {
+            } else {
             }
         }
 
@@ -251,5 +254,12 @@ export class Pawn extends Piece {
         }
 
         start.piece = null
+    }
+
+    static isEnPassant(start: Square, end: Square, game: Game): boolean {
+        start
+        end
+        game
+        return false
     }
 }
