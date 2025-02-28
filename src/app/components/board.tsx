@@ -60,8 +60,7 @@ function createReadablePosition(col: number, row: number): string {
     return `${letters[col]}${row + 1}`
 }
 
-const games: Game[] = []
-let game = makeAutoObservable(new Game())
+const game = makeAutoObservable(new Game())
 
 export default function ({ size }: { size: number }) {
     const [promoMove, setPromoMove] = useState<[Square, Square] | null>(null)
@@ -103,8 +102,6 @@ export default function ({ size }: { size: number }) {
             // send move to server and then update client
 
             callback?.()
-
-            games.push(gameCopy)
         } catch (err) {
             console.log(err)
         }
@@ -264,20 +261,7 @@ export default function ({ size }: { size: number }) {
                         </svg>
                         <span className="sr-only">toggle notation</span>
                     </Button>
-                    <Button
-                        onClick={() => {
-                            game = makeAutoObservable(games[games.length - 1] ?? new Game())
-                            games.pop()
-
-                            // To make it re-render
-                            setShowNotation(!showNotation)
-                            setTimeout(() => {
-                                setShowNotation(showNotation)
-                            }, 0)
-                        }}
-                    >
-                        {'<'}
-                    </Button>
+                    <Button onClick={() => game.undoHalfMove()}>{'<'}</Button>
                 </div>
 
                 <BoardView game={game} />
