@@ -184,6 +184,8 @@ export default class Game {
 
         this.board = Board.deepCopy(this.previousBoards[length - 2])
         this.previousBoards.pop()
+
+        this.state = GameState.Active
     }
 
     makeMove(start: Square, end: Square, promotion?: Piece) {
