@@ -103,7 +103,7 @@ export default class Game {
 
         if (Game.pathIsVertical(start, end)) {
             return helper(Math.abs(start.row - end.row) - 1, (i) => {
-                const row = start.row < end.row ? start.row + i + 1 : end.row - i + 1
+                const row = start.row < end.row ? start.row + i + 1 : start.row - i - 1
 
                 return [row, start.col]
             })
