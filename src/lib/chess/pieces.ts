@@ -23,6 +23,7 @@ export abstract class Piece {
     }
 
     abstract isValidMove(start: Square, end: Square, game: Game): boolean
+    abstract getValidMoves(start: Square, game: Game): Square[]
 
     executeMove(start: Square, end: Square, _game: Game, _promotion?: Piece): void {
         const piece = start.piece
@@ -88,6 +89,12 @@ export class King extends Piece {
         return true
     }
 
+    getValidMoves(start: Square, game: Game): Square[] {
+        start
+        game
+        return []
+    }
+
     override executeMove(start: Square, end: Square, game: Game): void {
         end.piece = start.piece
         start.piece = null
@@ -121,6 +128,12 @@ export class Queen extends Piece {
             PathUtils.isVertical(start, end)
         )
     }
+
+    getValidMoves(start: Square, game: Game): Square[] {
+        start
+        game
+        return []
+    }
 }
 
 export class Bishop extends Piece {
@@ -129,6 +142,12 @@ export class Bishop extends Piece {
     @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
         return PathUtils.isDiagonal(start, end)
+    }
+
+    getValidMoves(start: Square, game: Game): Square[] {
+        start
+        game
+        return []
     }
 }
 
@@ -179,6 +198,12 @@ export class Knight extends Piece {
 
         return false
     }
+
+    getValidMoves(start: Square, game: Game): Square[] {
+        start
+        game
+        return []
+    }
 }
 
 export class Rook extends Piece {
@@ -190,11 +215,17 @@ export class Rook extends Piece {
         return PathUtils.isHorizontal(start, end) || PathUtils.isVertical(start, end)
     }
 
-    executeMove(start: Square, end: Square): void {
+    override executeMove(start: Square, end: Square): void {
         end.piece = start.piece
         start.piece = null
 
         this.hasMoved = true
+    }
+
+    getValidMoves(start: Square, game: Game): Square[] {
+        start
+        game
+        return []
     }
 }
 
@@ -241,6 +272,12 @@ export class Pawn extends Piece {
         }
 
         return start.row - 1 === end.row
+    }
+
+    getValidMoves(start: Square, game: Game): Square[] {
+        start
+        game
+        return []
     }
 
     override executeMove(start: Square, end: Square, _game: Game, promotion?: Piece): void {
