@@ -46,13 +46,13 @@ export default class Game {
             return false
         }
 
-        const opponentSquares = this.board.squares
+        const squares = this.board.squares
             .flat()
             .filter((square) => square.piece && square.piece.color !== color) as (Square & {
             piece: Piece
         })[]
 
-        for (const square of opponentSquares) {
+        for (const square of squares) {
             const validMoves = square.piece.getValidMoves(square, this)
 
             if (validMoves.length) {
