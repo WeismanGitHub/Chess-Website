@@ -1,19 +1,19 @@
 import { Square, Board } from './'
 
 abstract class PathUtils {
-    static pathIsDiagonal(start: Square, end: Square): boolean {
+    static isDiagonal(start: Square, end: Square): boolean {
         return Math.abs(start.col - end.col) === Math.abs(start.row - end.row)
     }
 
-    static pathIsVertical(start: Square, end: Square): boolean {
+    static isVertical(start: Square, end: Square): boolean {
         return start.col === end.col
     }
 
-    static pathIsHorizontal(start: Square, end: Square): boolean {
+    static isHorizontal(start: Square, end: Square): boolean {
         return start.row === end.row
     }
 
-    static pathIsClear(board: Board, start: Square, end: Square): boolean {
+    static isClear(board: Board, start: Square, end: Square): boolean {
         const helper = (distance: number, coordCalculator: (i: number) => [number, number]): boolean => {
             for (let i = 0; i < distance; i++) {
                 const [row, col] = coordCalculator(i)
@@ -32,19 +32,19 @@ abstract class PathUtils {
             return true
         }
 
-        if (PathUtils.pathIsVertical(start, end)) {
+        if (PathUtils.isVertical(start, end)) {
             return helper(Math.abs(start.row - end.row) - 1, (i) => {
                 const row = start.row < end.row ? start.row + i + 1 : start.row - i - 1
 
                 return [row, start.col]
             })
-        } else if (PathUtils.pathIsHorizontal(start, end)) {
+        } else if (PathUtils.isHorizontal(start, end)) {
             return helper(Math.abs(start.col - end.col) - 1, (i) => {
                 const col = start.col < end.col ? start.col + i + 1 : end.col - i + 1
 
                 return [start.row, col]
             })
-        } else if (PathUtils.pathIsDiagonal(start, end)) {
+        } else if (PathUtils.isDiagonal(start, end)) {
             return helper(Math.abs(start.col - end.col) - 1, (i) => {
                 const col = start.col < end.col ? start.col + i + 1 : start.col - i - 1
                 const row = start.row < end.row ? start.row + i + 1 : start.row - i - 1

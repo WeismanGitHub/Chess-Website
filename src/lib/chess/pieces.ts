@@ -8,7 +8,7 @@ function clearPathCheck(_target: Object, _propertyKey: string, descriptor: Typed
 
     descriptor.value = function (start: Square, end: Square, game: Game): boolean {
         // game.pathIsClear is last because I need isValidMove to catch if a move isn't horizontal, diagonal, or vertical beforehand.
-        return originalMethod.apply(this, [start, end, game]) && PathUtils.pathIsClear(game.board, start, end)
+        return originalMethod.apply(this, [start, end, game]) && PathUtils.isClear(game.board, start, end)
     }
 
     return descriptor
@@ -116,9 +116,9 @@ export class Queen extends Piece {
     @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
         return (
-            PathUtils.pathIsDiagonal(start, end) ||
-            PathUtils.pathIsHorizontal(start, end) ||
-            PathUtils.pathIsVertical(start, end)
+            PathUtils.isDiagonal(start, end) ||
+            PathUtils.isHorizontal(start, end) ||
+            PathUtils.isVertical(start, end)
         )
     }
 }
@@ -128,7 +128,7 @@ export class Bishop extends Piece {
 
     @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
-        return PathUtils.pathIsDiagonal(start, end)
+        return PathUtils.isDiagonal(start, end)
     }
 }
 
@@ -187,7 +187,7 @@ export class Rook extends Piece {
 
     @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
-        return PathUtils.pathIsHorizontal(start, end) || PathUtils.pathIsVertical(start, end)
+        return PathUtils.isHorizontal(start, end) || PathUtils.isVertical(start, end)
     }
 
     executeMove(start: Square, end: Square): void {
@@ -222,7 +222,7 @@ export class Pawn extends Piece {
             }
         }
 
-        if (!PathUtils.pathIsVertical(start, end) || end.piece) {
+        if (!PathUtils.isVertical(start, end) || end.piece) {
             return false
         }
 
