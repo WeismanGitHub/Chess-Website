@@ -46,30 +46,21 @@ export default class Game {
             return false
         }
 
-        const kingSquare = this.board.getKingSquare(color)
+        const opponentSquares = this.board.squares
+            .flat()
+            .filter((square) => square.piece && square.piece.color !== color) as (Square & {
+            piece: Piece
+        })[]
 
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                if (j === 1 && i === 1) {
-                    continue
-                }
+        for (const square of opponentSquares) {
+            const validMoves = square.piece.getValidMoves(square, this)
 
-                const square = this.board.getSquare(kingSquare.row - i + 1, kingSquare.col - j + 1)
-
-                if (!square) {
-                    continue
-                }
-
-                try {
-                    this.makeMove(kingSquare, square)
-                    this.undoHalfMove()
-
-                    return false
-                } catch (err) {}
+            if (validMoves.length) {
+                return false
             }
         }
 
-        return false
+        return true
     }
 
     pathIsClear(start: Square, end: Square): boolean {
