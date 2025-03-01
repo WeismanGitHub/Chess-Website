@@ -9,7 +9,7 @@ export default class Game {
 
     private snapshots: Map<string, number> = new Map()
     public previousBoards: Board[] = []
-    public previousPiece: Piece | null = null
+    public previousPieces: Piece[] = []
     private fiftyMoveDrawCounter = 0
 
     constructor(board: Board = Board.generate()) {
@@ -177,6 +177,7 @@ export default class Game {
         this.turn = color
 
         this.board = Board.deepCopy(this.previousBoards[length - 2])
+        this.previousPieces.pop()
         this.previousBoards.pop()
 
         this.state = GameState.Active
@@ -231,7 +232,7 @@ export default class Game {
             this.fiftyMoveDrawCounter++
         }
 
-        this.previousPiece = piece
+        this.previousPieces.push(piece)
         this.previousBoards.push(Board.deepCopy(this.board))
 
         if (count >= 2) {
