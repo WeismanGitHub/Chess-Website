@@ -30,15 +30,9 @@ export default class Game {
     }
 
     kingInCheck(color: Color): boolean {
-        const opponentSquares = this.board.squares
-            .flat()
-            .filter((square) => square.piece && square.piece.color !== color) as (Square & {
-            piece: Piece
-        })[]
-
         const kingSquare = this.board.getKingSquare(color)
 
-        for (const square of opponentSquares) {
+        for (const square of this.board.getOccupiedSquares(color)) {
             if (square.piece.isValidMove(square, kingSquare, this)) {
                 return true
             }

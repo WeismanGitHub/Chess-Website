@@ -1,6 +1,8 @@
-import { Bishop, King, Knight, Pawn, Queen, Rook } from './pieces'
+import { Bishop, King, Knight, Pawn, Piece, Queen, Rook } from './pieces'
 import { Color } from '../../types'
 import Square from './square'
+
+type OccupiedSquare = Square & { piece: Piece }
 
 export default class Board {
     public squares: Square[][]
@@ -13,6 +15,12 @@ export default class Board {
         const square: Square | null = this.squares[row]?.[col] ?? null
 
         return square
+    }
+
+    getOccupiedSquares(color: Color): OccupiedSquare[] {
+        return this.squares
+            .flat()
+            .filter((square) => square.piece && square.piece.color !== color) as OccupiedSquare[]
     }
 
     getKingSquare(color: Color) {
