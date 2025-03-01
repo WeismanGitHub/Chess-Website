@@ -1,3 +1,4 @@
+import PathUtils from './path-utils'
 import { Color } from '../../types'
 import Square from './square'
 import Game from './game'
@@ -7,7 +8,7 @@ function clearPathCheck(_target: Object, _propertyKey: string, descriptor: Typed
 
     descriptor.value = function (start: Square, end: Square, game: Game): boolean {
         // game.pathIsClear is last because I need isValidMove to catch if a move isn't horizontal, diagonal, or vertical beforehand.
-        return originalMethod.apply(this, [start, end, game]) && game.pathIsClear(start, end)
+        return originalMethod.apply(this, [start, end, game]) && PathUtils.pathIsClear(game.board, start, end)
     }
 
     return descriptor
@@ -115,9 +116,9 @@ export class Queen extends Piece {
     @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
         return (
-            Game.pathIsDiagonal(start, end) ||
-            Game.pathIsHorizontal(start, end) ||
-            Game.pathIsVertical(start, end)
+            PathUtils.pathIsDiagonal(start, end) ||
+            PathUtils.pathIsHorizontal(start, end) ||
+            PathUtils.pathIsVertical(start, end)
         )
     }
 }
@@ -127,7 +128,7 @@ export class Bishop extends Piece {
 
     @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
-        return Game.pathIsDiagonal(start, end)
+        return PathUtils.pathIsDiagonal(start, end)
     }
 }
 
@@ -186,7 +187,7 @@ export class Rook extends Piece {
 
     @clearPathCheck
     isValidMove(start: Square, end: Square): boolean {
-        return Game.pathIsHorizontal(start, end) || Game.pathIsVertical(start, end)
+        return PathUtils.pathIsHorizontal(start, end) || PathUtils.pathIsVertical(start, end)
     }
 
     executeMove(start: Square, end: Square): void {
@@ -215,13 +216,13 @@ export class Pawn extends Piece {
             }
         }
 
-        if (game.previousPiece && game.previousPiece instanceof Pawn) {
+        if (game.previousPieces[game.previousPieces.length] instanceof Pawn) {
             if (this.color === 'white') {
             } else {
             }
         }
 
-        if (!Game.pathIsVertical(start, end) || end.piece) {
+        if (!PathUtils.pathIsVertical(start, end) || end.piece) {
             return false
         }
 

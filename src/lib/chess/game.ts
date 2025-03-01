@@ -17,18 +17,6 @@ export default class Game {
         this.previousBoards.push(Board.deepCopy(board))
     }
 
-    static pathIsDiagonal(start: Square, end: Square): boolean {
-        return Math.abs(start.col - end.col) === Math.abs(start.row - end.row)
-    }
-
-    static pathIsVertical(start: Square, end: Square): boolean {
-        return start.col === end.col
-    }
-
-    static pathIsHorizontal(start: Square, end: Square): boolean {
-        return start.row === end.row
-    }
-
     kingInCheck(color: Color): boolean {
         const kingSquare = this.board.getKingSquare(color)
 
@@ -61,53 +49,6 @@ export default class Game {
         }
 
         return true
-    }
-
-    pathIsClear(start: Square, end: Square): boolean {
-        const helper = (
-            distance: number,
-            coordCalculator: (i: number) => [number, number],
-            game = this
-        ): boolean => {
-            for (let i = 0; i < distance; i++) {
-                const [row, col] = coordCalculator(i)
-
-                const square = game.board.getSquare(row, col)
-
-                if (!square) {
-                    throw new Error(`No square at row ${row}, col ${col}`)
-                }
-
-                if (square.piece) {
-                    return false
-                }
-            }
-
-            return true
-        }
-
-        if (Game.pathIsVertical(start, end)) {
-            return helper(Math.abs(start.row - end.row) - 1, (i) => {
-                const row = start.row < end.row ? start.row + i + 1 : start.row - i - 1
-
-                return [row, start.col]
-            })
-        } else if (Game.pathIsHorizontal(start, end)) {
-            return helper(Math.abs(start.col - end.col) - 1, (i) => {
-                const col = start.col < end.col ? start.col + i + 1 : end.col - i + 1
-
-                return [start.row, col]
-            })
-        } else if (Game.pathIsDiagonal(start, end)) {
-            return helper(Math.abs(start.col - end.col) - 1, (i) => {
-                const col = start.col < end.col ? start.col + i + 1 : start.col - i - 1
-                const row = start.row < end.row ? start.row + i + 1 : start.row - i - 1
-
-                return [row, col]
-            })
-        } else {
-            throw new Error("Method cannot process paths that aren't diagonal, horizontal, or vertical.")
-        }
     }
 
     isStalemate(): boolean {
