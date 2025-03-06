@@ -54,19 +54,26 @@ export class King extends Piece {
             return false
         }
 
+        if (game.kingInCheck(this.color)) {
+            return false
+        }
+
         if (this.hasMoved) {
             return false
         }
 
-        const isKingSide = start.col < end.col
+        const isKingSide = start.col > end.col
 
-        const rook = game.board.getSquare(start.row, isKingSide ? 7 : 0)?.piece
+        const rook = game.board.getSquare(start.row, isKingSide ? 0 : 7)?.piece
 
         if (!rook || !(rook instanceof Rook) || rook.color !== this.color || rook.hasMoved) {
             return false
         }
 
-        const middleCols = isKingSide ? [start.col + 1, start.col + 2] : [start.col - 1, start.col - 2]
+        const middleCols = isKingSide ? [start.col - 1, start.col - 2] : [start.col + 1, start.col + 2]
+
+        const king = start.piece
+        start.piece = null
 
         for (const col of middleCols) {
             const middleSquare = game.board.getSquare(start.row, col)
@@ -75,16 +82,19 @@ export class King extends Piece {
                 return false
             }
 
-            middleSquare.piece = start.piece
-            start.piece = null
+            middleSquare.piece = king
 
             if (game.kingInCheck(this.color)) {
-                start.piece = middleSquare.piece
+                start.piece = king
                 middleSquare.piece = null
 
                 return false
             }
+
+            middleSquare.piece = null
         }
+
+        start.piece = king
 
         return true
     }
