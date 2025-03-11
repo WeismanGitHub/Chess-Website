@@ -301,8 +301,25 @@ export class Pawn extends Piece {
             }
 
             if (this.color === 'white') {
+                return start.row + 1 === end.row
             } else {
+                return start.row - 1 === end.row
             }
+        }
+
+        if (Pawn.isEnPassantMove(start, end, game)) {
+            const previousMove: HalfMove | undefined = game.halfMoves[game.halfMoves.length - 1]
+
+            if (
+                !previousMove ||
+                !(previousMove.piece instanceof Pawn) ||
+                previousMove.end.row !== start.row ||
+                previousMove.end.col !== end.col
+            ) {
+                return false
+            }
+
+            return true
         }
 
         if (!PathUtils.isVertical(start, end) || end.piece) {
@@ -316,14 +333,14 @@ export class Pawn extends Piece {
             }
 
             return start.row + 1 === end.row
-        }
+        } else {
+            // If pawn hasn't moved
+            if (start.row === 6) {
+                return start.row - 1 === end.row || start.row - 2 === end.row
+            }
 
-        // If pawn hasn't moved
-        if (start.row === 6) {
-            return start.row - 1 === end.row || start.row - 2 === end.row
+            return start.row - 1 === end.row
         }
-
-        return start.row - 1 === end.row
     }
 
     getValidMoves(start: Square, game: Game): Square[] {
