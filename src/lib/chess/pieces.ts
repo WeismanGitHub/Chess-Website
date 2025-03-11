@@ -240,6 +240,8 @@ export class Rook extends Piece {
         start.piece = null
 
         this.hasMoved = true
+
+        return new HalfMove(this.color, start, end, this, false, false, false, captured, null)
     }
 
     getValidMoves(start: Square, game: Game): Square[] {
