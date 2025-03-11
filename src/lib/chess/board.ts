@@ -79,20 +79,4 @@ export default class Board {
 
         return new Board(rows)
     }
-
-    static deepCopy(board: Board): Board {
-        const copiedSquares: Square[][] = []
-
-        for (let i = 0; i < 8; i++) {
-            copiedSquares[i] = []
-
-            for (let j = 0; j < 8; j++) {
-                const piece = board.squares[i][j].piece
-
-                copiedSquares[i][j] = new Square(i, j, piece && Object.create(piece))
-            }
-        }
-
-        return new Board(copiedSquares)
-    }
 }
