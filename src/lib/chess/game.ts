@@ -1,6 +1,7 @@
 import { King, Pawn, Piece, Rook } from './pieces'
 import { Color, GameState } from '../../types'
 import { Square, Board } from './'
+import HalfMove from './half-move'
 
 export default class Game {
     public state: GameState = GameState.Active
@@ -8,13 +9,11 @@ export default class Game {
     public turn: Color = 'white'
 
     private snapshots: Map<string, number> = new Map()
-    public previousBoards: Board[] = []
-    public previousPieces: Piece[] = []
+    public halfMoves: HalfMove[] = []
     private fiftyMoveDrawCounter = 0
 
     constructor(board: Board = Board.generate()) {
         this.board = board
-        this.previousBoards.push(Board.deepCopy(board))
     }
 
     kingInCheck(color: Color): boolean {
@@ -30,6 +29,7 @@ export default class Game {
     }
 
     kingInCheckmate(color: Color): boolean {
+        return false
         if (!this.kingInCheck(color)) {
             return false
         }
@@ -99,20 +99,17 @@ export default class Game {
     }
 
     undoHalfMove(): void {
-        const length = this.previousBoards.length
+        const halfMove: HalfMove | undefined = this.halfMoves[this.halfMoves.length - 1]
 
-        if (length <= 1) {
+        if (!halfMove) {
             return
         }
 
         const color = length % 2 === 0 ? 'white' : 'black'
         this.turn = color
-
-        this.board = Board.deepCopy(this.previousBoards[length - 2])
-        this.previousPieces.pop()
-        this.previousBoards.pop()
-
         this.state = GameState.Active
+
+        // undo move
     }
 
     makeMove(start: Square, end: Square, promotion?: Piece) {
@@ -120,11 +117,7 @@ export default class Game {
             throw new Error('Game is not active.')
         }
 
-        const opponentColor = this.turn === 'white' ? 'black' : 'white'
-
-        const isEnPassant = Pawn.isEnPassant(start, end, this)
         const piece = start.piece
-        const captured = isEnPassant ? new Pawn(opponentColor) : end.piece
 
         if (!piece) {
             throw new Error("There's no piece on that square.")
@@ -142,10 +135,14 @@ export default class Game {
             throw new Error('Invalid Move')
         }
 
-        piece.executeMove(start, end, this, promotion)
+        const halfMove = piece.executeMove(start, end, this, promotion)
+        this.halfMoves.push(halfMove)
+
+        const opponentColor = this.turn === 'white' ? 'black' : 'white'
+        this.turn = opponentColor
 
         if (this.kingInCheck(this.turn)) {
-            this.board = Board.deepCopy(this.previousBoards[this.previousBoards.length - 1])
+            this.undoHalfMove()
 
             throw new Error('Your King is in check.')
         }
@@ -158,14 +155,11 @@ export default class Game {
         const count = this.snapshots.get(snapshot) ?? 0
         this.snapshots.set(snapshot, count + 1)
 
-        if (piece instanceof Pawn || captured) {
+        if (piece instanceof Pawn || this.halfMoves[this.halfMoves.length - 1]?.captured) {
             this.fiftyMoveDrawCounter = 0
         } else {
             this.fiftyMoveDrawCounter++
         }
-
-        this.previousPieces.push(piece)
-        this.previousBoards.push(Board.deepCopy(this.board))
 
         if (count >= 2) {
             this.state = GameState.ThreefoldRepetition
@@ -174,7 +168,5 @@ export default class Game {
         } else if (this.isStalemate()) {
             this.state = GameState.Stalemate
         }
-
-        this.turn = opponentColor
     }
 }
