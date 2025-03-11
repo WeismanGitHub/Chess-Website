@@ -349,24 +349,37 @@ export class Pawn extends Piece {
         return []
     }
 
-    override executeMove(start: Square, end: Square, _game: Game, promotion?: Piece): void {
-        if (this.color === 'white' ? end.row === 7 : end.row === 0) {
+    override executeMove(start: Square, end: Square, game: Game, promotion?: Piece) {
+        const isPromotion = this.color === 'white' ? end.row === 7 : end.row === 0
+        const isEnPassant = Pawn.isEnPassantMove(start, end, game)
+
+        let captured = end.piece
+        end.piece = start.piece
+
+        if (isPromotion) {
             if (!promotion) {
                 throw new Error('Promotion piece is required.')
             }
 
             end.piece = promotion
-        } else {
-            end.piece = start.piece
+        } else if (isEnPassant) {
+            const opponentSquare = game.board.getSquare(start.row, end.col)!
+
+            captured = opponentSquare.piece
         }
 
         start.piece = null
-    }
 
-    static isEnPassant(start: Square, end: Square, game: Game): boolean {
-        start
-        end
-        game
-        return false
+        return new HalfMove(
+            this.color,
+            start,
+            end,
+            this,
+            isEnPassant,
+            false,
+            isPromotion,
+            captured,
+            promotion
+        )
     }
 }
