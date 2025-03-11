@@ -1,5 +1,6 @@
 import PathUtils from './path-utils'
 import { Color } from '../../types'
+import HalfMove from './half-move'
 import Square from './square'
 import Game from './game'
 
@@ -25,7 +26,7 @@ export abstract class Piece {
     abstract isValidMove(start: Square, end: Square, game: Game): boolean
     abstract getValidMoves(start: Square, game: Game): Square[]
 
-    executeMove(start: Square, end: Square, _game: Game, _promotion?: Piece): void {
+    executeMove(start: Square, end: Square, _game: Game, _promotion?: Piece): HalfMove {
         const piece = start.piece
 
         if (!piece) {
@@ -36,6 +37,8 @@ export abstract class Piece {
 
         end.piece = start.piece
         start.piece = null
+
+        return new HalfMove(this.color, start, end, this, false, false, false, captured, null)
     }
 }
 
