@@ -32,6 +32,8 @@ export abstract class Piece {
             throw new Error("There's no piece on that square.")
         }
 
+        const captured = end.piece
+
         end.piece = start.piece
         start.piece = null
     }
