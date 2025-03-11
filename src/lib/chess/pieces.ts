@@ -235,7 +235,9 @@ export class Rook extends Piece {
         return PathUtils.isHorizontal(start, end) || PathUtils.isVertical(start, end)
     }
 
-    override executeMove(start: Square, end: Square): void {
+    override executeMove(start: Square, end: Square) {
+        const captured = end.piece
+
         end.piece = start.piece
         start.piece = null
 
@@ -255,21 +257,49 @@ export class Rook extends Piece {
 export class Pawn extends Piece {
     public character = 'o'
 
+    private static isEnPassantMove(start: Square, end: Square, game: Game): boolean {
+        const piece = start.piece
+
+        if (!piece) {
+            throw new Error('Starting square does not have a piece.')
+        } else if (!(piece instanceof Pawn)) {
+            throw new Error('Piece is not a pawn.')
+        }
+
+        const horizontallyAdjacent = start.col + 1 === end.col || start.col - 1 === end.col
+
+        if (!horizontallyAdjacent) {
+            return false
+        }
+
+        if (piece.color === 'white') {
+            if (end.row !== 5) {
+                return false
+            }
+        } else {
+            if (end.row !== 2) {
+                return false
+            }
+        }
+
+        const opponentSquare = game.board.getSquare(start.row, end.col)
+
+        if (!opponentSquare || !opponentSquare.piece || !(opponentSquare.piece instanceof Pawn)) {
+            return false
+        }
+
+        return true
+    }
+
     @clearPathCheck
     isValidMove(start: Square, end: Square, game: Game): boolean {
         const horizontallyAdjacent = start.col + 1 === end.col || start.col - 1 === end.col
 
-        if (this.color === 'white') {
-            if (horizontallyAdjacent && start.row + 1 === end.row && end.piece) {
-                return true
+        if (horizontallyAdjacent) {
+            if (!end.piece) {
+                return false
             }
-        } else {
-            if (horizontallyAdjacent && start.row - 1 === end.row && end.piece) {
-                return true
-            }
-        }
 
-        if (game.previousPieces[game.previousPieces.length] instanceof Pawn) {
             if (this.color === 'white') {
             } else {
             }
