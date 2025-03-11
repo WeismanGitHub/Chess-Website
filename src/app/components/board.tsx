@@ -78,24 +78,6 @@ export default function ({ size }: { size: number }) {
     }, [])
 
     function handleMove(start: Square, end: Square, promotion?: Piece, callback?: Function) {
-        let gameCopy = new Game()
-
-        const copiedSquares: Square[][] = []
-
-        for (let i = 0; i < 8; i++) {
-            copiedSquares[i] = []
-
-            for (let j = 0; j < 8; j++) {
-                const piece = game.board.squares[i][j].piece
-
-                copiedSquares[i][j] = new Square(i, j, piece && Object.create(piece))
-            }
-        }
-
-        gameCopy.board.squares = copiedSquares
-        gameCopy.turn = game.turn
-        game.state = game.state
-
         try {
             game.makeMove(start, end, promotion)
 
