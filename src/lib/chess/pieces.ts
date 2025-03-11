@@ -110,11 +110,14 @@ export class King extends Piece {
         return []
     }
 
-    override executeMove(start: Square, end: Square, game: Game): void {
+    override executeMove(start: Square, end: Square, game: Game) {
+        const captured = end.piece
+        const isCastling = King.isCastlingMove(start, end)
+
         end.piece = start.piece
         start.piece = null
 
-        if (King.isCastlingMove(start, end)) {
+        if (isCastling) {
             const isKingSide = start.col < end.col
 
             const rookStart = game.board.getSquare(start.row, isKingSide ? 7 : 0)
@@ -129,6 +132,8 @@ export class King extends Piece {
         }
 
         this.hasMoved = true
+
+        return new HalfMove(this.color, start, end, this, false, isCastling, false, captured, null)
     }
 }
 
