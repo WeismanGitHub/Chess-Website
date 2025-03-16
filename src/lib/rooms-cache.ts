@@ -14,10 +14,10 @@ type Player = {
 }
 
 export interface Room {
-    id: string
     state: RoomState
     game: Game | null
     players: Player[]
+    minutes: number
 }
 
-export const rooms = new Keyv({ namespace: 'rooms' })
+export const rooms = new Keyv<Room>({ namespace: 'rooms' })
