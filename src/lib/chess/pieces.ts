@@ -1,6 +1,6 @@
 import PathUtils from './path-utils'
 import { Color } from '../../types'
-import HalfMove from './half-move'
+import Move from './move'
 import Square from './square'
 import Game from './game'
 
@@ -26,7 +26,7 @@ export abstract class Piece {
     abstract isValidMove(start: Square, end: Square, game: Game): boolean
     abstract getValidMoves(start: Square, game: Game): Square[]
 
-    executeMove(start: Square, end: Square, _game: Game, _promotion?: Piece): HalfMove {
+    executeMove(start: Square, end: Square, _game: Game, _promotion?: Piece): Move {
         const piece = start.piece
 
         if (!piece) {
@@ -38,7 +38,7 @@ export abstract class Piece {
         end.piece = start.piece
         start.piece = null
 
-        return new HalfMove(this.color, start, end, this, false, false, false, captured, null)
+        return new Move(this.color, start, end, this, false, false, false, captured, null)
     }
 }
 
@@ -133,7 +133,7 @@ export class King extends Piece {
 
         this.hasMoved = true
 
-        return new HalfMove(this.color, start, end, this, false, isCastling, false, captured, null)
+        return new Move(this.color, start, end, this, false, isCastling, false, captured, null)
     }
 }
 
@@ -243,7 +243,7 @@ export class Rook extends Piece {
 
         this.hasMoved = true
 
-        return new HalfMove(this.color, start, end, this, false, false, false, captured, null)
+        return new Move(this.color, start, end, this, false, false, false, captured, null)
     }
 
     getValidMoves(start: Square, game: Game): Square[] {
@@ -308,7 +308,7 @@ export class Pawn extends Piece {
         }
 
         if (Pawn.isEnPassantMove(start, end, game)) {
-            const previousMove: HalfMove | undefined = game.halfMoves[game.halfMoves.length - 1]
+            const previousMove: Move | undefined = game.moves[game.moves.length - 1]
 
             if (
                 !previousMove ||
@@ -370,16 +370,6 @@ export class Pawn extends Piece {
 
         start.piece = null
 
-        return new HalfMove(
-            this.color,
-            start,
-            end,
-            this,
-            isEnPassant,
-            false,
-            isPromotion,
-            captured,
-            promotion
-        )
+        return new Move(this.color, start, end, this, isEnPassant, false, isPromotion, captured, promotion)
     }
 }

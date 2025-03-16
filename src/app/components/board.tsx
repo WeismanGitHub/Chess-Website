@@ -243,7 +243,7 @@ export default function ({ size }: { size: number }) {
                         </svg>
                         <span className="sr-only">toggle notation</span>
                     </Button>
-                    <Button onClick={() => game.undoHalfMove()}>{'<'}</Button>
+                    <Button onClick={() => game.undoMove()}>{'<'}</Button>
                 </div>
 
                 <BoardView game={game} />

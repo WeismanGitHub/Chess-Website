@@ -1,7 +1,7 @@
 import { King, Pawn, Piece, Rook } from './pieces'
 import { Color, GameState } from '../../types'
 import { Square, Board } from './'
-import HalfMove from './half-move'
+import Move from './move'
 
 export default class Game {
     public state: GameState = GameState.Active
@@ -9,7 +9,7 @@ export default class Game {
     public turn: Color = 'white'
 
     private snapshots: Map<string, number> = new Map()
-    public halfMoves: HalfMove[] = []
+    public moves: Move[] = []
     private fiftyMoveDrawCounter = 0
 
     constructor(board: Board = Board.generate()) {
@@ -98,10 +98,10 @@ export default class Game {
         }, '')
     }
 
-    undoHalfMove(): void {
-        const halfMove: HalfMove | undefined = this.halfMoves[this.halfMoves.length - 1]
+    undoMove(): void {
+        const move: Move | undefined = this.moves[this.moves.length - 1]
 
-        if (!halfMove) {
+        if (!move) {
             return
         }
 
@@ -135,14 +135,14 @@ export default class Game {
             throw new Error('Invalid Move')
         }
 
-        const halfMove = piece.executeMove(start, end, this, promotion)
-        this.halfMoves.push(halfMove)
+        const move = piece.executeMove(start, end, this, promotion)
+        this.moves.push(move)
 
         const opponentColor = this.turn === 'white' ? 'black' : 'white'
         this.turn = opponentColor
 
         if (this.kingInCheck(this.turn)) {
-            this.undoHalfMove()
+            this.undoMove()
 
             throw new Error('Your King is in check.')
         }
@@ -155,7 +155,7 @@ export default class Game {
         const count = this.snapshots.get(snapshot) ?? 0
         this.snapshots.set(snapshot, count + 1)
 
-        if (piece instanceof Pawn || this.halfMoves[this.halfMoves.length - 1]?.captured) {
+        if (piece instanceof Pawn || this.moves[this.moves.length - 1]?.captured) {
             this.fiftyMoveDrawCounter = 0
         } else {
             this.fiftyMoveDrawCounter++

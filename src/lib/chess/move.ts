@@ -2,7 +2,7 @@ import { Color } from '../../types'
 import { Piece } from './pieces'
 import Square from './square'
 
-export default class HalfMove {
+export default class Move {
     public start: Square
     public end: Square
 
