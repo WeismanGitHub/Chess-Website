@@ -7,6 +7,7 @@ import { customAlphabet } from 'nanoid'
 import { decodeAuthJwt } from './jwt'
 import { Socket } from 'socket.io'
 import { User } from '../models'
+import { Game } from './chess'
 
 const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', RoomConstants.idLength)
 
@@ -69,13 +70,21 @@ export default function socketHandler(socket: Socket) {
 
             const id = await generateRoomId()
 
+            const user = await User.findById(userId)
+
+            if (!user) {
+                throw new Error('Could not find your account.')
+            }
+
             await rooms.set(id, {
+                state: RoomState.Setup,
+                game: new Game(),
                 minutes: data,
-                started: false,
                 players: [
                     {
                         id: userId,
                         ready: false,
+                        name: user.name,
                     },
                 ],
             })
