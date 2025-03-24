@@ -81,6 +81,32 @@ abstract class PathUtils {
 
         return squares
     }
+
+    static getHorizontalSquares(start: Square, board: Board): Square[] {
+        const squares: Square[] = []
+
+        for (let i = start.col + 1; i <= 7; i++) {
+            const square = board.getSquare(start.row, i)
+
+            if (!square) {
+                throw new Error(`Could not get square at row ${start.row} col ${i}`)
+            }
+
+            squares.push(square)
+        }
+
+        for (let i = start.col - 1; i >= 0; i--) {
+            const square = board.getSquare(start.row, i)
+
+            if (!square) {
+                throw new Error(`Could not get square at row ${start.row} col ${i}`)
+            }
+
+            squares.push(square)
+        }
+
+        return squares
+    }
 }
 
 export default PathUtils
