@@ -55,6 +55,32 @@ abstract class PathUtils {
             throw new Error("Method cannot process paths that aren't diagonal, horizontal, or vertical.")
         }
     }
+
+    static getVerticalSquares(start: Square, board: Board): Square[] {
+        const squares: Square[] = []
+
+        for (let i = start.row + 1; i <= 7; i++) {
+            const square = board.getSquare(i, start.col)
+
+            if (!square) {
+                throw new Error(`Could not get square at row ${i} col ${start.col}`)
+            }
+
+            squares.push(square)
+        }
+
+        for (let i = start.row - 1; i >= 0; i--) {
+            const square = board.getSquare(i, start.col)
+
+            if (!square) {
+                throw new Error(`Could not get square at row ${i} col ${start.col}`)
+            }
+
+            squares.push(square)
+        }
+
+        return squares
+    }
 }
 
 export default PathUtils
