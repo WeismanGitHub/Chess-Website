@@ -56,7 +56,7 @@ abstract class PathUtils {
         }
     }
 
-    static getVerticalSquares(start: Square, board: Board): Square[] {
+    static getFreeVerticalSquares(start: Square, board: Board): Square[] {
         const squares: Square[] = []
 
         for (let i = start.row + 1; i <= 7; i++) {
@@ -64,6 +64,8 @@ abstract class PathUtils {
 
             if (!square) {
                 throw new Error(`Could not get square at row ${i} col ${start.col}`)
+            } else if (square.piece) {
+                break
             }
 
             squares.push(square)
@@ -74,6 +76,8 @@ abstract class PathUtils {
 
             if (!square) {
                 throw new Error(`Could not get square at row ${i} col ${start.col}`)
+            } else if (square.piece) {
+                break
             }
 
             squares.push(square)
@@ -82,7 +86,7 @@ abstract class PathUtils {
         return squares
     }
 
-    static getHorizontalSquares(start: Square, board: Board): Square[] {
+    static getFreeHorizontalSquares(start: Square, board: Board): Square[] {
         const squares: Square[] = []
 
         for (let i = start.col + 1; i <= 7; i++) {
@@ -90,6 +94,8 @@ abstract class PathUtils {
 
             if (!square) {
                 throw new Error(`Could not get square at row ${start.row} col ${i}`)
+            } else if (square.piece) {
+                break
             }
 
             squares.push(square)
