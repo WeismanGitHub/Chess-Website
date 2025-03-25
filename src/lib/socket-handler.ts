@@ -187,7 +187,7 @@ export default function socketHandler(socket: Socket) {
         await rooms.set(roomId, room)
     })
 
-    socket.on('make-move', async () => {
+    socket.on(MakeMove.Name, async () => {
         if (!roomId) {
             throw new CustomError("You're not in a room.")
         }
