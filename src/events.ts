@@ -29,10 +29,14 @@ export namespace ReceiveMessage {
 }
 
 export namespace PlayerJoined {
-    export type Response = SocketResponse<{ id: string; ready: boolean; name: string }>
+    export type Response = SocketResponse<{ id: string; name: string }>
     export const Name = 'player-joined'
 }
 
 export namespace Ready {
     export const Name = 'ready'
+}
+
+export namespace MakeMove {
+    export const Name = 'make-move'
 }
