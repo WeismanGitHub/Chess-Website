@@ -18,6 +18,7 @@
     "@dnd-kit/modifiers": "^7.0.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
+    "chess": "^1.2.2",
     "flowbite-react": "^0.10.1",
     "formik": "^2.4.6",
     "jsonwebtoken": "^9.0.2",
