@@ -106,6 +106,38 @@ abstract class PathUtils {
 
             if (!square) {
                 throw new Error(`Could not get square at row ${start.row} col ${i}`)
+            } else if (square.piece) {
+                break
+            }
+
+            squares.push(square)
+        }
+
+        return squares
+    }
+
+    static getFreeDiagonalSquares(start: Square, board: Board): Square[] {
+        const squares: Square[] = []
+
+        for (let i = start.col + 1; i <= 7; i++) {
+            const square = board.getSquare(i, i)
+
+            if (!square) {
+                throw new Error(`Could not get square at row ${i} col ${i}`)
+            } else if (square.piece) {
+                break
+            }
+
+            squares.push(square)
+        }
+
+        for (let i = start.col - 1; i >= 0; i--) {
+            const square = board.getSquare(i, i)
+
+            if (!square) {
+                throw new Error(`Could not get square at row ${i} col ${i}`)
+            } else if (square.piece) {
+                break
             }
 
             squares.push(square)

@@ -101,6 +101,8 @@ export default class Game {
     undoMove(): void {
         const move: Move | undefined = this.moves[this.moves.length - 1]
 
+        console.log(move)
+
         if (!move) {
             return
         }
@@ -109,7 +111,13 @@ export default class Game {
         this.turn = color
         this.state = GameState.Active
 
-        // undo move
+        if (move.isCastling) {
+        } else if (move.isEnPassant) {
+        } else if (move.isPromotion) {
+        } else {
+            move.end.piece = move.captured
+            move.start.piece = move.piece
+        }
     }
 
     makeMove(start: Square, end: Square, promotion?: Piece) {

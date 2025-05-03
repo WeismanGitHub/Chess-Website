@@ -150,9 +150,9 @@ export class Queen extends Piece {
     }
 
     getValidMoves(start: Square, game: Game): Square[] {
-        start
-        game
-        return []
+        return PathUtils.getFreeVerticalSquares(start, game.board)
+            .concat(PathUtils.getFreeHorizontalSquares(start, game.board))
+            .concat(PathUtils.getFreeDiagonalSquares(start, game.board))
     }
 }
 
@@ -165,9 +165,7 @@ export class Bishop extends Piece {
     }
 
     getValidMoves(start: Square, game: Game): Square[] {
-        start
-        game
-        return []
+        return PathUtils.getFreeDiagonalSquares(start, game.board)
     }
 }
 
@@ -247,9 +245,9 @@ export class Rook extends Piece {
     }
 
     getValidMoves(start: Square, game: Game): Square[] {
-        start
-        game
-        return []
+        return PathUtils.getFreeVerticalSquares(start, game.board).concat(
+            PathUtils.getFreeHorizontalSquares(start, game.board)
+        )
     }
 }
 
@@ -344,14 +342,35 @@ export class Pawn extends Piece {
     }
 
     getValidMoves(start: Square, game: Game): Square[] {
-        start
-        game
-        return []
+        const squares: Square[] = []
+
+        const inStartingPosition =
+            (this.color === 'white' && start.row === 1) || (this.color === 'black' && start.row === 6)
+
+        if (inStartingPosition) {
+            const row = this.color === 'white' ? 3 : 4
+
+            const square = game.board.getSquare(row, start.col)
+
+            if (!square) {
+                throw new Error(`Could not get square at row ${row} col ${start.col}`)
+            }
+
+            if (!square.piece) {
+                squares.push(square)
+            }
+        }
+
+        // make sure no square puts king in check
+
+        return squares
     }
 
     override executeMove(start: Square, end: Square, game: Game, promotion?: Piece) {
         const isPromotion = this.color === 'white' ? end.row === 7 : end.row === 0
         const isEnPassant = Pawn.isEnPassantMove(start, end, game)
+
+        console.log(PathUtils.getFreeDiagonalSquares(start, game.board), start)
 
         let captured = end.piece
         end.piece = start.piece
